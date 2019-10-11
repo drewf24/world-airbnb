@@ -1,6 +1,6 @@
 Topic ideas
 ================
-NAME HERE
+Ellie Roza
 TODAY’S DATE
 
 ## Topic Ideas

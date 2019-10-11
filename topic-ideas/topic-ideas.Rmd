@@ -1,6 +1,6 @@
 ---
 title: "Topic ideas"
-author: "NAME HERE"
+author: "Ellie Roza"
 date: "TODAY'S DATE"
 output: github_document
 ---
