@@ -1,0 +1,23 @@
+---
+title: "Topic ideas"
+author: "NAME HERE"
+date: "TODAY'S DATE"
+output: github_document
+---
+
+## Topic Ideas
+
+### Idea #1
+
+### Idea #2
+
+### Idea #3 
+
+### Idea #4
+
+
+## Datasets
+
+### Dataset #!
+
+### Dataset #2

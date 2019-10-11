@@ -1,0 +1,15 @@
+---
+title: "PROJECT TITLE"
+author: "NAME HERE"
+date: "TODAY'S DATE"
+output: github_document
+---
+
+### Section 1. Introduction
+
+### Section 2. Exploratory data analysis
+
+### Section 3. Research questions
+
+### Section 4. Data
+
