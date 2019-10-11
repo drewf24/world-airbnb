@@ -1,13 +1,25 @@
 Topic ideas
 ================
-Ellie Roza
-TODAY’S DATE
+Team World
+10/11/19
 
 ## Topic Ideas
 
 ### Idea \#1
 
+Data related to Climate Change. Specifically, we might want to take a
+look at the contributing factors to our current climate crisis or look
+at how various indicators of climate have changed in the last 50 years.
+Alternatively, we might be able to use regression (whick we will soon
+learn) to predict the state of the climate considering trends continue
+as is.
+
 ### Idea \#2
+
+We wanted to look at Airbnb data because we thought this could be
+interesting insight into the economic housing market in NYC. We could
+compare price by neighborhood and borough which could provide
+interesting insights into the cost of living in NYC.
 
 ### Idea \#3
 
@@ -17,4 +29,8 @@ TODAY’S DATE
 
 ### Dataset \#\!
 
+<https://www.kaggle.com/theworldbank/world-bank-climate-change-data>
+
 ### Dataset \#2
+
+<https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data>
