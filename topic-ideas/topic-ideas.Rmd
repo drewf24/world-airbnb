@@ -21,11 +21,18 @@ We are interested in Uber data because we want to are curious how certain factor
 
 ### Idea #4
 
+We are interested in the Youtube data because it provides us with staightforward numerical and categorical data. We are curious about how the time or country of publication can impact the popularity of the posted video in terms of likes and comments. We could also look at the types of videos that tend to disable their comments or ratings through the description as well as do text analysis on the tags. We can also add additional datasets through inner-join to increase the variables we can analyze.
 
 ## Datasets
 
-### Dataset #!
+### Dataset #1
 https://www.kaggle.com/theworldbank/world-bank-climate-change-data
 
 ### Dataset #2
 https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data
+
+### Dataset #3
+https://www.kaggle.com/fivethirtyeight/uber-pickups-in-new-york-city?fbclid=IwAR1CCcEglvGDHGGltaTRPeXzH4sF0uzriZRo8pzkVMxpxBj6oexXl7YN8W0
+
+### Dataset #4
+https://www.kaggle.com/datasnaek/youtube-new
