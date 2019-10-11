@@ -23,6 +23,12 @@ interesting insights into the cost of living in NYC.
 
 ### Idea \#3
 
+We are interested in Uber data because we want to are curious how
+certain factors such as time, location, and distance, will play a role
+in the price of Uber rides. We are also interested in eventually using
+regression and statistics to predict the prices of Uber rides based on
+location, time, and distance.
+
 ### Idea \#4
 
 ## Datasets
