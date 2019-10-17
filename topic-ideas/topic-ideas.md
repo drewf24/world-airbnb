@@ -7,36 +7,37 @@ Team World
 
 ### Idea \#1
 
-Data related to Climate Change. Specifically, we might want to take a
-look at the contributing factors to our current climate crisis or look
-at how various indicators of climate have changed in the last 50 years.
-Alternatively, we might be able to use regression (whick we will soon
-learn) to predict the state of the climate considering trends continue
-as is.
-
-### Idea \#2
-
 We wanted to look at Airbnb data because we thought this could be
 interesting insight into the economic housing market in NYC. We could
 compare price by neighborhood and borough which could provide
 interesting insights into the cost of living in NYC.
 
+### Idea \#2
+
+We are interested in Uber/Lyft data because we want to are curious how
+certain factors such as time, location, and distance, will play a role
+in the price of Uber/Lyft rides. We are also interested in eventually
+using regression and statistics to predict the prices of Uber rides
+based on location, time, and distance.
+
 ### Idea \#3
 
-We are interested in Uber data because we want to are curious how
-certain factors such as time, location, and distance, will play a role
-in the price of Uber rides. We are also interested in eventually using
-regression and statistics to predict the prices of Uber rides based on
-location, time, and distance.
-
-### Idea \#4
+It could be interesting to explore what factors contribute to a
+“popular” (or not “popular”) YouTube video, depending on country.
+Whether it be numerical variables like number of likes and comments or
+discrete ones like the YouTuber’s name or whether or not they disabled
+comments.
 
 ## Datasets
 
-### Dataset \#\!
+### Dataset \#1
 
-<https://www.kaggle.com/theworldbank/world-bank-climate-change-data>
+<https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data>
 
 ### Dataset \#2
 
-<https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data>
+<https://www.kaggle.com/brllrb/uber-and-lyft-dataset-boston-ma>
+
+### Dataset \#3
+
+<https://www.kaggle.com/datasnaek/youtube-new>
