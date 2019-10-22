@@ -1,0 +1,26 @@
+PROJECT TITLE
+================
+WORLD
+10/22/2019
+
+### Section 1. Introduction
+
+Our topic is based on an AirBnb dataset in New York City for 2019.
+Ultimately, we hope to determine the best AirBnb’s to rent based on
+variables such as price, size, reviews and availability. We wanted to
+look at Airbnb data because we thought this could be interesting insight
+into the economic housing market in NYC. We plan to compare price by
+neighborhood and borough which could provide interesting insights into
+the cost of living in NYC. We found our data on Kaggle
+(<https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data>). The
+data was collected by \_\_\_\_\_\_\_ , and includes variables: listing
+ID, name of the listing, host ID, name of the host, location,
+neighbourhood, latitude and longitude coordinates, room type, price in
+dollars, minimum\_nights, number of reviews, latest review, number of
+reviews per month, amount of listing per host and availability.
+
+### Section 2. Exploratory data analysis
+
+### Section 3. Research questions
+
+### Section 4. Data
