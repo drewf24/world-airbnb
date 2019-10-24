@@ -21,6 +21,40 @@ library(broom)
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
+```{r neighbor_group-univariate}
+abnb %>%
+  select(neighbourhood_group) %>%
+  count(neighbourhood_group) %>%
+  arrange(desc(n))
+```
+
+```{r visualization-univariate}
+ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
+  geom_histogram(stat = "count") + 
+  labs(title = "Listings by Borough", x = "Borough", y = "Count")
+```
+
+```{r neighbourhood_group-neighbourhood}
+abnb %>%
+  group_by(neighbourhood_group) %>%
+  select(neighbourhood) %>%
+  count(neighbourhood) %>%
+  arrange(desc(n))
+```
+
+```{r price-borough}
+abnb %>%
+  ggplot(mapping = aes(x = neighbourhood_group, y = price)) +
+  geom_boxplot() + 
+  labs(title = "Price of Listings by Borough", x = "Borough", y = "Price")
+```
+
+```{r price-room_type}
+abnb %>%
+  ggplot(mapping = aes(x = availability_365, y = price, color = room_type)) +
+  geom_point(alpha = 0.3) + 
+  labs(title = "Price of Listing by Availability", x = "Room Type", y = "Price")
+```
 
 ### Section 3. Research questions
 
