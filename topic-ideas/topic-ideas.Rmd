@@ -17,7 +17,11 @@ We wanted to look at Airbnb data because we thought this could be interesting in
 
 ### Idea #3 
 
+<<<<<<< HEAD
 We are interested in Uber data because we want to are curious how certain factors such as time, location, and distance, will play a role in the price of Uber rides. We are also interested in eventually using regression and statistics to predict the prices of Uber rides based on location, time, and distance.
+=======
+We are interested in Uber and Lyft data because we want to are curious how certain factors such as time, location, and distance, will play a role in the price of Uber/Lyft rides. We are also interested in eventually using regression and statistics to predict the prices of Uber rides based on location, time, and distance.
+>>>>>>> 060e63541038088e17f581d705e1d7fdbd2a7ab7
 
 ### Idea #4
 
