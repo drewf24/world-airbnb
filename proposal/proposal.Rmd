@@ -11,6 +11,17 @@ Our topic is based on an AirBnb dataset in New York City for 2019. Ultimately, w
 
 ### Section 2. Exploratory data analysis
 
+### Load packages & data
+```{r load-packages, message=FALSE}
+library(tidyverse) 
+library(broom)
+```
+
+```{r load-data, message=FALSE}
+abnb <- read_csv("AB_NYC_2019.csv")
+```
+
+
 ### Section 3. Research questions
 
 ### Section 4. Data

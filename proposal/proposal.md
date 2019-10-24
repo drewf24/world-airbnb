@@ -21,6 +21,17 @@ reviews per month, amount of listing per host and availability.
 
 ### Section 2. Exploratory data analysis
 
+### Load packages & data
+
+``` r
+library(tidyverse) 
+library(broom)
+```
+
+``` r
+abnb <- read_csv("AB_NYC_2019.csv")
+```
+
 ### Section 3. Research questions
 
 ### Section 4. Data
