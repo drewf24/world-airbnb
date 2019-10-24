@@ -5,9 +5,9 @@ WORLD
 
 ### Section 1. Introduction
 
-hi guys Our topic is based on an AirBnb dataset in New York City for
-2019. Ultimately, we hope to determine the best AirBnb’s to rent based
-on variables such as price, size, reviews and availability. We wanted to
+Our topic is based on an AirBnb dataset in New York City for 2019.
+Ultimately, we hope to determine the best AirBnb’s to rent based on
+variables such as price, size, reviews and availability. We wanted to
 look at Airbnb data because we thought this could be interesting insight
 into the economic housing market in NYC. We plan to compare price by
 neighborhood and borough which could provide interesting insights into
