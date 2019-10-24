@@ -7,7 +7,7 @@ Dimensions:
 Codebook:
 Variable Name --- Description:
 
-id --- The specific listing's ID value from the Airbnb website.
+id --- The specific listing's ID value from the Airbnb website. 
 name --- Host-produced description of the listing.
 host_id --- The ID unique for the listing's owner.
 host_name --- First name of host/hosts. 
