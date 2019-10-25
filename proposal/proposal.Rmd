@@ -181,7 +181,14 @@ The graphs above show that among entire home/apt and private rooms, there is a h
 
 ### Section 3. Research questions
 
-How does location (borough and neighborhood, for example) influence the price of a listing?
+The first research question that we are interested in exploring is “How does location (borough and neighborhood, for example) influence the price of a listing?”
+
+Through our exploratory analysis we were able to see that the vast majority of Airbnb listings are located in Brooklyn and Manhattan which is not surprising. We are very interested in the prices of different Airbnb listings, we can see the distribution of prices for each borough in the second visualization. The highest median price is located in Manhattan at $150 as well as the largest IQR ($125). The histograms also show that for each borough, price is very dramatically skewed right with many outliers. 
+
+We then decided to look further into price distribution across neighborhoods within each borough which showed the highest median price per neighborhood was Fort Wadsworth, Staten Island which was surprising because Staten Island overall had one of the lowest median prices. We plan to continue this analysis to determine what other factors contribute to fluctuation in prices (such as using latitude and longitude coordinates to see how distance from central park may affect prices as well as which neighborhoods are the highest and lowest cost relative to its borough). 
+
+To complete this research we will use the location variables (neighbourhood, neighbourhood_group, and latitude longitude) as predictors variables and price will be the response variable.
+
 
 How does the way in which a property is listed (type of room, for example) influence the availability of a listing?
 
