@@ -79,7 +79,8 @@ abnb <- read_csv("AB_NYC_2019.csv")
 
 LOCATION AND PRICE:
 
-Univariate Borough Count (Visualization):
+Univariate Borough Count (Visualization): Creating a histogram that
+displays number of listings by neighborhood borough in New York City.
 
 ``` r
 ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
@@ -91,7 +92,15 @@ ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
 
 ![](proposal_files/figure-gfm/visualization-univariate-1.png)<!-- -->
 
-Univariate Borough Count (Summary)
+According to this histogram, Manhattan and Brooklyn dominate the number
+of listings on Airbnb in New York City. More specifically, there is
+roughly 20,000 listings in Brooklyn and slightly more than 20,000
+listings in Manhattan. The Queens borough follows after with roughly
+5,000 listings, followed by Bronx and Staten Island with fewer than
+1,100 listings each.
+
+Univariate Borough Count (Summary) Creating summary statistics that will
+count the number of listings in each neighborhood group.
 
 ``` r
 abnb %>%
@@ -107,6 +116,13 @@ abnb %>%
     ## 3 Queens               5666
     ## 4 Bronx                1091
     ## 5 Staten Island         373
+
+According to the table, Manhattan has the most listings at 21,661
+followed by Brooklyn at 20,104 listings, followed by Queens at 5,666,
+Bronx at 1,091, and Staten Island last at only 373 listings.
+
+Creating a facet histogram that will display the price of listings by
+borough.
 
 ``` r
 abnb %>%
@@ -133,7 +149,14 @@ abnb %>%
     ## attr(,"class")
     ## [1] "labels"
 
-Lots of right skew…
+The graphs display that the prices for listings are very skewed to the
+right. In other words, there are many outliers that fall out of the IQR
+for each neighborhood group. Most listings fall in the 50 to 150 price
+range. However, there are outliers that are a lot higher than this price
+range.
+
+Creating summary statistics that displays the median and IQR price of
+each neighborhood group.
 
 ``` r
 abnb %>%
@@ -155,6 +178,13 @@ abnb %>%
     ## 4 Staten Island              75        60
     ## 5 Bronx                      65        54
 
+According to the table, Manhattan has the highest median price at 150
+followed by Brooklyn at 90, Queens and Staten Island at 75, and Bronx
+last at 65.
+
+Creating summary statistics that finds the median price based upon
+neighborhood in descending order.
+
 ``` r
 abnb %>%
   group_by(neighbourhood_group, neighbourhood) %>%
@@ -173,13 +203,21 @@ abnb %>%
     ## 4 Queens              Neponsit                274
     ## 5 Manhattan           NoHo                    250
 
+According to the table, Fort Wadsworth in Staten Island has the highest
+median price at 800 followed by Woodrow at 700, Tribeca at 295, Neponsit
+at 274, and NoHo at 250.
+
 ``` r
 abnb %>%
   ggplot(mapping = aes (x = longitude, y = latitude, color = price)) +
   geom_point(alpha = 0.6)
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](proposal_files/figure-gfm/price-at-longtitude-1.png)<!-- -->
+
+The graph displays that most listings take place in the (-74, -73.7)
+longtitude region and (40.55, 40.9) latitude region. Prices are
+generally in the 50 to 150 range.
 
 LISTING DETAILS AND AVAILABILITY
 
@@ -193,7 +231,12 @@ abnb %>%
   )
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](proposal_files/figure-gfm/avail-listings-distr-1.png)<!-- -->
+
+The graph is skewed to the right with most occurrences happening in the
+0 to 100 availibily (days per year). More specifically, approximately
+more than 25,000 listings occurr in the 0 to 100 availability (days per
+year).
 
 ``` r
 abnb %>%
@@ -207,23 +250,10 @@ abnb %>%
 
 ![](proposal_files/figure-gfm/room_type-availability_365-1.png)<!-- -->
 
-``` r
-abnb %>%
-  group_by(room_type) %>%
-  summarise(
-    med_availability_365 = median(availability_365), 
-    IQR_availability_365 = IQR(availability_365)
-    ) %>%
-  arrange(desc(med_availability_365)) %>%
-  head(5)
-```
-
-    ## # A tibble: 3 x 3
-    ##   room_type       med_availability_365 IQR_availability_365
-    ##   <chr>                          <dbl>                <dbl>
-    ## 1 Shared room                       90                  341
-    ## 2 Private room                      45                  214
-    ## 3 Entire home/apt                   42                  229
+The graph above are boxplots that show that the availability based on
+room type is also skewed to the right. The median availability days
+among entire home and private rooms are slightly less than 50 days while
+shared rooms have a rough median availability of 90 days.
 
 ``` r
 abnb %>%
@@ -242,6 +272,9 @@ abnb %>%
     ## 1 Shared room                       90                  341
     ## 2 Private room                      45                  214
     ## 3 Entire home/apt                   42                  229
+
+The table shows that the median availability are 90 days for shared
+room, 45 days for private room, and 42 days for entire home/apartment.
 
 ``` r
 abnb %>%
@@ -254,9 +287,14 @@ ggplot(mapping = aes(x = room_type, fill = avail)) +
   geom_bar(position = "fill")
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](proposal_files/figure-gfm/prop-of-avail-1.png)<!-- -->
 
-Note that there are NAs.
+The stacked bar graph above shows the proprotion of listings based on
+room\_type that are either not busy, very busy, or have no data (NAs).
+According to the graph, all entire home, private rooms, shared room
+listing types are generally mostly very busy at roughly 60% while only
+roughly 20% across the charts are roughly not busy. Shared rooms are
+generally less busy than private rooms and entire home/apt listings.
 
 ``` r
 abnb %>%
@@ -273,6 +311,10 @@ ggplot(mapping = aes(x = calculated_host_listings_count, y = reviews_per_month))
     ## Warning: Removed 10052 rows containing missing values (geom_point).
 
 ![](proposal_files/figure-gfm/avail-by-room_type-reviews-1.png)<!-- -->
+
+The graphs above show that among entire home/apt and private rooms,
+there is a higher amount of reviews per month (roughly less than 20)
+with fewer calculated host listings.
 
 ### Section 3. Research questions
 
