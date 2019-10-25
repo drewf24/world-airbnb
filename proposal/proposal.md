@@ -33,15 +33,32 @@ Based on these factors, it seems as though price and availibility would
 make the most interesting response variables because they are very
 important to understand the economic landscape. For example someone who
 is looking to book an Airbnb is going to be very interested in what is
-availible within their budget. Of course there are going to be other
+available within their budget. Of course there are going to be other
 factors that are important to a consumer, such as location within NYC.
 However, we expect availability and price to be the most predictive and
 representative of the Airbnbs in New York City.
 
-how variables such as price, location, description, reviews, and
-availability. We wanted to look at the gig hospitality market in NYC. We
-plan to compare price by neighborhood and borough which could provide
-interesting insights into the cost of living in NYC.
+Some variables from the dataset that would be interesting to explore in
+section two that pertain to location include the borough, neighborhood,
+latitude, and longitude. We know that in real estate location highly
+influences value, especially in a large, wealthy, productive city like
+New York. We hope to explore how location influences potential response
+variables such as availability and price.
+
+We also hope to explore how the listing is presented on the Airbnb
+platform might influence consumer choices. Some variables that could be
+insightful include the name of the listing which we may use text
+analysis to analyze. Each observation is also classified as one of three
+room types: private room, shared room and entire home/apt. Moreover,
+minimum nights required to stay and frequency of reviews are also
+included. We hope to see how this mix of categorical and numerical
+values impact one of the potential response variables.
+
+Although section two is preliminary exploration, various tools from the
+course such as the group\_by function, the summarise function, linear
+modeling, and possible joining with outside data to draw meaningful
+insights. Clear and specific notation will be employed to make sure
+analysis is reproducible.
 
 ### Section 2. Exploratory data analysis
 
