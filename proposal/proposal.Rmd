@@ -28,6 +28,8 @@ Uploaded the Airbnb data set from Kaggle via a csv file:
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
+LOCATION AND PRICE:
+
 Univariate Borough Count (Visualization):
 
 ```{r visualization-univariate}
@@ -42,40 +44,6 @@ abnb %>%
   count(neighbourhood_group) %>%
   arrange(desc(n))
 ```
-
-```{r}
-abnb %>%
-  ggplot(mapping = aes(x = availability_365)) +
-  geom_histogram() + 
-  labs(title = "Availability of Listings Distribution",
-       x = "Availability (days per year)",
-       y = "Count"
-  )
-```
-
-```{r room_type-availability_365, message=FALSE}
-abnb %>%
-  ggplot(mapping = aes(x =  reviews_per_month, y = availability_365)) +
-  geom_smooth() + 
-  labs(
-    title = "Availability and Number of Reviews",
-    x = "Number of Reviews", 
-    y = "Availability (days per year)")
-```
-
-```{r}
-abnb %>%
-  mutate(avail = ifelse(number_of_reviews > median(number_of_reviews), "more", "less")) %>%
-  filter(avail == "more") %>%
-  ggplot(mapping = aes(x =  number_of_reviews, y = availability_365)) +
-  geom_smooth() + 
-  labs(
-    title = "Availability and Number of Reviews by Room Type",
-    subtitle = "Below Median Availability",
-    x = "Number of Reviews", 
-    y = "Availability (days per year)")
-```
-
 
 ```{r price-borough}
 abnb %>%
@@ -92,8 +60,9 @@ abnb %>%
     IQR_price = IQR(price)
     ) %>%
   arrange(desc(med_price)) %>%
-  head(10)
+  head(5)
 ```
+
 
 ```{r neighbourhood_group-neighbourhood}
 abnb %>%
@@ -104,6 +73,41 @@ abnb %>%
 ```
 
 
+LISTING DETAILS AND AVAILABILITY
+
+
+```{r message=FALSE}
+abnb %>%
+  ggplot(mapping = aes(x = availability_365)) +
+  geom_histogram(binwidth=80) + 
+  labs(title = "Availability of Listings Distribution",
+       x = "Availability (days per year)",
+       y = "Count"
+  )
+```
+
+```{r room_type-availability_365, message=FALSE}
+abnb %>%
+  ggplot(mapping = aes(x =  reviews_per_month, y = availability_365, color = room_type)) +
+  geom_point(alpha=0.2) + 
+  labs(
+    title = "Availability and Number of Reviews",
+    x = "Number of Reviews", 
+    y = "Availability (days per year)")
+```
+
+```{r}
+abnb %>%
+  mutate(avail = ifelse(availability_365 > median(availability_365), "more", "less")) %>%
+  filter(avail == "more") %>%
+  ggplot(mapping = aes(x =  number_of_reviews, y = availability_365, color = room_type)) +
+  geom_point() + 
+  labs(
+    title = "Availability and Number of Reviews by Room Type",
+    subtitle = "Below Median Availability",
+    x = "Number of Reviews", 
+    y = "Availability (days per year)")
+```
 
 
 ### Section 3. Research questions

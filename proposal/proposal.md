@@ -40,6 +40,8 @@ Uploaded the Airbnb data set from Kaggle via a csv file:
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
+LOCATION AND PRICE:
+
 Univariate Borough Count (Visualization):
 
 ``` r
@@ -71,51 +73,6 @@ abnb %>%
 
 ``` r
 abnb %>%
-  ggplot(mapping = aes(x = availability_365)) +
-  geom_histogram() + 
-  labs(title = "Availability of Listings Distribution",
-       x = "Availability (days per year)",
-       y = "Count"
-  )
-```
-
-    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
-
-![](proposal_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
-
-``` r
-abnb %>%
-  ggplot(mapping = aes(x =  reviews_per_month, y = availability_365)) +
-  geom_smooth() + 
-  labs(
-    title = "Availability and Number of Reviews",
-    x = "Number of Reviews", 
-    y = "Availability (days per year)")
-```
-
-    ## Warning: Removed 10052 rows containing non-finite values (stat_smooth).
-
-![](proposal_files/figure-gfm/room_type-availability_365-1.png)<!-- -->
-
-``` r
-abnb %>%
-  mutate(avail = ifelse(number_of_reviews > median(number_of_reviews), "more", "less")) %>%
-  filter(avail == "more") %>%
-  ggplot(mapping = aes(x =  number_of_reviews, y = availability_365)) +
-  geom_smooth() + 
-  labs(
-    title = "Availability and Number of Reviews by Room Type",
-    subtitle = "Below Median Availability",
-    x = "Number of Reviews", 
-    y = "Availability (days per year)")
-```
-
-    ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
-
-![](proposal_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
-
-``` r
-abnb %>%
   ggplot(mapping = aes(x = neighbourhood_group, y = price)) +
   geom_boxplot() + 
   labs(title = "Price of Listings by Borough", x = "Borough", y = "Price")
@@ -131,7 +88,7 @@ abnb %>%
     IQR_price = IQR(price)
     ) %>%
   arrange(desc(med_price)) %>%
-  head(10)
+  head(5)
 ```
 
     ## # A tibble: 5 x 3
@@ -160,6 +117,49 @@ abnb %>%
     ## 3 Manhattan           Tribeca                 295
     ## 4 Queens              Neponsit                274
     ## 5 Manhattan           NoHo                    250
+
+LISTING DETAILS AND AVAILABILITY
+
+``` r
+abnb %>%
+  ggplot(mapping = aes(x = availability_365)) +
+  geom_histogram(binwidth=80) + 
+  labs(title = "Availability of Listings Distribution",
+       x = "Availability (days per year)",
+       y = "Count"
+  )
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+``` r
+abnb %>%
+  ggplot(mapping = aes(x =  reviews_per_month, y = availability_365, color = room_type)) +
+  geom_point(alpha=0.2) + 
+  labs(
+    title = "Availability and Number of Reviews",
+    x = "Number of Reviews", 
+    y = "Availability (days per year)")
+```
+
+    ## Warning: Removed 10052 rows containing missing values (geom_point).
+
+![](proposal_files/figure-gfm/room_type-availability_365-1.png)<!-- -->
+
+``` r
+abnb %>%
+  mutate(avail = ifelse(availability_365 > median(availability_365), "more", "less")) %>%
+  filter(avail == "more") %>%
+  ggplot(mapping = aes(x =  number_of_reviews, y = availability_365, color = room_type)) +
+  geom_point() + 
+  labs(
+    title = "Availability and Number of Reviews by Room Type",
+    subtitle = "Below Median Availability",
+    x = "Number of Reviews", 
+    y = "Availability (days per year)")
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ### Section 3. Research questions
 
