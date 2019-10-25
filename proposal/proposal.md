@@ -5,9 +5,13 @@ Team World
 
 ### Section 1. Introduction
 
-Our topic is based on an Airbnb dataset in New York City for 2019.
-Ultimately, we hope to determine the best Airbnbs to rent based on
-variables such as price, location, description, reviews, and
+The introduction should introduce your general research topic and your
+data (where it came from, how it was collected, what are the cases, what
+are the variables, etc.).
+
+Using the Airbnb dataset, we hope to gain a better understanding of the
+gig hospitality market in NYC for 2019. Specificially, we want to seee
+how variables such as price, location, description, reviews, and
 availability. We wanted to look at the gig hospitality market in NYC. We
 plan to compare price by neighborhood and borough which could provide
 interesting insights into the cost of living in NYC.
