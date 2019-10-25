@@ -7,36 +7,55 @@ Team World
 
 Our topic is based on an Airbnb dataset in New York City for 2019.
 Ultimately, we hope to determine the best Airbnbs to rent based on
-variables such as price, size, reviews and availability. We wanted to
-look at Airbnb data because we thought this could be interesting insight
-into the economic housing market in NYC. We plan to compare price by
-neighborhood and borough which could provide interesting insights into
-the cost of living in NYC. Through Kaggle we found this data set
+variables such as price, location, description, reviews, and
+availability. We wanted to look at the gig hospitality market in NYC. We
+plan to compare price by neighborhood and borough which could provide
+interesting insights into the cost of living in NYC.
+
+Through Kaggle, we found this data set
 (<https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data>) that
-was collected in 2019 on Airbnb listings in New York City by a 4th year
-data science student at Drexel University. The data set includes
-variables: listing ID, name of the listing, host ID, name of the host,
-location, neighbourhood, latitude and longitude coordinates, room type,
-price in dollars, minimum\_nights, number of reviews, latest review,
-number of reviews per month, amount of listing per host and
-availability.
+was collected, and continues to be updated, in 2019 on Airbnb listings
+in New York City by a 4th year data science student at Drexel
+University. The data set includes variables: listing ID, name of the
+listing, host ID, name of the host, location, neighbourhood, latitude
+and longitude coordinates, room type, price in dollars, minimum\_nights,
+number of reviews, latest review, number of reviews per month, amount of
+listing per host and availability. A description of each of these is
+included in the codebook.
 
 ### Section 2. Exploratory data analysis
 
 ### Load packages & data
+
+Loaded the tidyverse and broom packages:
 
 ``` r
 library(tidyverse) 
 library(broom)
 ```
 
+Uploaded the Airbnb data set from Kaggle via a csv file:
+
 ``` r
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
+Univariate Borough Count (Visualization):
+
+``` r
+ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
+  geom_histogram(stat = "count") + 
+  labs(title = "Listings by Borough", x = "Borough", y = "Count")
+```
+
+    ## Warning: Ignoring unknown parameters: binwidth, bins, pad
+
+![](proposal_files/figure-gfm/visualization-univariate-1.png)<!-- -->
+
+Univariate Borough Count (Summary)
+
 ``` r
 abnb %>%
-  select(neighbourhood_group) %>%
   count(neighbourhood_group) %>%
   arrange(desc(n))
 ```
@@ -51,40 +70,49 @@ abnb %>%
     ## 5 Staten Island         373
 
 ``` r
-ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
-  geom_histogram(stat = "count") + 
-  labs(title = "Listings by Borough", x = "Borough", y = "Count")
+abnb %>%
+  ggplot(mapping = aes(x = availability_365)) +
+  geom_histogram() + 
+  labs(title = "Availability of Listings Distribution",
+       x = "Availability (days per year)",
+       y = "Count"
+  )
 ```
 
-    ## Warning: Ignoring unknown parameters: binwidth, bins, pad
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](proposal_files/figure-gfm/visualization-univariate-1.png)<!-- -->
+![](proposal_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ``` r
 abnb %>%
-  group_by(neighbourhood_group) %>%
-  select(neighbourhood) %>%
-  count(neighbourhood) %>%
-  arrange(desc(n)) %>%
-  head(10)
+  ggplot(mapping = aes(x =  reviews_per_month, y = availability_365)) +
+  geom_smooth() + 
+  labs(
+    title = "Availability and Number of Reviews",
+    x = "Number of Reviews", 
+    y = "Availability (days per year)")
 ```
 
-    ## Adding missing grouping variables: `neighbourhood_group`
+    ## Warning: Removed 10052 rows containing non-finite values (stat_smooth).
 
-    ## # A tibble: 10 x 3
-    ## # Groups:   neighbourhood_group [2]
-    ##    neighbourhood_group neighbourhood          n
-    ##    <chr>               <chr>              <int>
-    ##  1 Brooklyn            Williamsburg        3920
-    ##  2 Brooklyn            Bedford-Stuyvesant  3714
-    ##  3 Manhattan           Harlem              2658
-    ##  4 Brooklyn            Bushwick            2465
-    ##  5 Manhattan           Upper West Side     1971
-    ##  6 Manhattan           Hell's Kitchen      1958
-    ##  7 Manhattan           East Village        1853
-    ##  8 Manhattan           Upper East Side     1798
-    ##  9 Brooklyn            Crown Heights       1564
-    ## 10 Manhattan           Midtown             1545
+![](proposal_files/figure-gfm/room_type-availability_365-1.png)<!-- -->
+
+``` r
+abnb %>%
+  mutate(avail = ifelse(number_of_reviews > median(number_of_reviews), "more", "less")) %>%
+  filter(avail == "more") %>%
+  ggplot(mapping = aes(x =  number_of_reviews, y = availability_365)) +
+  geom_smooth() + 
+  labs(
+    title = "Availability and Number of Reviews by Room Type",
+    subtitle = "Below Median Availability",
+    x = "Number of Reviews", 
+    y = "Availability (days per year)")
+```
+
+    ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
+
+![](proposal_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 abnb %>%
@@ -99,77 +127,51 @@ abnb %>%
 abnb %>%
   group_by(neighbourhood_group) %>%
   summarise(
-    med_price = mean(price), 
+    med_price = median(price), 
     IQR_price = IQR(price)
-    )
+    ) %>%
+  arrange(desc(med_price)) %>%
+  head(10)
 ```
 
     ## # A tibble: 5 x 3
     ##   neighbourhood_group med_price IQR_price
     ##   <chr>                   <dbl>     <dbl>
-    ## 1 Bronx                    87.5        54
-    ## 2 Brooklyn                124.         90
-    ## 3 Manhattan               197.        125
-    ## 4 Queens                   99.5        60
-    ## 5 Staten Island           115.         60
+    ## 1 Manhattan                 150       125
+    ## 2 Brooklyn                   90        90
+    ## 3 Queens                     75        60
+    ## 4 Staten Island              75        60
+    ## 5 Bronx                      65        54
 
 ``` r
 abnb %>%
-  summarise(
-    med_price = mean(price), 
-    IQR_price = IQR(price)
-    )
+  group_by(neighbourhood_group, neighbourhood) %>%
+  summarise(median_price = median(price)) %>%
+  arrange(desc(median_price)) %>%
+  head(5)
 ```
 
-    ## # A tibble: 1 x 2
-    ##   med_price IQR_price
-    ##       <dbl>     <dbl>
-    ## 1      153.       106
-
-``` r
-abnb %>%
-  mutate(price_tier = ifelse(price > median(price), "upper", "lower")) %>%
-  filter(price_tier == "upper") %>%
-  ggplot(mapping = aes(x = availability_365, y = price)) +
-  geom_point(alpha = 0.2) + 
-  facet_grid(.~room_type) +
-  labs(
-    title = "Price of Listing and Availability by Room Type",
-    subtitle = "Above Median Listing Price",
-    x = "Availability", 
-    y = "Price")
-```
-
-![](proposal_files/figure-gfm/price-room_type-upper-1.png)<!-- -->
-
-``` r
-abnb %>%
-  mutate(price_tier = ifelse(price > median(price), "upper", "lower")) %>%
-  filter(price_tier == "lower") %>%
-  ggplot(mapping = aes(x = availability_365, y = price)) +
-  geom_point(alpha = 0.2) + 
-  facet_grid(.~room_type) +
-  labs(
-    title = "Price of Listing and Availability by Room Type",
-    subtitle = "Below Median Listing Price",
-    x = "Availability", 
-    y = "Price")
-```
-
-![](proposal_files/figure-gfm/price-room_type-lower-1.png)<!-- -->
+    ## # A tibble: 5 x 3
+    ## # Groups:   neighbourhood_group [3]
+    ##   neighbourhood_group neighbourhood  median_price
+    ##   <chr>               <chr>                 <dbl>
+    ## 1 Staten Island       Fort Wadsworth          800
+    ## 2 Staten Island       Woodrow                 700
+    ## 3 Manhattan           Tribeca                 295
+    ## 4 Queens              Neponsit                274
+    ## 5 Manhattan           NoHo                    250
 
 ### Section 3. Research questions
 
-How does location (for example, borough, neighborhood, and coordinates)
-influence the price of a listing?
+How does location (borough and neighborhood, for example) influence the
+price of a listing?
 
-How does the listing type (type of room) and online traffic (for
-example, review, when last reviewed) room incluence the availability of
-a listing?
-
-Show one things up there\!\!\!
+How does the way in which a property is listed (type of room, for
+example) influence the availability of a listing?
 
 ### Section 4. Data
+
+Used the glimpse function to show information about and part of abnb:
 
 ``` r
 glimpse(abnb)
