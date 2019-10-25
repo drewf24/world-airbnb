@@ -7,11 +7,18 @@ output: github_document
 
 ### Section 1. Introduction
 
-The introduction should introduce your general research topic and your data (where it came from, how it was collected, what are the cases, what are the variables, etc.).
+Using the Airbnb dataset, we hope to gain a better understanding of the gig hospitality market in New York City for 2019. Specifically, we want to find, explore and understand trends in the market as they relate to supply (availability) and demand (what people are willing to pay). The data set we chose allows us to draw conclusions and understand the factors that contribute to the New York City Airbnb scene. 
 
-Using the Airbnb dataset, we hope to gain a better understanding of the gig hospitality market in NYC for 2019. Specificially, we want to seee how variables such as price, location, description, reviews, and availability. We wanted to look at the gig hospitality market in NYC. We plan to compare price by neighborhood and borough which could provide interesting insights into the cost of living in NYC. 
+Through Kaggle, we found this data set (https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data) that was collected, and continues to be updated, in 2019 on Airbnb listings in New York City. This data set continues to be curated by a 4th year data science student at Drexel University (Dgomonov). We are unable to reach out to him to get more information on the data set, such as where he got it from or how he collected it, because our account on Kaggle is not at the "Contributor tier." 
 
-Through Kaggle, we found this data set (https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data) that was collected, and continues to be updated, in 2019 on Airbnb listings in New York City by a 4th year data science student at Drexel University. We are unable to reach out to him to get more information on the data set, such as where he got it from or how he collected it, because our account on Kaggle is not at the "Contributor tier." The data set includes variables: listing ID, name of the listing, host ID, name of the host, location, neighbourhood, latitude and longitude coordinates, room type, price in dollars, minimum_nights, number of reviews, latest review, number of reviews per month, amount of listing per host and availability. A description of each of these is included in the codebook.
+To analyze this data set it is first important to understand its variables which include: listing ID, name of the listing, host ID, name of the host, location, neighbourhood, latitude and longitude coordinates, room type, price in dollars, minimum_nights, number of reviews, latest review, number of reviews per month, amount of listing per host and availability. A description of each of these is included in the codebook. 
+
+Based on these factors, it seems as though price and availibility would make the most interesting response variables because they are very important to understand the economic landscape. For example someone who is looking to book an Airbnb is going to be very interested in what is availible within their budget. Of course there are going to be other factors that are important to a consumer, such as location within NYC. However, we expect availability and price to be the most predictive and representative of the Airbnbs in New York City.
+
+Some variables from the dataset that would be interesting to explore in section two that pertain to location include the borough, neighborhood, latitude, and longitude. We know that in real estate location highly influences value, especially in a large, wealthy, productive city like New York. We hope to explore how location influences potential response variables such as availibility and price.
+
+
+how variables such as price, location, description, reviews, and availability. We wanted to look at the gig hospitality market in NYC. We plan to compare price by neighborhood and borough which could provide interesting insights into the cost of living in NYC. 
 
 ### Section 2. Exploratory data analysis
 
