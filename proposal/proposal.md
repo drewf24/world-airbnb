@@ -110,12 +110,30 @@ abnb %>%
 
 ``` r
 abnb %>%
-  ggplot(mapping = aes(x = neighbourhood_group, y = price)) +
-  geom_boxplot() + 
-  labs(title = "Price of Listings by Borough", x = "Borough", y = "Price")
+  ggplot(mapping = aes(x = price)) +
+  geom_histogram(bins=35) +
+  facet_wrap(.~neighbourhood_group)
 ```
 
 ![](proposal_files/figure-gfm/price-borough-1.png)<!-- -->
+
+``` r
+  labs(title = "Price of Listings by Borough", x = "Borough", y = "Price")
+```
+
+    ## $x
+    ## [1] "Borough"
+    ## 
+    ## $y
+    ## [1] "Price"
+    ## 
+    ## $title
+    ## [1] "Price of Listings by Borough"
+    ## 
+    ## attr(,"class")
+    ## [1] "labels"
+
+Lots of right skew…
 
 ``` r
 abnb %>%
@@ -155,6 +173,14 @@ abnb %>%
     ## 4 Queens              Neponsit                274
     ## 5 Manhattan           NoHo                    250
 
+``` r
+abnb %>%
+  ggplot(mapping = aes (x = longitude, y = latitude, color = price)) +
+  geom_point(alpha = 0.6)
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
 LISTING DETAILS AND AVAILABILITY
 
 ``` r
@@ -167,36 +193,86 @@ abnb %>%
   )
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](proposal_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 abnb %>%
-  ggplot(mapping = aes(x =  reviews_per_month, y = availability_365, color = room_type)) +
-  geom_point(alpha=0.2) + 
+  ggplot(mapping = aes(x =  room_type, y = availability_365)) +
+  geom_boxplot() + 
   labs(
-    title = "Availability and Number of Reviews",
-    x = "Number of Reviews", 
+    title = "Availability by Room Type",
+    x = "Room Type", 
     y = "Availability (days per year)")
 ```
-
-    ## Warning: Removed 10052 rows containing missing values (geom_point).
 
 ![](proposal_files/figure-gfm/room_type-availability_365-1.png)<!-- -->
 
 ``` r
 abnb %>%
-  mutate(avail = ifelse(availability_365 > median(availability_365), "more", "less")) %>%
-  filter(avail == "more") %>%
-  ggplot(mapping = aes(x =  number_of_reviews, y = availability_365, color = room_type)) +
-  geom_point() + 
-  labs(
-    title = "Availability and Number of Reviews by Room Type",
-    subtitle = "Below Median Availability",
-    x = "Number of Reviews", 
-    y = "Availability (days per year)")
+  group_by(room_type) %>%
+  summarise(
+    med_availability_365 = median(availability_365), 
+    IQR_availability_365 = IQR(availability_365)
+    ) %>%
+  arrange(desc(med_availability_365)) %>%
+  head(5)
 ```
 
-![](proposal_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+    ## # A tibble: 3 x 3
+    ##   room_type       med_availability_365 IQR_availability_365
+    ##   <chr>                          <dbl>                <dbl>
+    ## 1 Shared room                       90                  341
+    ## 2 Private room                      45                  214
+    ## 3 Entire home/apt                   42                  229
+
+``` r
+abnb %>%
+  group_by(room_type) %>%
+  summarise(
+    med_availability_365 = median(availability_365), 
+    IQR_availability_365 = IQR(availability_365)
+    ) %>%
+  arrange(desc(med_availability_365)) %>%
+  head(5)
+```
+
+    ## # A tibble: 3 x 3
+    ##   room_type       med_availability_365 IQR_availability_365
+    ##   <chr>                          <dbl>                <dbl>
+    ## 1 Shared room                       90                  341
+    ## 2 Private room                      45                  214
+    ## 3 Entire home/apt                   42                  229
+
+``` r
+abnb %>%
+  mutate(avail = case_when(
+    availability_365 < 100            ~ "Very Busy",
+    availability_365 < 200 && availability_365 > 100  ~ "Somewhat Busy",
+    availability_365 > 300    ~ "Not Busy",)
+    ) %>%
+ggplot(mapping = aes(x = room_type, fill = avail)) +
+  geom_bar(position = "fill")
+```
+
+![](proposal_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+Note that there are NAs.
+
+``` r
+abnb %>%
+  mutate(avail = case_when(
+    availability_365 < 100            ~ "Very Busy",
+    availability_365 >= 100 & availability_365 <= 300  ~ "Somewhat Busy",
+    availability_365 > 300    ~ "Not Busy",)
+    ) %>%
+ggplot(mapping = aes(x = calculated_host_listings_count, y = reviews_per_month)) +
+  geom_point() +
+  facet_grid(room_type ~ avail)
+```
+
+    ## Warning: Removed 10052 rows containing missing values (geom_point).
+
+![](proposal_files/figure-gfm/avail-by-room_type-reviews-1.png)<!-- -->
 
 ### Section 3. Research questions
 
