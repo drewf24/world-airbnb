@@ -77,12 +77,8 @@ Uploaded the Airbnb data set from Kaggle via a csv file:
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
-LOCATION AND PRICE:
-
-Univariate Borough Count (Visualization):
-
 Creating a histogram that displays number of listings by neighborhood
-borough in New York City.
+borough in New York City:
 
 ``` r
 ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
@@ -100,10 +96,8 @@ Brooklyn and slightly more than 20,000 listings in Manhattan. The Queens
 borough follows after with roughly 5,000 listings, followed by Bronx and
 Staten Island with fewer than 1,100 listings each.
 
-Univariate Borough Count (Summary):
-
 Creating summary statistics that will count the number of listings in
-each neighborhood group.
+each neighborhood group:
 
 ``` r
 abnb %>%
@@ -125,14 +119,14 @@ listings, followed by Queens at 5,666, Bronx at 1,091, and Staten Island
 last at only 373 listings.
 
 Creating a facet histogram that will display the price of listings by
-borough.
+borough:
 
 ``` r
 abnb %>%
   ggplot(mapping = aes(x = price)) +
   geom_histogram(bins=35) +
   facet_wrap(.~neighbourhood_group) +
-  labs(title = "Price of Listings by Borough", x = "Price", y = "Count")
+  labs(title = "Price of Listings by Borough", x = "Price ($)", y = "Count")
 ```
 
 ![](proposal_files/figure-gfm/price-borough-1.png)<!-- -->
@@ -201,7 +195,7 @@ longitude co-ordinates:
 abnb %>%
   ggplot(mapping = aes (x = longitude, y = latitude, color = price)) +
   geom_point(alpha = 0.3) +
-  labs(title = "Prices at Latitude and Longitude Co-ordinates", x = "Longitude", y = "Latitude")
+  labs(title = "Prices at Latitude and Longitude Coordinates", x = "Longitude", y = "Latitude")
 ```
 
 ![](proposal_files/figure-gfm/price-at-longtitude-1.png)<!-- -->
@@ -209,8 +203,6 @@ abnb %>%
 Most listings take place in the (-74, -73.7) longtitude region and
 (40.55, 40.9) latitude region. Prices are generally in the 50 to 150
 range.
-
-LISTING DETAILS AND AVAILABILITY
 
 Creating a histogram that describes the number of days a listing is
 available in a year:
@@ -263,8 +255,7 @@ abnb %>%
     med_availability_365 = median(availability_365), 
     IQR_availability_365 = IQR(availability_365)
     ) %>%
-  arrange(desc(med_availability_365)) %>%
-  head(5)
+  arrange(desc(med_availability_365))
 ```
 
     ## # A tibble: 3 x 3
@@ -279,15 +270,15 @@ room, and 42 days for entire home/apartment. The range for shared room
 type is the highest with 341 days.
 
 Creating a new variable mutate to use availibility as a index of
-popularity of the listing based on “busy”, “not busy” and “NA”.
-Visualizing this data using a segmented barplot:
+popularity of the listing based on “busy”, “not busy”, “Somewhat Busy”,
+and “NA”. Visualizing this data using a segmented barplot:
 
 ``` r
 abnb %>%
   mutate(avail = case_when(
     availability_365 < 100            ~ "Very Busy",
-    availability_365 < 200 && availability_365 > 100  ~ "Somewhat Busy",
-    availability_365 > 300    ~ "Not Busy",)
+    availability_365 < 200 & availability_365 > 100  ~ "Somewhat Busy",
+    availability_365 > 200    ~ "Not Busy",)
     ) %>%
 ggplot(mapping = aes(x = room_type, fill = avail)) +
   geom_bar(position = "fill") +
@@ -299,10 +290,12 @@ ggplot(mapping = aes(x = room_type, fill = avail)) +
 ![](proposal_files/figure-gfm/prop-of-avail-1.png)<!-- -->
 
 The stacked bar graph above shows the proprotion of listings based on
-room type that are either not busy, very busy, or have no data (NAs).
+room type that are either not busy, very busy, somewhat busy, or have no
+data (NAs).
+
 According to the graph, all entire home, private rooms, shared room
 listing types are generally mostly very busy at roughly 60% while only
-roughly 20% across the charts are not busy. Shared rooms are generally
+roughly 30% across the charts are not busy. Shared rooms are generally
 less busy than private rooms and entire home/apt listings.
 
 Creating a facet scatterplot that will display the busyness of different
@@ -312,13 +305,13 @@ room types:
 abnb %>%
   mutate(avail = case_when(
     availability_365 < 100            ~ "Very Busy",
-    availability_365 >= 100 & availability_365 <= 300  ~ "Somewhat Busy",
-    availability_365 > 300    ~ "Not Busy",)
+    availability_365 < 200 & availability_365 > 100  ~ "Somewhat Busy",
+    availability_365 > 200    ~ "Not Busy",)
     ) %>%
 ggplot(mapping = aes(x = calculated_host_listings_count, y = reviews_per_month)) +
   geom_point() +
   facet_grid(room_type ~ avail) +
-  labs(title = "", x = "", y = "")
+  labs(title = "Host Listings vs. Reviews Frequency by Availability & Room Type", x = "Number of Listings (per host)", y = "Number of Reviews (per month)")
 ```
 
     ## Warning: Removed 10052 rows containing missing values (geom_point).
@@ -356,7 +349,9 @@ relative to its borough).
 
 To complete this research we will use the location variables
 (neighbourhood, neighbourhood\_group, and latitude longitude) as
-predictors variables and price will be the response variable.
+predictors variables and price will be the response variable. It is
+hypothesized that Airbnbs closer to Manhattan are expected, on average,
+to be listed for a higher price.
 
 In addition to location and price, we wanted to explore which factors
 made certain Airbnb listings more popular than others. We decided that
@@ -369,13 +364,13 @@ question: “How does the way in which a property is listed (type of room,
 for example) influence the availability of a listing?”
 
 When looking at a histogram of the availability variable (the fourth
-visualization) we can clearly see that the majority of listings are only
-available from 0-50 days out of the year and the distribution was
+visualization), we can clearly see that the majority of listings are
+only available from 0-50 days out of the year and the distribution was
 heavily skewed right. Looking at how the variable “room\_type” affects
 the availability of the listing shows that rooms that are considered
 “shared rooms” have the largest IQR and highest median availability.
-This is not surprising considering a shared room is likely the least
-desired of the three room types.
+Initially, it is hypothesized that a shared room is likely the least
+desired of the three room types and therefore has the most availability.
 
 To complete this analysis we would use the room type, minimum nights and
 price as predictor variables and availability as the response variable
