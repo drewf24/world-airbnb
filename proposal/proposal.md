@@ -305,7 +305,8 @@ listing types are generally mostly very busy at roughly 60% while only
 roughly 20% across the charts are not busy. Shared rooms are generally
 less busy than private rooms and entire home/apt listings.
 
-Creating a \_\_\_\_:
+Creating a facet scatterplot that will display the busyness of different
+room types:
 
 ``` r
 abnb %>%

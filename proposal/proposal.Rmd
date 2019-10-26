@@ -179,7 +179,7 @@ ggplot(mapping = aes(x = room_type, fill = avail)) +
 The stacked bar graph above shows the proprotion of listings based on room type that are either not busy, very busy, or have no data (NAs).
 According to the graph, all entire home, private rooms, shared room listing types are generally mostly very busy at roughly 60% while only roughly 20% across the charts are not busy. Shared rooms are generally less busy than private rooms and entire home/apt listings.
 
-Creating a ____:
+Creating a facet scatterplot that will display the busyness of different room types:
 
 ```{r avail-by-room_type-reviews, message=FALSE}
 abnb %>%
