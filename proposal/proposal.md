@@ -79,8 +79,10 @@ abnb <- read_csv("AB_NYC_2019.csv")
 
 LOCATION AND PRICE:
 
-Univariate Borough Count (Visualization): Creating a histogram that
-displays number of listings by neighborhood borough in New York City.
+Univariate Borough Count (Visualization):
+
+Creating a histogram that displays number of listings by neighborhood
+borough in New York City.
 
 ``` r
 ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
@@ -92,15 +94,16 @@ ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
 
 ![](proposal_files/figure-gfm/visualization-univariate-1.png)<!-- -->
 
-According to this histogram, Manhattan and Brooklyn dominate the number
-of listings on Airbnb in New York City. More specifically, there is
-roughly 20,000 listings in Brooklyn and slightly more than 20,000
-listings in Manhattan. The Queens borough follows after with roughly
-5,000 listings, followed by Bronx and Staten Island with fewer than
-1,100 listings each.
+Manhattan and Brooklyn dominate the number of listings on Airbnb in New
+York City. More specifically, there is roughly 20,000 listings in
+Brooklyn and slightly more than 20,000 listings in Manhattan. The Queens
+borough follows after with roughly 5,000 listings, followed by Bronx and
+Staten Island with fewer than 1,100 listings each.
 
-Univariate Borough Count (Summary) Creating summary statistics that will
-count the number of listings in each neighborhood group.
+Univariate Borough Count (Summary):
+
+Creating summary statistics that will count the number of listings in
+each neighborhood group.
 
 ``` r
 abnb %>%
@@ -117,9 +120,9 @@ abnb %>%
     ## 4 Bronx                1091
     ## 5 Staten Island         373
 
-According to the table, Manhattan has the most listings at 21,661
-followed by Brooklyn at 20,104 listings, followed by Queens at 5,666,
-Bronx at 1,091, and Staten Island last at only 373 listings.
+Manhattan has the most listings at 21,661 followed by Brooklyn at 20,104
+listings, followed by Queens at 5,666, Bronx at 1,091, and Staten Island
+last at only 373 listings.
 
 Creating a facet histogram that will display the price of listings by
 borough.
@@ -128,32 +131,17 @@ borough.
 abnb %>%
   ggplot(mapping = aes(x = price)) +
   geom_histogram(bins=35) +
-  facet_wrap(.~neighbourhood_group)
+  facet_wrap(.~neighbourhood_group) +
+  labs(title = "Price of Listings by Borough", x = "Price", y = "Count")
 ```
 
 ![](proposal_files/figure-gfm/price-borough-1.png)<!-- -->
 
-``` r
-  labs(title = "Price of Listings by Borough", x = "Borough", y = "Price")
-```
-
-    ## $x
-    ## [1] "Borough"
-    ## 
-    ## $y
-    ## [1] "Price"
-    ## 
-    ## $title
-    ## [1] "Price of Listings by Borough"
-    ## 
-    ## attr(,"class")
-    ## [1] "labels"
-
-The graphs display that the prices for listings are very skewed to the
-right. In other words, there are many outliers that fall out of the IQR
-for each neighborhood group. Most listings fall in the 50 to 150 price
-range. However, there are outliers that are a lot higher than this price
-range.
+The prices for listings are very skewed to the right. In other words,
+there are many outliers that fall out of the IQR for each neighborhood
+group. Most listings fall in the 50 to 150 price range, with the
+outliers at much higher prices. The graph also shows us the number of
+listings at a given price within that borough.
 
 Creating summary statistics that displays the median and IQR price of
 each neighborhood group.
@@ -178,12 +166,11 @@ abnb %>%
     ## 4 Staten Island              75        60
     ## 5 Bronx                      65        54
 
-According to the table, Manhattan has the highest median price at 150
-followed by Brooklyn at 90, Queens and Staten Island at 75, and Bronx
-last at 65.
+Manhattan has the highest median price at 150 followed by Brooklyn at
+90, Queens and Staten Island at 75, and Bronx last at 65.
 
-Creating summary statistics that finds the median price based upon
-neighborhood in descending order.
+Creating summary statistics that finds the neighbourhoods with the
+highest median prices and gives their corresponding borough:
 
 ``` r
 abnb %>%
@@ -203,23 +190,30 @@ abnb %>%
     ## 4 Queens              Neponsit                274
     ## 5 Manhattan           NoHo                    250
 
-According to the table, Fort Wadsworth in Staten Island has the highest
-median price at 800 followed by Woodrow at 700, Tribeca at 295, Neponsit
-at 274, and NoHo at 250.
+Fort Wadsworth in Staten Island has the highest median price at 800
+followed by Woodrow at 700, Tribeca at 295, Neponsit at 274, and NoHo at
+250.
+
+Creating a scatterplot that finds the prices at different latitude and
+longitude co-ordinates:
 
 ``` r
 abnb %>%
   ggplot(mapping = aes (x = longitude, y = latitude, color = price)) +
-  geom_point(alpha = 0.6)
+  geom_point(alpha = 0.3) +
+  labs(title = "Prices at Latitude and Longitude Co-ordinates", x = "Longitude", y = "Latitude")
 ```
 
 ![](proposal_files/figure-gfm/price-at-longtitude-1.png)<!-- -->
 
-The graph displays that most listings take place in the (-74, -73.7)
-longtitude region and (40.55, 40.9) latitude region. Prices are
-generally in the 50 to 150 range.
+Most listings take place in the (-74, -73.7) longtitude region and
+(40.55, 40.9) latitude region. Prices are generally in the 50 to 150
+range.
 
 LISTING DETAILS AND AVAILABILITY
+
+Creating a histogram that describes the number of days a listing is
+available in a year:
 
 ``` r
 abnb %>%
@@ -238,9 +232,12 @@ The graph is skewed to the right with most occurrences happening in the
 more than 25,000 listings occurr in the 0 to 100 availability (days per
 year).
 
+Creating a boxplot to show which room type (shared, private or
+house/apartment) is available for the most amount of days per year:
+
 ``` r
 abnb %>%
-  ggplot(mapping = aes(x =  room_type, y = availability_365)) +
+  ggplot(mapping = aes(x =  room_type, y = availability_365, fill = room_type)) +
   geom_boxplot() + 
   labs(
     title = "Availability by Room Type",
@@ -251,9 +248,13 @@ abnb %>%
 ![](proposal_files/figure-gfm/room_type-availability_365-1.png)<!-- -->
 
 The graph above are boxplots that show that the availability based on
-room type is also skewed to the right. The median availability days
-among entire home and private rooms are slightly less than 50 days while
-shared rooms have a rough median availability of 90 days.
+room type is also skewed to the right. The median available number of
+days days among entire home and private rooms are slightly less than 50
+days while shared rooms have a rough median availability of 90 days.
+Shared rooms are available for the most number of days in the year.
+
+Creating a table to describe summary statistics for availibility by room
+type:
 
 ``` r
 abnb %>%
@@ -273,8 +274,13 @@ abnb %>%
     ## 2 Private room                      45                  214
     ## 3 Entire home/apt                   42                  229
 
-The table shows that the median availability are 90 days for shared
-room, 45 days for private room, and 42 days for entire home/apartment.
+The median availability are 90 days for shared room, 45 days for private
+room, and 42 days for entire home/apartment. The range for shared room
+type is the highest with 341 days.
+
+Creating a new variable mutate to use availibility as a index of
+popularity of the listing based on “busy”, “not busy” and “NA”.
+Visualizing this data using a segmented barplot:
 
 ``` r
 abnb %>%
@@ -284,17 +290,22 @@ abnb %>%
     availability_365 > 300    ~ "Not Busy",)
     ) %>%
 ggplot(mapping = aes(x = room_type, fill = avail)) +
-  geom_bar(position = "fill")
+  geom_bar(position = "fill") +
+  labs(title = "Popularity of Listings by Room Type", 
+       x = "Room Type", y = "Proportion", 
+       fill = "Busyness of Room Type") 
 ```
 
 ![](proposal_files/figure-gfm/prop-of-avail-1.png)<!-- -->
 
 The stacked bar graph above shows the proprotion of listings based on
-room\_type that are either not busy, very busy, or have no data (NAs).
+room type that are either not busy, very busy, or have no data (NAs).
 According to the graph, all entire home, private rooms, shared room
 listing types are generally mostly very busy at roughly 60% while only
-roughly 20% across the charts are roughly not busy. Shared rooms are
-generally less busy than private rooms and entire home/apt listings.
+roughly 20% across the charts are not busy. Shared rooms are generally
+less busy than private rooms and entire home/apt listings.
+
+Creating a \_\_\_\_:
 
 ``` r
 abnb %>%
@@ -305,7 +316,8 @@ abnb %>%
     ) %>%
 ggplot(mapping = aes(x = calculated_host_listings_count, y = reviews_per_month)) +
   geom_point() +
-  facet_grid(room_type ~ avail)
+  facet_grid(room_type ~ avail) +
+  labs(title = "", x = "", y = "")
 ```
 
     ## Warning: Removed 10052 rows containing missing values (geom_point).
