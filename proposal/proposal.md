@@ -357,8 +357,32 @@ To complete this research we will use the location variables
 (neighbourhood, neighbourhood\_group, and latitude longitude) as
 predictors variables and price will be the response variable.
 
-How does the way in which a property is listed (type of room, for
-example) influence the availability of a listing?
+In addition to location and price, we wanted to explore which factors
+made certain Airbnb listings more popular than others. We decided that
+the best way to measure how popular a listing is would be to look at the
+availability variable. This variable shows the average number of days in
+a year that the listing is available to be booked, those that are most
+popular would be available for less days than those that are least
+popular. Using these assumptions we came up with our second research
+question: “How does the way in which a property is listed (type of room,
+for example) influence the availability of a listing?”
+
+When looking at a histogram of the availability variable (the fourth
+visualization) we can clearly see that the majority of listings are only
+available from 0-50 days out of the year and the distribution was
+heavily skewed right. Looking at how the variable “room\_type” affects
+the availability of the listing shows that rooms that are considered
+“shared rooms” have the largest IQR and highest median availability.
+This is not surprising considering a shared room is likely the least
+desired of the three room types.
+
+To complete this analysis we would use the room type, minimum nights and
+price as predictor variables and availability as the response variable
+to represent popularity.
+
+In addition to this analysis we would be interesting in doing a text
+analysis of the description of the listing to determine if there were
+any trends in the description that could correlate to availability.
 
 ### Section 4. Data
 
