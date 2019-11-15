@@ -136,9 +136,32 @@ else constant.
 
 ### Part C
 
-\`\`{r ellie} abnb\_sample %\>% summarise(price\_median = median(price))
-%\>% mutate( price = case\_when( price \> price\_median ~ “Above”, price
-\< price\_median ~ “Below” )) \`\`\`
+`{r ellie} abnb_sample %>% summarise(price_median = median(price)) %>%
+mutate( price = case_when( price > price_median ~ "Above", price <
+price_median ~ "Below" ))`
+
+We will now perform a hypothesis test to determine if there is a
+difference in the true median prices between Manhattan and Brooklyn.
+
+We will set our alpha level of 5%.
+
+m1 = median price of Manhattan m2 = median price of Brooklyn
+
+Null Hypothesis: There is no difference between the median prices
+between Manhattan and Brooklyn. Ho: m1 - m2 = 0
+
+Alternative Hypothesis: There is a difference between the median prices
+between Manhattan and Brooklyn. Ha: m1 - m2 \!= 0
+
+If the p-value is greater than our predetermined alpha level of 0.05,
+then we fail to reject the null hypothesis and cannot conlude that there
+is a statistically significant difference between the median prices of
+Manhattan and Brooklyn.
+
+If the p-value is less than our predetermined alpha level of 0.05, then
+we reject the null hypothesis and have convincing evidence to conclude
+that there is a statistically significant difference bteween the median
+prices of Manhattan and Brooklyn.
 
 ### Part D
 
