@@ -20,14 +20,13 @@ To start, the following research question will be examined: How does
 location (borough and neighborhood, for example) influence the price of
 a listing?
 
-For bootstrapping
+### Part A
+
+For bootstrapping, we need a sample to perform a bootstrap analysis.
 
 \`\`{r} set.seed(111519) abnb\_sample \<- sample\_n(abnb, 30)
 
 ``` 
-
-
-### Part A
 
 Constructing a bootstrap distribution for the median price of Airbnbs in NYC:
 
