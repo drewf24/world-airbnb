@@ -31,7 +31,7 @@ For bootstrapping, we need a sample to perform a bootstrap analysis.
 Constructing a bootstrap distribution for the median price of Airbnbs in NYC:
 
 ``{r diff_med_income_boot_dist}
-boot_dist_median_price <- abnb %>%
+boot_dist_median_price <- abnb_sample %>%
   specify(response = price) %>%
   generate(reps = 1000, type = "bootstrap") %>%
   calculate(stat = "median")
