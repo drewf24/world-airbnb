@@ -4,7 +4,7 @@ author: "WORLD"
 date: "12/15/2019"
 output: github_document
 ---
-    
+     
 ### Load packages & data
 
 ```{r load-packages, message=FALSE}
@@ -80,15 +80,14 @@ Tenured professors are expected to have, on average, an average professor evalua
 
 ### Part C
 
-``{r ellie}
-abnb_sample %>%
-  summarise(price_median = median(price)) %>%
-  mutate(
-    price = case_when(
+```{r ellie}
+abnb_sample <- abnb_sample %>%
+   mutate(price_median = median(price), 
+          price = case_when(
       price > price_median ~ "Above",
       price < price_median ~ "Below"
-    )) 
-``
+    ))
+```
 
 We will now perform a hypothesis test to determine if there is a difference in the true median prices between Manhattan and Brooklyn.
 

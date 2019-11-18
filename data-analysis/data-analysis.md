@@ -136,9 +136,14 @@ else constant.
 
 ### Part C
 
-`{r ellie} abnb_sample %>% summarise(price_median = median(price)) %>%
-mutate( price = case_when( price > price_median ~ "Above", price <
-price_median ~ "Below" ))`
+``` r
+abnb_sample <- abnb_sample %>%
+   mutate(price_median = median(price), 
+          price = case_when(
+      price > price_median ~ "Above",
+      price < price_median ~ "Below"
+    ))
+```
 
 We will now perform a hypothesis test to determine if there is a
 difference in the true median prices between Manhattan and Brooklyn.
