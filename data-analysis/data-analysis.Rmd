@@ -41,6 +41,7 @@ abnb_sample <- sample_n(abnb, 50)
 Constructing a bootstrap distribution for the median price of Airbnbs in NYC:
 
 ```{r diff_med_income_boot_dist}
+set.seed(111519)
 boot_dist_median_price <- abnb_sample %>%
   specify(response = price) %>%
   generate(reps = 1000, type = "bootstrap") %>%
@@ -50,7 +51,6 @@ boot_dist_median_price <- abnb_sample %>%
 Creating a 95% bootstrap confidence interval for the the median price of Airbnbs in NYC:
 
 ```{r boot_dist_median_priceci}
-set.seed(111519)
 (ci_bounds <- get_ci(boot_dist_median_price, level= 0.95))
 ```
 
@@ -92,55 +92,81 @@ lm_price_borough %>%
 
 The linear model is:
 
-`price-hat = 180.333 -63.000*(neighbourhood_groupBrooklyn) +80.333*(neighbourhood_groupStaten Island) -71.667*(neighbourhood_groupQueens) -125.333(neighbourhood_groupBronx)`
+`price-hat = 180.333 -63.000*(neighbourhood_groupBrooklyn) -80.333*(neighbourhood_groupStaten Island) -71.667*(neighbourhood_groupQueens) -125.333(neighbourhood_groupBronx)`
 
 Intepreting the intercept:
 
-Given that a teaching professor has an average attractiveness of 0, their expected professor evaluation, on average, is 3.982 out of 5. In this case, the intercept does not have a meaningful interpretation because a student could not rate their professor a 0. The least they could rate their professor is a 1.
+Given that the Airbnb is in Manhattan the expected price, on average, is $180.33. In this case, the intercept does have a meaningful interpretation because an Airbnb could be $180.33 per night.
 
-Interpreting the slopes using m_bty_rank linear model:
+Interpreting the slopes using lm_price_borough linear model:
 
-For each additional point rating increase in the attractiveness scale (out of 10), the average professor evaluation is expected to increase, on average, by 0.068 rating points (out of 5), holding all else constant.
+For an Airbnb in Brooklyn, the average price is expected, on average, to be $63.00 less than an Airbnb in Manhattan, holding all else constant.
 
-Professors on the tenure track are expected to have, on average, an average professor evaluation score which is 0.161 rating points lower (out of 5) than the average professor rating of teaching professors, holding all else constant.
+For an Airbnb in Staten Island, the average price is expected, on average, to be $80.33 less than an Airbnb in Manhattan, holding all else constant.
 
-Tenured professors are expected to have, on average, an average professor evaluation score which is 0.126 rating points lower (out of 5) than the average professor rating of teaching professors, holding all else constant.
+For an Airbnb in Queens, the average price is expected, on average, to be $71.66 less than an Airbnb in Manhattan, holding all else constant.
 
+For an Airbnb in Bronx, the average price is expected, on average, to be $125.33 less than an Airbnb in Manhattan, holding all else constant.
 
 ### Part C
 
-```{r ellie}
+We are suspicious that there might be a relationship between median price in Manhattan and Brooklyn. Therefore we will attempt to answer the following: Is there is a difference in the true median prices between Manhattan and Brooklyn?
+
+```{r filter-borough}
+abnb_sample_filtered <- abnb_sample %>%
+  filter(neighbourhood_group == "Manhattan" | neighbourhood_group == "Brooklyn")
+```
+
+```{r sample_diff_med}
+abnb_sample_filtered %>%
+  group_by(neighbourhood_group) %>%
+  summarise(med_price = median(price))
+```
+
+The observed median prices for Manhattan and Brooklyn are $148.00 and $92.50, respectively. Therefore, the observed difference in median prices is $55.50.
+
+H0: There is no difference in median price between Manhattan and Brooklyn Airbnb per night.
+HA: There is a difference in median price between Manhattan and Brooklyn Airbnb per night.
+
+```{r man-brook-med-price}
+set.seed(111519)
+null_dist_man_brook_med_price <- abnb_sample_filtered %>%
+  specify(response = price, explanatory = neighbourhood_group) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  calculate(stat = "diff in medians", order = c("Manhattan", "Brooklyn"))
+
+```
+
+Visualizing the null distribution.
+
+```{r null_dist_diff_median_vis}
+visualize(null_dist_man_brook_med_price) + 
+  labs(title = "Null Dist of Difference in Median Price between Manhattan and Brooklyn") +
+  shade_p_value(obs_stat = 55.5, direction = "two_sided")
+```
+
+Findng the p-value.
+
+```{r null_dist_diff_median_p_val}
+get_p_value(null_dist_man_brook_med_price, 55.5, direction = "two_sided")
+```
+
+We reject the null hypothesis in favor of the alternative hypothesis. The data does provide convincing evidence of a difference in median price of Airbnbs for listings in Manhattan and Brooklyn.
+
+
+
+
+Creating a variable (median_price) to determine whether price is above or below the median.
+
+```{r median_price}
 abnb_sample <- abnb_sample %>%
    mutate(price_median = median(price), 
           price = case_when(
-      price > price_median ~ "Above",
-      price < price_median ~ "Below"
+      price >= price_median ~ "Median or Above",
+      price < price_median ~ "Below Median", 
     ))
 ```
-
-We will now perform a hypothesis test to determine if there is a difference in the true median prices between Manhattan and Brooklyn.
-
-We will set our alpha level of 5%.
-
-m1 = median price of Manhattan
-m2 = median price of Brooklyn
-
-Null Hypothesis: There is no difference between the median prices between Manhattan and Brooklyn.
-Ho: m1 - m2 = 0
-
-Alternative Hypothesis: There is a difference between the median prices between Manhattan and Brooklyn.
-Ha: m1 - m2 != 0
-
-```{r hypothesis-test}
-
-```
-
-If the p-value is greater than our predetermined alpha level of 0.05, then we fail to reject the null hypothesis and cannot conlude that there is a statistically significant difference between the median prices of Manhattan and Brooklyn.
-
-If the p-value is less than our predetermined alpha level of 0.05, then we reject the null hypothesis and have convincing evidence to conclude that there is a statistically significant difference bteween the median prices of Manhattan and Brooklyn.
-
-
 ### Part D
->>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
 
 Second research question: How does the way in which a property is listed (type of room, for example) influence the availability of a listing?
