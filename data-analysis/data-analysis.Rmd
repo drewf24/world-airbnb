@@ -5,21 +5,16 @@ date: "12/15/2019"
 output: github_document
 ---
      
-### Load packages & data
 
-<<<<<<< HEAD
 ### Load packages & data 
 
-=======
->>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
 ```{r load-packages, message=FALSE}
 library(tidyverse) 
 library(infer)
 library(openintro)
-<<<<<<< HEAD
-=======
 library(dplyr)
->>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
+library(knitr)
+library(broom)
 ```
 
 Uploaded the Airbnb data set from Kaggle via a csv file:
@@ -28,70 +23,77 @@ Uploaded the Airbnb data set from Kaggle via a csv file:
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
-To start, the following research question will be examined: How does location (borough and neighborhood, for example) influence the price of a listing?
+Assuming that the data we have for Airbnbs in New York City represents the population. In order to perform the following analysis we used sample_n to randomly select 31 sample observations.
+
+In part I, the following research question will be examined: How does location (borough and neighborhood, for example) influence the price of a listing?
+
+In part II, the following research question will be examined: How does the way in which a property is listed (type of room, for example) influence the availability of a listing?
 
 ### Part A
 
-<<<<<<< HEAD
-Constructing a bootstrap distribution for the median price of Airbnbs in NYC:
+Creating the sample that we will perform the following analysis on:
 
-``{r diff_med_income_boot_dist}
-boot_dist_median_price <- abnb %>%
-=======
-For bootstrapping, a sample to perform a bootstrap analysis.
-
-```{r}
+```{r abnb_sample}
 set.seed(111519)
-abnb_sample <- sample_n(abnb, 30)
+abnb_sample <- sample_n(abnb, 50)
 ```
 
 Constructing a bootstrap distribution for the median price of Airbnbs in NYC:
 
 ```{r diff_med_income_boot_dist}
 boot_dist_median_price <- abnb_sample %>%
->>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
   specify(response = price) %>%
   generate(reps = 1000, type = "bootstrap") %>%
   calculate(stat = "median")
 ```
 
-<<<<<<< HEAD
 
+Creating a 95% bootstrap confidence interval for the the median price of Airbnbs in NYC:
 
-Creating a 95% bootstrap confidence interval for the difference in median incomes of employed Americans born in the first half of the year vs. those born in the second half:
-
-``{r diff_med_income_boot_dist-ci}
-set.seed(111319)
-(ci_bounds <- get_ci(diff_med_income_boot_dist, level= 0.95))
-```
-
-We are 95% confident that the difference in median incomes of employed Americans born in the first half of the year vs. those born in the second half is between -6001.25 and 6500.
-
-=======
-Creating a 95% bootstrap confidence interval for the median price of Airbnbs:
-
-```{r diff_med_income_boot_dist-ci}
+```{r boot_dist_median_priceci}
 set.seed(111519)
 (ci_bounds <- get_ci(boot_dist_median_price, level= 0.95))
 ```
 
-We are 95% confident that the median price of Airbnbs per night in NYC is between $92.50 and $138.50.
+We are 95% confident that the population median price per night of Airbnbs in NYC is between $97.50 and $147.51.
 
+Creating a visualizaing of the bootstrap distribution for median price:
+
+```{r boot_dist_median_vis}
+visualize(boot_dist_median_price) + 
+  labs(title = "Bootstrap Dist of Median Price") +
+  shade_ci(ci_bounds)
+```
 ### Part B
 
-Created a linear model predict Airbnb price by borough (neighbourhood_group):
-```{r}
-abnb %>%
-  mutate(neighbourhood_group = fct_relevel(neighbourhood_group, "Manhattan", "Brooklyn","Staten Island","Queens", "Bronx"))
+Using fct_relevel to make Manhattan the baseline level for neighbourhood_group:
 
-lm(price ~ neighbourhood_group, data = abnb)
+```{r mutate-neighbourhood_group}
+abnb_sample <- abnb_sample %>%
+  mutate(neighbourhood_group = fct_relevel(neighbourhood_group, 
+                                           "Manhattan", 
+                                           "Brooklyn",
+                                           "Staten Island",
+                                           "Queens",
+                                           "Bronx"))
+```
+
+Creating a linear model to predict Airbnb price by neighbourhood_group:
+
+``{r lm-price-borough}
+lm-price-borough <- lm(price ~ neighbourhood_group, data = abnb_sample)
+
+lm-price-borough %>% 
+  tidy() %>% 
+  select(term, estimate) %>%
+  kable(format = "markdown", digits =3)
+
 ```
 
 The linear model is:
 
 `price-hat = 87.50 +36.89*(neighbourhood_groupBrooklyn) +12.02*(neighbourhood_groupQueens) +27.32*(neighbourhood_groupStaten Island)`
 
-Manhattan is the baseline level for borough variable.
 
 Intepreting the intercept:
 

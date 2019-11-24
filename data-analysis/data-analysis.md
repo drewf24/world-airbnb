@@ -9,10 +9,9 @@ WORLD
 library(tidyverse) 
 library(infer)
 library(openintro)
-<<<<<<< HEAD
-=======
 library(dplyr)
->>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
+library(knitr)
+library(broom)
 ```
 
 Uploaded the Airbnb data set from Kaggle via a csv file:
@@ -21,40 +20,25 @@ Uploaded the Airbnb data set from Kaggle via a csv file:
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
-To start, the following research question will be examined: How does
+Assuming that the data we have for Airbnbs in New York City represents
+the population. In order to perform the following analysis we used
+sample\_n to randomly select 31 sample observations.
+
+In part I, the following research question will be examined: How does
 location (borough and neighborhood, for example) influence the price of
 a listing?
 
+In part II, the following research question will be examined: How does
+the way in which a property is listed (type of room, for example)
+influence the availability of a listing?
+
 ### Part A
 
-<<<<<<< HEAD
-Constructing a bootstrap distribution for the median price of Airbnbs in
-NYC:
-
-\`\`{r diff\_med\_income\_boot\_dist} boot\_dist\_median\_price \<- abnb
-%\>% specify(response = price) %\>% generate(reps = 1000, type =
-“bootstrap”) %\>% calculate(stat = “median”)
-
-``` 
-
-
-
-Creating a 95% bootstrap confidence interval for the difference in median incomes of employed Americans born in the first half of the year vs. those born in the second half:
-
-``{r diff_med_income_boot_dist-ci}
-set.seed(111319)
-(ci_bounds <- get_ci(diff_med_income_boot_dist, level= 0.95))
-```
-
-We are 95% confident that the difference in median incomes of employed
-Americans born in the first half of the year vs. those born in the
-second half is between -6001.25 and 6500.
-=======
-For bootstrapping, a sample to perform a bootstrap analysis.
+Creating the sample that we will perform the following analysis on:
 
 ``` r
 set.seed(111519)
-abnb_sample <- sample_n(abnb, 30)
+abnb_sample <- sample_n(abnb, 50)
 ```
 
 Constructing a bootstrap distribution for the median price of Airbnbs in
@@ -67,8 +51,8 @@ boot_dist_median_price <- abnb_sample %>%
   calculate(stat = "median")
 ```
 
-Creating a 95% bootstrap confidence interval for the median price of
-Airbnbs:
+Creating a 95% bootstrap confidence interval for the the median price of
+Airbnbs in NYC:
 
 ``` r
 set.seed(111519)
@@ -78,62 +62,50 @@ set.seed(111519)
     ## # A tibble: 1 x 2
     ##   `2.5%` `97.5%`
     ##    <dbl>   <dbl>
-    ## 1   92.5    138.
+    ## 1   97.5    148.
 
-We are 95% confident that the median price of Airbnbs per night in NYC
-is between $92.50 and $138.50.
+We are 95% confident that the population median price per night of
+Airbnbs in NYC is between $97.50 and $147.51.
 
-### Part B
-
-Created a linear model predict Airbnb price by borough
-(neighbourhood\_group):
+Creating a visualizaing of the bootstrap distribution for median price:
 
 ``` r
-abnb %>%
-  mutate(neighbourhood_group = fct_relevel(neighbourhood_group, "Manhattan", "Brooklyn","Staten Island","Queens", "Bronx"))
+visualize(boot_dist_median_price) + 
+  labs(title = "Bootstrap Dist of Median Price") +
+  shade_ci(ci_bounds)
 ```
 
-    ## # A tibble: 48,895 x 16
-    ##       id name  host_id host_name neighbourhood_g… neighbourhood latitude
-    ##    <dbl> <chr>   <dbl> <chr>     <fct>            <chr>            <dbl>
-    ##  1  2539 Clea…    2787 John      Brooklyn         Kensington        40.6
-    ##  2  2595 Skyl…    2845 Jennifer  Manhattan        Midtown           40.8
-    ##  3  3647 THE …    4632 Elisabeth Manhattan        Harlem            40.8
-    ##  4  3831 Cozy…    4869 LisaRoxa… Brooklyn         Clinton Hill      40.7
-    ##  5  5022 Enti…    7192 Laura     Manhattan        East Harlem       40.8
-    ##  6  5099 Larg…    7322 Chris     Manhattan        Murray Hill       40.7
-    ##  7  5121 Blis…    7356 Garon     Brooklyn         Bedford-Stuy…     40.7
-    ##  8  5178 Larg…    8967 Shunichi  Manhattan        Hell's Kitch…     40.8
-    ##  9  5203 Cozy…    7490 MaryEllen Manhattan        Upper West S…     40.8
-    ## 10  5238 Cute…    7549 Ben       Manhattan        Chinatown         40.7
-    ## # … with 48,885 more rows, and 9 more variables: longitude <dbl>,
-    ## #   room_type <chr>, price <dbl>, minimum_nights <dbl>,
-    ## #   number_of_reviews <dbl>, last_review <date>, reviews_per_month <dbl>,
-    ## #   calculated_host_listings_count <dbl>, availability_365 <dbl>
+![](data-analysis_files/figure-gfm/boot_dist_median_vis-1.png)<!-- -->
+\#\#\# Part B
+
+Using fct\_relevel to make Manhattan the baseline level for
+neighbourhood\_group:
 
 ``` r
-lm(price ~ neighbourhood_group, data = abnb)
+abnb_sample <- abnb_sample %>%
+  mutate(neighbourhood_group = fct_relevel(neighbourhood_group, 
+                                           "Manhattan", 
+                                           "Brooklyn",
+                                           "Staten Island",
+                                           "Queens",
+                                           "Bronx"))
 ```
 
-    ## 
-    ## Call:
-    ## lm(formula = price ~ neighbourhood_group, data = abnb)
-    ## 
-    ## Coefficients:
-    ##                      (Intercept)       neighbourhood_groupBrooklyn  
-    ##                            87.50                             36.89  
-    ##     neighbourhood_groupManhattan         neighbourhood_groupQueens  
-    ##                           109.38                             12.02  
-    ## neighbourhood_groupStaten Island  
-    ##                            27.32
+Creating a linear model to predict Airbnb price by neighbourhood\_group:
+
+\`\`{r lm-price-borough} lm-price-borough \<- lm(price ~
+neighbourhood\_group, data = abnb\_sample)
+
+lm-price-borough %\>% tidy() %\>% select(term, estimate) %\>%
+kable(format = “markdown”, digits =3)
+
+\`\`\`
 
 The linear model is:
 
 `price-hat = 87.50 +36.89*(neighbourhood_groupBrooklyn)
 +12.02*(neighbourhood_groupQueens) +27.32*(neighbourhood_groupStaten
 Island)`
-
-Manhattan is the baseline level for borough variable.
 
 Intepreting the intercept:
 
@@ -195,7 +167,8 @@ that there is a statistically significant difference bteween the median
 prices of Manhattan and Brooklyn.
 
 ### Part D
->>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
+
+> > > > > > > f0dd0b9fae3b746538aec0d22f731995da201782
 
 Second research question: How does the way in which a property is listed
 (type of room, for example) influence the availability of a listing?
