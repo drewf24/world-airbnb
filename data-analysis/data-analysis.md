@@ -76,7 +76,8 @@ visualize(boot_dist_median_price) +
 ```
 
 ![](data-analysis_files/figure-gfm/boot_dist_median_vis-1.png)<!-- -->
-\#\#\# Part B
+
+### Part B
 
 Using fct\_relevel to make Manhattan the baseline level for
 neighbourhood\_group:
@@ -93,19 +94,28 @@ abnb_sample <- abnb_sample %>%
 
 Creating a linear model to predict Airbnb price by neighbourhood\_group:
 
-\`\`{r lm-price-borough} lm-price-borough \<- lm(price ~
-neighbourhood\_group, data = abnb\_sample)
+``` r
+lm_price_borough <- lm(price ~ neighbourhood_group, data = abnb_sample)
 
-lm-price-borough %\>% tidy() %\>% select(term, estimate) %\>%
-kable(format = “markdown”, digits =3)
+lm_price_borough %>% 
+  tidy() %>% 
+  select(term, estimate) %>%
+  kable(format = "markdown", digits =3)
+```
 
-\`\`\`
+| term                              |  estimate |
+| :-------------------------------- | --------: |
+| (Intercept)                       |   180.333 |
+| neighbourhood\_groupBrooklyn      |  \-63.000 |
+| neighbourhood\_groupStaten Island |  \-80.333 |
+| neighbourhood\_groupQueens        |  \-71.667 |
+| neighbourhood\_groupBronx         | \-125.333 |
 
 The linear model is:
 
-`price-hat = 87.50 +36.89*(neighbourhood_groupBrooklyn)
-+12.02*(neighbourhood_groupQueens) +27.32*(neighbourhood_groupStaten
-Island)`
+`price-hat = 180.333 -63.000*(neighbourhood_groupBrooklyn)
++80.333*(neighbourhood_groupStaten Island)
+-71.667*(neighbourhood_groupQueens) -125.333(neighbourhood_groupBronx)`
 
 Intepreting the intercept:
 

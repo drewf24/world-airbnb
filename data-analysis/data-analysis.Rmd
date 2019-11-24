@@ -47,7 +47,6 @@ boot_dist_median_price <- abnb_sample %>%
   calculate(stat = "median")
 ```
 
-
 Creating a 95% bootstrap confidence interval for the the median price of Airbnbs in NYC:
 
 ```{r boot_dist_median_priceci}
@@ -64,6 +63,7 @@ visualize(boot_dist_median_price) +
   labs(title = "Bootstrap Dist of Median Price") +
   shade_ci(ci_bounds)
 ```
+
 ### Part B
 
 Using fct_relevel to make Manhattan the baseline level for neighbourhood_group:
@@ -80,10 +80,10 @@ abnb_sample <- abnb_sample %>%
 
 Creating a linear model to predict Airbnb price by neighbourhood_group:
 
-``{r lm-price-borough}
-lm-price-borough <- lm(price ~ neighbourhood_group, data = abnb_sample)
+```{r lm-price-borough}
+lm_price_borough <- lm(price ~ neighbourhood_group, data = abnb_sample)
 
-lm-price-borough %>% 
+lm_price_borough %>% 
   tidy() %>% 
   select(term, estimate) %>%
   kable(format = "markdown", digits =3)
@@ -92,8 +92,7 @@ lm-price-borough %>%
 
 The linear model is:
 
-`price-hat = 87.50 +36.89*(neighbourhood_groupBrooklyn) +12.02*(neighbourhood_groupQueens) +27.32*(neighbourhood_groupStaten Island)`
-
+`price-hat = 180.333 -63.000*(neighbourhood_groupBrooklyn) +80.333*(neighbourhood_groupStaten Island) -71.667*(neighbourhood_groupQueens) -125.333(neighbourhood_groupBronx)`
 
 Intepreting the intercept:
 
