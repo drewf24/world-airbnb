@@ -4,13 +4,22 @@ author: "WORLD"
 date: "12/15/2019"
 output: github_document
 ---
+     
+### Load packages & data
 
+<<<<<<< HEAD
 ### Load packages & data 
 
+=======
+>>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
 ```{r load-packages, message=FALSE}
 library(tidyverse) 
 library(infer)
 library(openintro)
+<<<<<<< HEAD
+=======
+library(dplyr)
+>>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
 ```
 
 Uploaded the Airbnb data set from Kaggle via a csv file:
@@ -23,15 +32,30 @@ To start, the following research question will be examined: How does location (b
 
 ### Part A
 
+<<<<<<< HEAD
 Constructing a bootstrap distribution for the median price of Airbnbs in NYC:
 
 ``{r diff_med_income_boot_dist}
 boot_dist_median_price <- abnb %>%
+=======
+For bootstrapping, a sample to perform a bootstrap analysis.
+
+```{r}
+set.seed(111519)
+abnb_sample <- sample_n(abnb, 30)
+```
+
+Constructing a bootstrap distribution for the median price of Airbnbs in NYC:
+
+```{r diff_med_income_boot_dist}
+boot_dist_median_price <- abnb_sample %>%
+>>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
   specify(response = price) %>%
   generate(reps = 1000, type = "bootstrap") %>%
   calculate(stat = "median")
 ```
 
+<<<<<<< HEAD
 
 
 Creating a 95% bootstrap confidence interval for the difference in median incomes of employed Americans born in the first half of the year vs. those born in the second half:
@@ -43,5 +67,79 @@ set.seed(111319)
 
 We are 95% confident that the difference in median incomes of employed Americans born in the first half of the year vs. those born in the second half is between -6001.25 and 6500.
 
+=======
+Creating a 95% bootstrap confidence interval for the median price of Airbnbs:
+
+```{r diff_med_income_boot_dist-ci}
+set.seed(111519)
+(ci_bounds <- get_ci(boot_dist_median_price, level= 0.95))
+```
+
+We are 95% confident that the median price of Airbnbs per night in NYC is between $92.50 and $138.50.
+
+### Part B
+
+Created a linear model predict Airbnb price by borough (neighbourhood_group):
+```{r}
+abnb %>%
+  mutate(neighbourhood_group = fct_relevel(neighbourhood_group, "Manhattan", "Brooklyn","Staten Island","Queens", "Bronx"))
+
+lm(price ~ neighbourhood_group, data = abnb)
+```
+
+The linear model is:
+
+`price-hat = 87.50 +36.89*(neighbourhood_groupBrooklyn) +12.02*(neighbourhood_groupQueens) +27.32*(neighbourhood_groupStaten Island)`
+
+Manhattan is the baseline level for borough variable.
+
+Intepreting the intercept:
+
+Given that a teaching professor has an average attractiveness of 0, their expected professor evaluation, on average, is 3.982 out of 5. In this case, the intercept does not have a meaningful interpretation because a student could not rate their professor a 0. The least they could rate their professor is a 1.
+
+Interpreting the slopes using m_bty_rank linear model:
+
+For each additional point rating increase in the attractiveness scale (out of 10), the average professor evaluation is expected to increase, on average, by 0.068 rating points (out of 5), holding all else constant.
+
+Professors on the tenure track are expected to have, on average, an average professor evaluation score which is 0.161 rating points lower (out of 5) than the average professor rating of teaching professors, holding all else constant.
+
+Tenured professors are expected to have, on average, an average professor evaluation score which is 0.126 rating points lower (out of 5) than the average professor rating of teaching professors, holding all else constant.
+
+
+### Part C
+
+```{r ellie}
+abnb_sample <- abnb_sample %>%
+   mutate(price_median = median(price), 
+          price = case_when(
+      price > price_median ~ "Above",
+      price < price_median ~ "Below"
+    ))
+```
+
+We will now perform a hypothesis test to determine if there is a difference in the true median prices between Manhattan and Brooklyn.
+
+We will set our alpha level of 5%.
+
+m1 = median price of Manhattan
+m2 = median price of Brooklyn
+
+Null Hypothesis: There is no difference between the median prices between Manhattan and Brooklyn.
+Ho: m1 - m2 = 0
+
+Alternative Hypothesis: There is a difference between the median prices between Manhattan and Brooklyn.
+Ha: m1 - m2 != 0
+
+```{r hypothesis-test}
+
+```
+
+If the p-value is greater than our predetermined alpha level of 0.05, then we fail to reject the null hypothesis and cannot conlude that there is a statistically significant difference between the median prices of Manhattan and Brooklyn.
+
+If the p-value is less than our predetermined alpha level of 0.05, then we reject the null hypothesis and have convincing evidence to conclude that there is a statistically significant difference bteween the median prices of Manhattan and Brooklyn.
+
+
+### Part D
+>>>>>>> f0dd0b9fae3b746538aec0d22f731995da201782
 
 Second research question: How does the way in which a property is listed (type of room, for example) influence the availability of a listing?
