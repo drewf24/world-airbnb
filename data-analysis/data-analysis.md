@@ -283,8 +283,19 @@ Second research question: How does the way in which a property is listed
 (type of room, for example) influence the availability of a listing?
 
 ``` r
-abnb_text <- abnb %>%
-  select(id, name, availability_365)
+abnb_sample <- abnb_sample %>%
+  mutate(availability_365_case = case_when(
+      availability_365 <= 73  ~ "Low",
+      availability_365 <= 143 & availability_365 > 73 ~ "Medium Low",
+      availability_365 > 143 & availability_365 <= 219 ~ "Medium",
+      availability_365 > 219 & availability_365 <= 292 ~ "Medium High",
+      availability_365 > 292 ~ "High", 
+    ))
+```
+
+``` r
+abnb_text <- abnb_sample %>%
+  select(id, name, availability_365_case, availability_365)
 ```
 
 ``` r
@@ -296,20 +307,20 @@ tidy_description <- abnb_text %>%
 tidy_description
 ```
 
-    ## # A tibble: 299,931 x 3
-    ##       id availability_365 word   
-    ##    <dbl>            <dbl> <chr>  
-    ##  1  2539              365 clean  
-    ##  2  2539              365 quiet  
-    ##  3  2539              365 apt    
-    ##  4  2539              365 home   
-    ##  5  2539              365 by     
-    ##  6  2539              365 the    
-    ##  7  2539              365 park   
-    ##  8  2595              355 skylit 
-    ##  9  2595              355 midtown
-    ## 10  2595              355 castle 
-    ## # … with 299,921 more rows
+    ## # A tibble: 24,435 x 4
+    ##          id availability_365_case availability_365 word     
+    ##       <dbl> <chr>                            <dbl> <chr>    
+    ##  1 26274952 Low                                 72 entire   
+    ##  2 26274952 Low                                 72 apartment
+    ##  3 26274952 Low                                 72 in       
+    ##  4 26274952 Low                                 72 house    
+    ##  5 26274952 Low                                 72 20mins   
+    ##  6 26274952 Low                                 72 to       
+    ##  7 26274952 Low                                 72 free     
+    ##  8 26274952 Low                                 72 ferry    
+    ##  9 35771605 Low                                 25 master   
+    ## 10 35771605 Low                                 25 bedroom  
+    ## # … with 24,425 more rows
 
 ``` r
 tidy_description <- tidy_description %>%
@@ -320,23 +331,61 @@ tidy_description <- tidy_description %>%
 tidy_description %>%
   count(word, availability_365, sort = T) %>%
   arrange(availability_365) %>%
-  head(25)
+  head(10)
 ```
 
-    ## # A tibble: 25 x 3
-    ##    word      availability_365     n
-    ##    <chr>                <dbl> <int>
-    ##  1 bedroom                  0  3396
-    ##  2 apartment                0  2869
-    ##  3 private                  0  2515
-    ##  4 cozy                     0  1939
-    ##  5 apt                      0  1936
-    ##  6 spacious                 0  1749
-    ##  7 brooklyn                 0  1596
-    ##  8 studio                   0  1593
-    ##  9 east                     0  1412
-    ## 10 sunny                    0  1395
-    ## # … with 15 more rows
+    ## # A tibble: 10 x 3
+    ##    word         availability_365     n
+    ##    <chr>                   <dbl> <int>
+    ##  1 bedroom                     0   275
+    ##  2 apartment                   0   236
+    ##  3 private                     0   208
+    ##  4 cozy                        0   171
+    ##  5 apt                         0   170
+    ##  6 brooklyn                    0   146
+    ##  7 spacious                    0   135
+    ##  8 studio                      0   130
+    ##  9 east                        0   114
+    ## 10 williamsburg                0   106
+
+``` r
+frequency_all <- tidy_description %>%
+  count(word, sort = T) %>%
+  mutate(freq = n / sum(n)) 
+```
+
+``` r
+ggplot(frequency_all %>% top_n(10, freq) %>%
+         mutate(word = reorder(word, freq)), aes(x = word, y = freq))+
+  geom_col()+ 
+  coord_flip()
+```
+
+![](data-analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+``` r
+tidy_description %>%
+  group_by(availability_365_case) %>%
+  count(word, sort = T) %>% 
+  filter(availability_365_case == "Low") %>%
+  arrange(desc(n)) %>%
+  head(10)
+```
+
+    ## # A tibble: 10 x 3
+    ## # Groups:   availability_365_case [1]
+    ##    availability_365_case word          n
+    ##    <chr>                 <chr>     <int>
+    ##  1 Low                   bedroom     399
+    ##  2 Low                   apartment   356
+    ##  3 Low                   private     331
+    ##  4 Low                   cozy        252
+    ##  5 Low                   apt         239
+    ##  6 Low                   brooklyn    213
+    ##  7 Low                   spacious    199
+    ##  8 Low                   studio      197
+    ##  9 Low                   east        165
+    ## 10 Low                   sunny       147
 
 Creating a linear model to predict Airbnb availability by roomtype wth
 entire home/apt as be our

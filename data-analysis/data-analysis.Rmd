@@ -199,8 +199,19 @@ abnb_sample %>%
 Second research question: How does the way in which a property is listed (type of room, for example) influence the availability of a listing?
 
 ```{r}
-abnb_text <- abnb %>%
-  select(id, name, availability_365)
+abnb_sample <- abnb_sample %>%
+  mutate(availability_365_case = case_when(
+      availability_365 <= 73  ~ "Low",
+      availability_365 <= 143 & availability_365 > 73 ~ "Medium Low",
+      availability_365 > 143 & availability_365 <= 219 ~ "Medium",
+      availability_365 > 219 & availability_365 <= 292 ~ "Medium High",
+      availability_365 > 292 ~ "High", 
+    ))
+```
+
+```{r}
+abnb_text <- abnb_sample %>%
+  select(id, name, availability_365_case, availability_365)
 ```
 
 
@@ -222,8 +233,32 @@ tidy_description <- tidy_description %>%
 tidy_description %>%
   count(word, availability_365, sort = T) %>%
   arrange(availability_365) %>%
-  head(25)
+  head(10)
 ```
+
+
+```{r}
+frequency_all <- tidy_description %>%
+  count(word, sort = T) %>%
+  mutate(freq = n / sum(n)) 
+```
+
+```{r}
+ggplot(frequency_all %>% top_n(10, freq) %>%
+         mutate(word = reorder(word, freq)), aes(x = word, y = freq))+
+  geom_col()+ 
+  coord_flip()
+```
+
+```{r}
+tidy_description %>%
+  group_by(availability_365_case) %>%
+  count(word, sort = T) %>% 
+  filter(availability_365_case == "Low") %>%
+  arrange(desc(n)) %>%
+  head(10)
+```
+
 
 Creating a linear model to predict Airbnb availability by roomtype wth entire home/apt as be our baseline.
 
