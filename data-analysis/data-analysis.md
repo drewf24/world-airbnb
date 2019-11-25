@@ -291,3 +291,44 @@ Second research question: How does the way in which a property is listed
 mutate(text = str\_remove\_all(text, remove\_reg))%\>%
 unnest\_tokens(word, text, token = “tweets”) tidy\_tweets %\>%
 slice(1:5) \`\`\`
+
+Creating a linear model to predict Airbnb availability by roomtype wth
+entire home/apt as be our
+baseline.
+
+``` r
+lm_avail_room_type <- lm(availability_365 ~ room_type, data = abnb_sample)
+
+lm_avail_room_type %>% 
+  tidy() %>% 
+  select(term, estimate) %>%
+  kable(format = "markdown", digits =3)
+```
+
+| term                   | estimate |
+| :--------------------- | -------: |
+| (Intercept)            |  121.067 |
+| room\_typePrivate room | \-38.678 |
+| room\_typeShared room  |   25.433 |
+
+The linear model is:
+
+`price-hat = 121.067 -38.678*(room_typePrivateroom)
++25.433*(room_typeShared room)`
+
+Intepreting the intercept:
+
+Given that the Airbnb has the roomtype of entire house/apt the expected
+availability, on average, is 121 days out of the year. In this case, the
+intercept does have a meaningful interpretation because an Airbnb could
+be available for 121 days out of 365 per year.
+
+Interpreting the slopes using lm\_avail\_room\_type linear model:
+
+For an Airbnb with roomtype of private room, the average availability is
+expected, on average, to be 38.68 days less per year than an Airbnb in
+wth room type of entire house/apt, holding all else constant.
+
+For an Airbnb with roomtype of shared room, the average availability is
+expected, on average, to be 25.43 days more per year than an Airbnb in
+wth room type of entire house/apt, holding all else constant.
