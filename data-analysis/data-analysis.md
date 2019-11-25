@@ -378,3 +378,11 @@ room type of entire house/apt, holding all else constant.
 For an Airbnb with roomtype of shared room, the average availability is
 expected, on average, to be 74.9 days more per year than an Airbnb in
 wth room type of entire house/apt, holding all else constant.
+
+-----
+
+TO DO: 1. Add R squared for models we have 2. Bootstrap Distribution,
+Visualization, CI for Availability 3. Evertything (Room Type, Min Night,
+Number of Reviews, Calculated Host Listing, price\_case, Reviews per
+month) AIC Model Selection for Availability — R squared and AIC Values
+4. Host high volume or low volume \*\*\*
