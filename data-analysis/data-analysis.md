@@ -12,6 +12,7 @@ library(openintro)
 library(dplyr)
 library(knitr)
 library(broom)
+library(tidytext)
 ```
 
 Uploaded the Airbnb data set from Kaggle via a csv file:
@@ -141,7 +142,8 @@ $125.33 less than an Airbnb in Manhattan, holding all else constant.
 ### Part C
 
 We are suspicious that there might be a relationship between median
-price in Manhattan and Brooklyn. Therefore we will attempt to answer the
+price in Manhattan and Brooklyn because they contain the largest amount
+and the most expensive Airbnbs. Therefore we will attempt to answer the
 following: Is there is a difference in the true median prices between
 Manhattan and Brooklyn?
 
@@ -166,9 +168,11 @@ The observed median prices for Manhattan and Brooklyn are $148.00 and
 $92.50, respectively. Therefore, the observed difference in median
 prices is $55.50.
 
-H0: There is no difference in median price between Manhattan and
-Brooklyn Airbnb per night. HA: There is a difference in median price
-between Manhattan and Brooklyn Airbnb per night.
+Null Hypothesis: There is no difference in median price between
+Manhattan and Brooklyn Airbnb per night.
+
+Alternative Hypothesis: There is a difference in median price between
+Manhattan and Brooklyn Airbnb per night.
 
 ``` r
 set.seed(111519)
@@ -203,23 +207,87 @@ get_p_value(null_dist_man_brook_med_price, 55.5, direction = "two_sided")
     ##     <dbl>
     ## 1   0.116
 
-We reject the null hypothesis in favor of the alternative hypothesis.
-The data does provide convincing evidence of a difference in median
-price of Airbnbs for listings in Manhattan and Brooklyn.
+The p-value is 0.116 which is greater than the significance value of
+0.05. Therefore, we fail to reject the null hypothesis in favor of the
+alternative hypothesis. The data does not provide convincing evidence of
+a difference in median price of Airbnbs for listings in Manhattan and
+Brooklyn.
 
-Creating a variable (median\_price) to determine whether price is above
-or below the median.
+### Part D
 
 ``` r
-abnb_sample <- abnb_sample %>%
+abnb_sample_plot <- sample_n(abnb, 5000)
+```
+
+``` r
+abnb_sample_plot <- abnb_sample_plot %>%
    mutate(price_median = median(price), 
-          price = case_when(
+          price_case = case_when(
       price >= price_median ~ "Median or Above",
       price < price_median ~ "Below Median", 
     ))
 ```
 
-### Part D
+``` r
+abnb_sample_plot %>%
+  ggplot(mapping = aes (x = longitude, y = latitude, color = price_case)) +
+  geom_jitter(alpha = 0.5) +
+  labs(title = "Prices at Latitude and Longitude Coordinates", x = "Longitude", y = "Latitude", color = "Price Case")
+```
+
+![](data-analysis_files/figure-gfm/price-at-location-1.png)<!-- -->
+
+``` r
+abnb_sample_plot %>%
+  count(neighbourhood_group, price_case) %>%
+  group_by(neighbourhood_group) %>%
+  mutate(rel_freq = n/sum(n)) %>%
+  filter(price_case == "Median or Above")
+```
+
+    ## # A tibble: 5 x 4
+    ## # Groups:   neighbourhood_group [5]
+    ##   neighbourhood_group price_case          n rel_freq
+    ##   <chr>               <chr>           <int>    <dbl>
+    ## 1 Bronx               Median or Above    15    0.158
+    ## 2 Brooklyn            Median or Above   825    0.404
+    ## 3 Manhattan           Median or Above  1504    0.671
+    ## 4 Queens              Median or Above   149    0.255
+    ## 5 Staten Island       Median or Above    15    0.395
+
+WANT TO SAY WHETHER PRICE IS DEPENDEDNT ON LOCATION OF BOROUGH\!
+
+### Part E
+
+``` r
+abnb_sample %>%
+  group_by(neighbourhood, neighbourhood_group) %>%
+  summarise(med_price = median(price)) %>%
+  arrange(desc(med_price)) %>%
+  head(10)
+```
+
+    ## # A tibble: 10 x 3
+    ## # Groups:   neighbourhood [10]
+    ##    neighbourhood    neighbourhood_group med_price
+    ##    <chr>            <fct>                   <dbl>
+    ##  1 Theater District Manhattan                239 
+    ##  2 Hell's Kitchen   Manhattan                225 
+    ##  3 East Harlem      Manhattan                218.
+    ##  4 Jackson Heights  Queens                   200 
+    ##  5 Greenpoint       Brooklyn                 199 
+    ##  6 Williamsburg     Brooklyn                 199 
+    ##  7 Ditmars Steinway Queens                   190 
+    ##  8 Midtown          Manhattan                181 
+    ##  9 Chelsea          Manhattan                180 
+    ## 10 Elmhurst         Queens                   179
+
+### Part II
 
 Second research question: How does the way in which a property is listed
 (type of room, for example) influence the availability of a listing?
+
+\`\`{r} remove\_reg \<- “&|\<|\>” tidy\_tweets \<- abnb\_sample %\>%
+mutate(text = str\_remove\_all(text, remove\_reg))%\>%
+unnest\_tokens(word, text, token = “tweets”) tidy\_tweets %\>%
+slice(1:5) \`\`\`

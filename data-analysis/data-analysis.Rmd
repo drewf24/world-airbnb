@@ -4,8 +4,7 @@ author: "WORLD"
 date: "12/15/2019"
 output: github_document
 ---
-     
-
+    
 ### Load packages & data 
 
 ```{r load-packages, message=FALSE}
@@ -15,6 +14,7 @@ library(openintro)
 library(dplyr)
 library(knitr)
 library(broom)
+library(tidytext)
 ```
 
 Uploaded the Airbnb data set from Kaggle via a csv file:
@@ -110,7 +110,7 @@ For an Airbnb in Bronx, the average price is expected, on average, to be $125.33
 
 ### Part C
 
-We are suspicious that there might be a relationship between median price in Manhattan and Brooklyn. Therefore we will attempt to answer the following: Is there is a difference in the true median prices between Manhattan and Brooklyn?
+We are suspicious that there might be a relationship between median price in Manhattan and Brooklyn because they contain the largest amount and the most expensive Airbnbs. Therefore we will attempt to answer the following: Is there is a difference in the true median prices between Manhattan and Brooklyn?
 
 ```{r filter-borough}
 abnb_sample_filtered <- abnb_sample %>%
@@ -125,8 +125,9 @@ abnb_sample_filtered %>%
 
 The observed median prices for Manhattan and Brooklyn are $148.00 and $92.50, respectively. Therefore, the observed difference in median prices is $55.50.
 
-H0: There is no difference in median price between Manhattan and Brooklyn Airbnb per night.
-HA: There is a difference in median price between Manhattan and Brooklyn Airbnb per night.
+Null Hypothesis: There is no difference in median price between Manhattan and Brooklyn Airbnb per night.
+
+Alternative Hypothesis: There is a difference in median price between Manhattan and Brooklyn Airbnb per night.
 
 ```{r man-brook-med-price}
 set.seed(111519)
@@ -152,21 +153,62 @@ Findng the p-value.
 get_p_value(null_dist_man_brook_med_price, 55.5, direction = "two_sided")
 ```
 
-We reject the null hypothesis in favor of the alternative hypothesis. The data does provide convincing evidence of a difference in median price of Airbnbs for listings in Manhattan and Brooklyn.
+The p-value is 0.116 which is greater than the significance value of 0.05. Therefore, we fail to reject the null hypothesis in favor of the alternative hypothesis. The data does not provide convincing evidence of a difference in median price of Airbnbs for listings in Manhattan and Brooklyn.
 
+### Part D
 
+```{r}
+abnb_sample_plot <- sample_n(abnb, 5000)
+```
 
-
-Creating a variable (median_price) to determine whether price is above or below the median.
-
-```{r median_price}
-abnb_sample <- abnb_sample %>%
+```{r median_price-mutate}
+abnb_sample_plot <- abnb_sample_plot %>%
    mutate(price_median = median(price), 
-          price = case_when(
+          price_case = case_when(
       price >= price_median ~ "Median or Above",
       price < price_median ~ "Below Median", 
     ))
 ```
-### Part D
 
+```{r price-at-location}
+abnb_sample_plot %>%
+  ggplot(mapping = aes (x = longitude, y = latitude, color = price_case)) +
+  geom_jitter(alpha = 0.5) +
+  labs(title = "Prices at Latitude and Longitude Coordinates", x = "Longitude", y = "Latitude", color = "Price Case")
+```
+
+```{r}
+abnb_sample_plot %>%
+  count(neighbourhood_group, price_case) %>%
+  group_by(neighbourhood_group) %>%
+  mutate(rel_freq = n/sum(n)) %>%
+  filter(price_case == "Median or Above")
+```
+
+WANT TO SAY WHETHER PRICE IS DEPENDEDNT ON LOCATION OF BOROUGH!
+
+### Part E
+
+```{r}
+abnb_sample %>%
+  group_by(neighbourhood, neighbourhood_group) %>%
+  summarise(med_price = median(price)) %>%
+  arrange(desc(med_price)) %>%
+  head(10)
+```
+
+
+
+### Part II
 Second research question: How does the way in which a property is listed (type of room, for example) influence the availability of a listing?
+
+
+``{r}
+remove_reg <- "&amp;|&lt;|&gt;"
+tidy_tweets <- abnb_sample %>%
+  mutate(text = str_remove_all(text, remove_reg))%>%
+  unnest_tokens(word, text, token = "tweets")
+tidy_tweets %>% slice(1:5)
+```
+
+
