@@ -287,10 +287,61 @@ abnb_sample %>%
 Second research question: How does the way in which a property is listed
 (type of room, for example) influence the availability of a listing?
 
-\`\`{r} remove\_reg \<- “&|\<|\>” tidy\_tweets \<- abnb\_sample %\>%
-mutate(text = str\_remove\_all(text, remove\_reg))%\>%
-unnest\_tokens(word, text, token = “tweets”) tidy\_tweets %\>%
-slice(1:5) \`\`\`
+``` r
+abnb_text <- abnb %>%
+  select(id, name, availability_365)
+```
+
+``` r
+remove_reg <- "&amp;|&lt;|&gt;"
+tidy_description <- abnb_text %>%
+  mutate(name = str_remove_all(name, remove_reg)) %>%
+  unnest_tokens(word, name)
+
+tidy_description
+```
+
+    ## # A tibble: 299,931 x 3
+    ##       id availability_365 word   
+    ##    <dbl>            <dbl> <chr>  
+    ##  1  2539              365 clean  
+    ##  2  2539              365 quiet  
+    ##  3  2539              365 apt    
+    ##  4  2539              365 home   
+    ##  5  2539              365 by     
+    ##  6  2539              365 the    
+    ##  7  2539              365 park   
+    ##  8  2595              355 skylit 
+    ##  9  2595              355 midtown
+    ## 10  2595              355 castle 
+    ## # … with 299,921 more rows
+
+``` r
+tidy_description <- tidy_description %>%
+  filter(!word %in% stop_words $ word,
+         !word %in% str_remove_all(stop_words$word, "'"),
+         str_detect(word, "[a-z]"))
+
+tidy_description %>%
+  count(word, availability_365, sort = T) %>%
+  arrange(availability_365) %>%
+  head(25)
+```
+
+    ## # A tibble: 25 x 3
+    ##    word      availability_365     n
+    ##    <chr>                <dbl> <int>
+    ##  1 bedroom                  0  3396
+    ##  2 apartment                0  2869
+    ##  3 private                  0  2515
+    ##  4 cozy                     0  1939
+    ##  5 apt                      0  1936
+    ##  6 spacious                 0  1749
+    ##  7 brooklyn                 0  1596
+    ##  8 studio                   0  1593
+    ##  9 east                     0  1412
+    ## 10 sunny                    0  1395
+    ## # … with 15 more rows
 
 Creating a linear model to predict Airbnb availability by roomtype wth
 entire home/apt as be our

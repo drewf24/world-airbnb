@@ -198,17 +198,35 @@ abnb_sample %>%
 ```
 
 
-
 ### Part II
+
 Second research question: How does the way in which a property is listed (type of room, for example) influence the availability of a listing?
 
+```{r}
+abnb_text <- abnb %>%
+  select(id, name, availability_365)
+```
 
-``{r}
+
+```{r}
 remove_reg <- "&amp;|&lt;|&gt;"
-tidy_tweets <- abnb_sample %>%
-  mutate(text = str_remove_all(text, remove_reg))%>%
-  unnest_tokens(word, text, token = "tweets")
-tidy_tweets %>% slice(1:5)
+tidy_description <- abnb_text %>%
+  mutate(name = str_remove_all(name, remove_reg)) %>%
+  unnest_tokens(word, name)
+
+tidy_description
+```
+
+```{r}
+tidy_description <- tidy_description %>%
+  filter(!word %in% stop_words $ word,
+         !word %in% str_remove_all(stop_words$word, "'"),
+         str_detect(word, "[a-z]"))
+
+tidy_description %>%
+  count(word, availability_365, sort = T) %>%
+  arrange(availability_365) %>%
+  head(25)
 ```
 
 Creating a linear model to predict Airbnb availability by roomtype wth entire home/apt as be our baseline.
