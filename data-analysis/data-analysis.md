@@ -39,7 +39,7 @@ Creating the sample that we will perform the following analysis on:
 
 ``` r
 set.seed(111519)
-abnb_sample <- sample_n(abnb, 50)
+abnb_sample <- sample_n(abnb, 4000)
 ```
 
 Constructing a bootstrap distribution for the median price of Airbnbs in
@@ -63,10 +63,10 @@ Airbnbs in NYC:
     ## # A tibble: 1 x 2
     ##   `2.5%` `97.5%`
     ##    <dbl>   <dbl>
-    ## 1     95    148.
+    ## 1    100     110
 
 We are 95% confident that the population median price per night of
-Airbnbs in NYC is between $97.50 and $147.51.
+Airbnbs in NYC is between $100.00 and $110.00.
 
 Creating a visualizaing of the bootstrap distribution for median price:
 
@@ -106,38 +106,38 @@ lm_price_borough %>%
 
 | term                              |  estimate |
 | :-------------------------------- | --------: |
-| (Intercept)                       |   180.333 |
-| neighbourhood\_groupBrooklyn      |  \-63.000 |
-| neighbourhood\_groupStaten Island |  \-80.333 |
-| neighbourhood\_groupQueens        |  \-71.667 |
-| neighbourhood\_groupBronx         | \-125.333 |
+| (Intercept)                       |   206.848 |
+| neighbourhood\_groupBrooklyn      |  \-85.106 |
+| neighbourhood\_groupStaten Island | \-117.674 |
+| neighbourhood\_groupQueens        | \-110.432 |
+| neighbourhood\_groupBronx         | \-126.213 |
 
 The linear model is:
 
-`price-hat = 180.333 -63.000*(neighbourhood_groupBrooklyn)
--80.333*(neighbourhood_groupStaten Island)
--71.667*(neighbourhood_groupQueens) -125.333(neighbourhood_groupBronx)`
+`price-hat = 206.848 -85.106*(neighbourhood_groupBrooklyn)
+-117.674*(neighbourhood_groupStaten Island)
+-110.432*(neighbourhood_groupQueens) -126.213(neighbourhood_groupBronx)`
 
 Intepreting the intercept:
 
 Given that the Airbnb is in Manhattan the expected price, on average, is
-$180.33. In this case, the intercept does have a meaningful
-interpretation because an Airbnb could be $180.33 per night.
+$206.85. In this case, the intercept does have a meaningful
+interpretation because an Airbnb could be $206.85 per night.
 
 Interpreting the slopes using lm\_price\_borough linear model:
 
 For an Airbnb in Brooklyn, the average price is expected, on average, to
-be $63.00 less than an Airbnb in Manhattan, holding all else constant.
+be $85.11 less than an Airbnb in Manhattan, holding all else constant.
 
 For an Airbnb in Staten Island, the average price is expected, on
-average, to be $80.33 less than an Airbnb in Manhattan, holding all else
-constant.
+average, to be $117.67 less than an Airbnb in Manhattan, holding all
+else constant.
 
 For an Airbnb in Queens, the average price is expected, on average, to
-be $71.66 less than an Airbnb in Manhattan, holding all else constant.
+be $110.43 less than an Airbnb in Manhattan, holding all else constant.
 
 For an Airbnb in Bronx, the average price is expected, on average, to be
-$125.33 less than an Airbnb in Manhattan, holding all else constant.
+$126.21 less than an Airbnb in Manhattan, holding all else constant.
 
 ### Part C
 
@@ -161,12 +161,12 @@ abnb_sample_filtered %>%
     ## # A tibble: 2 x 2
     ##   neighbourhood_group med_price
     ##   <fct>                   <dbl>
-    ## 1 Manhattan               148  
-    ## 2 Brooklyn                 92.5
+    ## 1 Manhattan                 150
+    ## 2 Brooklyn                   90
 
-The observed median prices for Manhattan and Brooklyn are $148.00 and
-$92.50, respectively. Therefore, the observed difference in median
-prices is $55.50.
+The observed median prices for Manhattan and Brooklyn are $150.00 and
+$90.00, respectively. Therefore, the observed difference in median
+prices is $60.
 
 Null Hypothesis: There is no difference in median price between
 Manhattan and Brooklyn Airbnb per night.
@@ -188,39 +188,34 @@ Visualizing the null distribution.
 ``` r
 visualize(null_dist_man_brook_med_price) + 
   labs(title = "Null Dist of Difference in Median Price between Manhattan and Brooklyn") +
-  shade_p_value(obs_stat = 55.5, direction = "two_sided")
+  shade_p_value(obs_stat = 60, direction = "two_sided")
 ```
 
     ## Warning: F usually corresponds to right-tailed tests. Proceed with caution.
 
 ![](data-analysis_files/figure-gfm/null_dist_diff_median_vis-1.png)<!-- -->
 
-Findng the
-p-value.
+Findng the p-value.
 
 ``` r
-get_p_value(null_dist_man_brook_med_price, 55.5, direction = "two_sided")
+get_p_value(null_dist_man_brook_med_price, 60, direction = "two_sided")
 ```
 
     ## # A tibble: 1 x 1
     ##   p_value
     ##     <dbl>
-    ## 1   0.116
+    ## 1       0
 
-The p-value is 0.116 which is greater than the significance value of
-0.05. Therefore, we fail to reject the null hypothesis in favor of the
-alternative hypothesis. The data does not provide convincing evidence of
-a difference in median price of Airbnbs for listings in Manhattan and
-Brooklyn.
+The p-value is 0 which is less than the significance value of 0.05.
+Therefore, we reject the null hypothesis that there is no difference in
+median price between Manhattan and Brooklyn Airbnb per night. We can
+conclude that the data does provide convincing evidence of a difference
+in median price of Airbnbs for listings in Manhattan and Brooklyn.
 
 ### Part D
 
 ``` r
-abnb_sample_plot <- sample_n(abnb, 5000)
-```
-
-``` r
-abnb_sample_plot <- abnb_sample_plot %>%
+abnb_sample <- abnb_sample %>%
    mutate(price_median = median(price), 
           price_case = case_when(
       price >= price_median ~ "Median or Above",
@@ -229,7 +224,7 @@ abnb_sample_plot <- abnb_sample_plot %>%
 ```
 
 ``` r
-abnb_sample_plot %>%
+abnb_sample %>%
   ggplot(mapping = aes (x = longitude, y = latitude, color = price_case)) +
   geom_jitter(alpha = 0.5) +
   labs(title = "Prices at Latitude and Longitude Coordinates", x = "Longitude", y = "Latitude", color = "Price Case")
@@ -238,7 +233,7 @@ abnb_sample_plot %>%
 ![](data-analysis_files/figure-gfm/price-at-location-1.png)<!-- -->
 
 ``` r
-abnb_sample_plot %>%
+abnb_sample %>%
   count(neighbourhood_group, price_case) %>%
   group_by(neighbourhood_group) %>%
   mutate(rel_freq = n/sum(n)) %>%
@@ -248,12 +243,12 @@ abnb_sample_plot %>%
     ## # A tibble: 5 x 4
     ## # Groups:   neighbourhood_group [5]
     ##   neighbourhood_group price_case          n rel_freq
-    ##   <chr>               <chr>           <int>    <dbl>
-    ## 1 Bronx               Median or Above    15    0.158
-    ## 2 Brooklyn            Median or Above   825    0.404
-    ## 3 Manhattan           Median or Above  1504    0.671
-    ## 4 Queens              Median or Above   149    0.255
-    ## 5 Staten Island       Median or Above    15    0.395
+    ##   <fct>               <chr>           <int>    <dbl>
+    ## 1 Manhattan           Median or Above  1184    0.688
+    ## 2 Brooklyn            Median or Above   680    0.404
+    ## 3 Staten Island       Median or Above     5    0.217
+    ## 4 Queens              Median or Above   119    0.245
+    ## 5 Bronx               Median or Above    13    0.153
 
 WANT TO SAY WHETHER PRICE IS DEPENDEDNT ON LOCATION OF BOROUGH\!
 
@@ -269,18 +264,18 @@ abnb_sample %>%
 
     ## # A tibble: 10 x 3
     ## # Groups:   neighbourhood [10]
-    ##    neighbourhood    neighbourhood_group med_price
-    ##    <chr>            <fct>                   <dbl>
-    ##  1 Theater District Manhattan                239 
-    ##  2 Hell's Kitchen   Manhattan                225 
-    ##  3 East Harlem      Manhattan                218.
-    ##  4 Jackson Heights  Queens                   200 
-    ##  5 Greenpoint       Brooklyn                 199 
-    ##  6 Williamsburg     Brooklyn                 199 
-    ##  7 Ditmars Steinway Queens                   190 
-    ##  8 Midtown          Manhattan                181 
-    ##  9 Chelsea          Manhattan                180 
-    ## 10 Elmhurst         Queens                   179
+    ##    neighbourhood     neighbourhood_group med_price
+    ##    <chr>             <fct>                   <dbl>
+    ##  1 Eastchester       Bronx                    475 
+    ##  2 Far Rockaway      Queens                   450 
+    ##  3 Tribeca           Manhattan                450 
+    ##  4 Vinegar Hill      Brooklyn                 354.
+    ##  5 NoHo              Manhattan                325 
+    ##  6 Castleton Corners Staten Island            299 
+    ##  7 Rockaway Beach    Queens                   297 
+    ##  8 DUMBO             Brooklyn                 250 
+    ##  9 Highbridge        Bronx                    240 
+    ## 10 Great Kills       Staten Island            235
 
 ### Part II
 
@@ -358,28 +353,28 @@ lm_avail_room_type %>%
 
 | term                   | estimate |
 | :--------------------- | -------: |
-| (Intercept)            |  121.067 |
-| room\_typePrivate room | \-38.678 |
-| room\_typeShared room  |   25.433 |
+| (Intercept)            |  115.774 |
+| room\_typePrivate room |  \-3.443 |
+| room\_typeShared room  |   74.912 |
 
 The linear model is:
 
-`price-hat = 121.067 -38.678*(room_typePrivateroom)
-+25.433*(room_typeShared room)`
+`price-hat = 115.774 -3.443*(room_typePrivateroom)
++74.912*(room_typeShared room)`
 
 Intepreting the intercept:
 
 Given that the Airbnb has the roomtype of entire house/apt the expected
-availability, on average, is 121 days out of the year. In this case, the
-intercept does have a meaningful interpretation because an Airbnb could
-be available for 121 days out of 365 per year.
+availability, on average, is 115.8 days out of the year. In this case,
+the intercept does have a meaningful interpretation because an Airbnb
+could be available for 121 days out of 365 per year.
 
 Interpreting the slopes using lm\_avail\_room\_type linear model:
 
 For an Airbnb with roomtype of private room, the average availability is
-expected, on average, to be 38.68 days less per year than an Airbnb in
-wth room type of entire house/apt, holding all else constant.
+expected, on average, to be 3.4 days less per year than an Airbnb in wth
+room type of entire house/apt, holding all else constant.
 
 For an Airbnb with roomtype of shared room, the average availability is
-expected, on average, to be 25.43 days more per year than an Airbnb in
+expected, on average, to be 74.9 days more per year than an Airbnb in
 wth room type of entire house/apt, holding all else constant.
