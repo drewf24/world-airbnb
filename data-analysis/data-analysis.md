@@ -428,6 +428,42 @@ For an Airbnb with roomtype of shared room, the average availability is
 expected, on average, to be 74.9 days more per year than an Airbnb in
 wth room type of entire house/apt, holding all else constant.
 
+Constructing a bootstrap distribution for the median number of available
+days of Airbnbs in NYC:
+
+``` r
+set.seed(111519)
+boot_dist_avail <- abnb_sample %>%
+  specify(response = availability_365) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "median")
+```
+
+Creating a 95% bootstrap confidence interval for the median number of
+available days of an Airbnb in NYC:
+
+``` r
+(ci_bounds <- get_ci(boot_dist_avail, level= 0.95))
+```
+
+    ## # A tibble: 1 x 2
+    ##   `2.5%` `97.5%`
+    ##    <dbl>   <dbl>
+    ## 1     42      57
+
+We are 95% confident that the median number of available days of Airbnbs
+in New York City is between 42 and 57 days.
+
+Creating a visualization of the bootstrap distribution for median price:
+
+``` r
+visualize(boot_dist_avail) + 
+  labs(title = "Bootstrap Dist of Median Number of Available Days of Airbnbs in NYC") +
+  shade_ci(ci_bounds)
+```
+
+![](data-analysis_files/figure-gfm/visualize_avail365-1.png)<!-- -->
+
 -----
 
 TO DO: 1. Add R squared for models we have 2. Bootstrap Distribution,
