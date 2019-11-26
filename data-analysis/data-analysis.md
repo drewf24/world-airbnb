@@ -139,6 +139,17 @@ be $110.43 less than an Airbnb in Manhattan, holding all else constant.
 For an Airbnb in Bronx, the average price is expected, on average, to be
 $126.21 less than an Airbnb in Manhattan, holding all else constant.
 
+We are now going to add R^2 to our linear model above.
+
+``` r
+glance(lm_price_borough)$r.squared
+```
+
+    ## [1] 0.03669659
+
+This means that roughly 3.670% of the variability in average price can
+be explained by the neighborhood type of Airbnbs in New York City.
+
 ### Part C
 
 We are suspicious that there might be a relationship between median
