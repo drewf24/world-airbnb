@@ -487,6 +487,53 @@ visualize(boot_dist_avail) +
 
 ![](data-analysis_files/figure-gfm/visualize_avail365-1.png)<!-- -->
 
+Removing NA values and creating a full model for availability\_365:
+
+``` r
+abnb_model <- abnb_sample %>%
+  drop_na(availability_365,
+          room_type, minimum_nights, 
+          number_of_reviews,
+          calculated_host_listings_count, 
+          price_case, 
+          reviews_per_month)
+
+m_full_model <- lm(availability_365 ~ room_type + 
+                     minimum_nights +  
+                     number_of_reviews + 
+                     calculated_host_listings_count + 
+                     price_case + 
+                     reviews_per_month, data = abnb_model)
+```
+
+Performing model selection using AIC for Availability:
+
+``` r
+selected_model <- step(m_full_model, direction = "backward")
+
+tidy(selected_model) %>%
+  select(term, estimate) %>%
+  kable(format = "markdown", digits = 3)
+```
+
+The linear model for this model is:
+
+`availability_365 = 59.923 + 26.396*(room_typePrivate room)
++ 115.98*(room_typeShared room) + 0.481*(minimum_nights)
++ 0.461*(number_of_reviews) + 0.853*(calculated_host_listings_count)
++ 29.622*(price_caseMedian or Above) + 5.93*(reviews_per_month)`
+
+Determining R-squared:
+
+``` r
+glance(selected_model)$r.squared
+```
+
+    ## [1] 0.1048801
+
+The R-squared value is 10.49% of the variability in availibility can be
+explained by this model.
+
 -----
 
 TO DO: 1. Add R squared for models we have 2. Bootstrap Distribution,
