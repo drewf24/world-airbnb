@@ -673,8 +673,17 @@ higher than that of low volume hosts.
 
 -----
 
-TO DO: 1. Add R squared for models we have 2. Bootstrap Distribution,
-Visualization, CI for Availability 3. Evertything (Room Type, Min Night,
-Number of Reviews, Calculated Host Listing, price\_case, Reviews per
-month) AIC Model Selection for Availability — R squared and AIC Values
-4. Host high volume or low volume \*\*\*
+TO DO: 1. Add R squared for models we have —\> Done (Brandon) 2.
+Bootstrap Distribution, Visualization, CI for Availability —\> Done
+(Brandon) 3. Evertything (Room Type, Min Night, Number of Reviews,
+Calculated Host Listing, price\_case, Reviews per month) AIC Model
+Selection for Availability — R squared and AIC Values 4. Host high
+volume or low volume 5. Hypothesis testing, visualization of p-value on
+the difference between Staten island and queens because they’re so close
+to each other —\> In Progress (Brandon) 6. I want to do more on the text
+analysis as I think this is a brilliant idea by Ellie/Drew and key to
+making our project stand out relative to others — what if we do
+hypothesis testing on the true difference in price listing between the
+word “spacious” and “cozy” as these seem to be polar opposite
+descriptive words yet they are very common? —\> In Debate/Progress
+(Brandon) \*\*\*

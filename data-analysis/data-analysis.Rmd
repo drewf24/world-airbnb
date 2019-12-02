@@ -58,7 +58,7 @@ We are 95% confident that the population median price per night of Airbnbs in NY
 
 Creating a visualizaing of the bootstrap distribution for median price:
 
-```{r boot_dist_median_vis}
+```{r boot_dist_median_visu}
 visualize(boot_dist_median_price) + 
   labs(title = "Bootstrap Dist of Median Price") +
   shade_ci(ci_bounds)
@@ -162,6 +162,53 @@ get_p_value(null_dist_man_brook_med_price, 60, direction = "two_sided")
 ```
 
 The p-value is 0 which is less than the significance value of 0.05. Therefore, we reject the null hypothesis that there is no difference in median price between Manhattan and Brooklyn Airbnb per night. We can conclude that the data does provide convincing evidence of a difference in median price of Airbnbs for listings in Manhattan and Brooklyn.
+
+### Part XX
+
+We concluded in the previous part that our data does provide convincing evidence of a difference in true median price of Airbnbs for listing in Manhattan and Brooklyn. But, if we look closely at the median price listings of Staten Island's Airbnbs and Queen's Airbnbs, we see that there are similar. Let's perform a hypothesis test on these two neighborhood groups to attempt to answer the following: Is there is a difference in the true median prices between Staten Island and Queens?
+
+```{r filter-staten-queens}
+abnb_staten <- abnb_sample %>%
+  filter(neighbourhood_group == "Staten Island" | neighbourhood_group == "Queens")
+```
+
+```{r sample_diff_med_staten_queens}
+abnb_staten %>%
+  group_by(neighbourhood_group) %>%
+  summarise(med_price = median(price))
+```
+
+The observed median prices for Staten Island and Queens are $65 and $72, respectively. Therefore, the observed difference in median prices is $7.
+
+Null Hypothesis: There is no difference in median price between Staten Island and Queens Airbnb per night.
+
+Alternative Hypothesis: There is a difference in median price between Staten Island and Queens Airbnb per night.
+
+```{r staten-queens-med-price}
+set.seed(111519)
+null_dist_staten_queens_med_price <- abnb_staten %>%
+  specify(response = price, explanatory = neighbourhood_group) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  calculate(stat = "diff in medians", order = c("Staten Island", "Queens"))
+
+```
+
+Visualizing the null distribution.
+
+```{r null_dist_diff_median_vis_staten_queens}
+visualize(null_dist_staten_queens_med_price) + 
+  labs(title = "Null Dist of Difference in Median Price between Staten Island and Queens") +
+  shade_p_value(obs_stat = -7, direction = "two_sided")
+```
+
+Findng the p-value.
+
+```{r null_dist_diff_median_p_val_staten_queens}
+get_p_value(null_dist_staten_queens_med_price, -7, direction = "two_sided")
+```
+
+The p-value is 0.488 which is less than our alpha level of 0.05. Because the p-value is less than our alpha level, we have enough convincing evidence to reject the null hypothesis and conclude that there is a true median price difference in listings between Staten Island and Queens. However, keep in mind, that our p-value was very close to 0.05. If we set our predetermined alpha level to anything below 0.488, we would had failed to reject our null hypothesis.
 
 ### Part D
 
@@ -473,8 +520,10 @@ Based on the results, we are 95% confident that the median availibility of the l
 
 ***
 TO DO:
-1. Add R squared for models we have
-2. Bootstrap Distribution, Visualization, CI for Availability
+1. Add R squared for models we have ---> Done (Brandon)
+2. Bootstrap Distribution, Visualization, CI for Availability ---> Done (Brandon)
 3. Evertything (Room Type, Min Night, Number of Reviews, Calculated Host Listing, price_case, Reviews per month) AIC Model Selection for Availability — R squared and AIC Values
 4. Host high volume or low volume
+5. Hypothesis testing, visualization of p-value on the difference between Staten island and queens because they're so close to each other ---> Done (Brandon)
+6. I want to do more on the text analysis as I think this is a brilliant idea by Ellie/Drew and key to making our project stand out relative to others --- what if we do hypothesis testing on the true difference in price listing between the word "spacious" and "cozy" as these seem to be polar opposite descriptive words yet they are very common? ---> In Debate/Progress (Brandon)
 ***
