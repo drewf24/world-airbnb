@@ -3,7 +3,7 @@ title: "NYC Airbnb Popularity Factors"
 author: "WORLD"
 date: "12/3/2019"
 output: github_document
---- 
+---  
     
 ### Load packages & data
 

@@ -36,6 +36,10 @@ set.seed(111519)
 abnb_sample <- sample_n(abnb, 4000)
 ```
 
+It is important to note that we were advised that our exploratory data
+analysis should involve the entire dataset while our conclusions should
+be drawn from the sample.
+
 ### Part I: Price and Location
 
 In part I, the following research question will be examined: How does
@@ -44,7 +48,7 @@ a listing?
 
 ### Understanding Price
 
-To start, a bootsrap distribution was constructed for the median price
+To start, a bootstrap distribution was constructed for the median price
 of Airbnbs in NYC. This will help to better understand the range of
 prices and the real estate landscape that the true median price would be
 within.
@@ -439,14 +443,66 @@ selected linear model by backwards selection in the next section.
 
 ### Looking At Everything
 
-### Part II
+### Part II: Availability and Property Listing
 
 In part II, the following research question will be examined: How does
 the way in which a property is listed (type of room, for example)
 influence the availability of a listing?
 
-Second research question: How does the way in which a property is listed
-(type of room, for example) influence the availability of a listing?
+### Understanding Availability
+
+To start, a bootstrap distribution was constructed for the median
+availability of Airbnbs in NYC. This will help to better understand the
+range of available number of days (out of 365) and the market demand.
+
+Constructing a bootstrap distribution for the median number of available
+days of Airbnbs in NYC:
+
+``` r
+set.seed(111519)
+boot_dist_avail <- abnb_sample %>%
+  specify(response = availability_365) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "median")
+```
+
+Creating a 95% bootstrap confidence interval for the median number of
+available days of an Airbnb in NYC:
+
+``` r
+(ci_bounds <- get_ci(boot_dist_avail, level= 0.95))
+```
+
+    ## # A tibble: 1 x 2
+    ##   `2.5%` `97.5%`
+    ##    <dbl>   <dbl>
+    ## 1     42      57
+
+Creating a visualization of the bootstrap distribution for median price:
+
+``` r
+visualize(boot_dist_avail) + 
+  labs(title = "Bootstrap Dist of Median Number of Available Days of Airbnbs in NYC") +
+  shade_ci(ci_bounds)
+```
+
+![](data-analysis_files/figure-gfm/visualize_avail365-1.png)<!-- -->
+
+Thus, we are 95% confident that the median number of available days of
+Airbnbs in New York City is between 42 and 57 days. This information
+will help us understand availability in the Airbnb market as we go about
+attempting to draw comparisions.
+
+### Descriptions and Desires: What makes an Airbnb appealing?
+
+In order to work with availability further, we categorize it in terms of
+ranges. Those available less than or equal to 73 days are “low”, those
+greater than 73 and less than or equal to 143 are “medium low”, those
+greater than 143 and less than or equal to 219 are “medium”, those
+greater than 219 and less than or equal to 292 are “medium high”, and
+those greater than 292 are “high”.
+
+Categorizing availability as described:
 
 ``` r
 abnb_sample <- abnb_sample %>%
@@ -459,34 +515,29 @@ abnb_sample <- abnb_sample %>%
     ))
 ```
 
+Given that the descriptions of an Airbnb listings include multiple words
+or short sentences, text analysis will be performed.
+
+Creating new dataset abnb\_text and selecting only the variables
+required:
+
 ``` r
 abnb_text <- abnb_sample %>%
   select(id, name, availability_365_case, availability_365)
 ```
+
+Performing text analysis by unnested tokens:
 
 ``` r
 remove_reg <- "&amp;|&lt;|&gt;"
 tidy_description <- abnb_text %>%
   mutate(name = str_remove_all(name, remove_reg)) %>%
   unnest_tokens(word, name)
-
-tidy_description
 ```
 
-    ## # A tibble: 24,435 x 4
-    ##          id availability_365_case availability_365 word     
-    ##       <dbl> <chr>                            <dbl> <chr>    
-    ##  1 26274952 Low                                 72 entire   
-    ##  2 26274952 Low                                 72 apartment
-    ##  3 26274952 Low                                 72 in       
-    ##  4 26274952 Low                                 72 house    
-    ##  5 26274952 Low                                 72 20mins   
-    ##  6 26274952 Low                                 72 to       
-    ##  7 26274952 Low                                 72 free     
-    ##  8 26274952 Low                                 72 ferry    
-    ##  9 35771605 Low                                 25 master   
-    ## 10 35771605 Low                                 25 bedroom  
-    ## # … with 24,425 more rows
+Removing stop words to get the top 10 most common words used in
+descriptions of significance for Airbnb listings with the least
+availability:
 
 ``` r
 tidy_description <- tidy_description %>%
@@ -514,24 +565,91 @@ tidy_description %>%
     ##  9 east                        0   114
     ## 10 williamsburg                0   106
 
+The top most common words for Airbnbs with the least availability are
+bedroom, apartment and private.
+
+Calculating and visualizing the relaitve frequency of the most common
+words:
+
 ``` r
 frequency_all <- tidy_description %>%
   count(word, sort = T) %>%
   mutate(freq = n / sum(n)) 
-```
 
-``` r
 ggplot(frequency_all %>% top_n(10, freq) %>%
          mutate(word = reorder(word, freq)), aes(x = word, y = freq))+
   geom_col()+ 
   coord_flip()
 ```
 
-![](data-analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](data-analysis_files/figure-gfm/word-freq-vis-1.png)<!-- -->
 
-Creating a linear model to predict Airbnb availability by roomtype wth
-entire home/apt as be our
-baseline.
+It appears that the word bedroom was an appeal for many bookers likely
+because it gives a sense of exclusivity and privacy, which many people
+look for while travelling. Moreover, the second most common word,
+private, underscores this desire. Additionally, the considering we are
+looking at NYC, the word apartment would be descriptive of a private
+enclave within the hustle and bustle of one of the busiest cities in the
+world.
+
+Source for text analysis: <https://www.tidytextmining.com/tidytext.html>
+
+### Physical Description
+
+It seems as though how the physical description of the room influences
+the number of booking and thus, the availability of the listing.
+Therefore, we will create a linear model to predict Airbnb availability
+by roomtype.
+
+In order to find the baseline, we will use our exploratory analysis. We
+create a boxplot to show which room type (shared, private or
+house/apartment) is available for the most amount of days per year:
+
+``` r
+abnb %>%
+  ggplot(mapping = aes(x =  room_type, y = availability_365, fill = room_type)) +
+  geom_boxplot() + 
+  labs(
+    title = "Availability by Room Type",
+    x = "Room Type", 
+    y = "Availability (days per year)")
+```
+
+![](data-analysis_files/figure-gfm/room_type-availability_365-1.png)<!-- -->
+
+The graph above are boxplots that show that the availability based on
+room type is also skewed to the right. The median available number of
+days days among entire home and private rooms are slightly less than 50
+days while shared rooms have a rough median availability of 90 days.
+Shared rooms are available for the most number of days in the year.
+
+Creating a table to describe summary statistics for availibility by room
+type:
+
+``` r
+abnb %>%
+  group_by(room_type) %>%
+  summarise(
+    med_availability_365 = median(availability_365), 
+    IQR_availability_365 = IQR(availability_365)
+    ) %>%
+  arrange(desc(med_availability_365))
+```
+
+    ## # A tibble: 3 x 3
+    ##   room_type       med_availability_365 IQR_availability_365
+    ##   <chr>                          <dbl>                <dbl>
+    ## 1 Shared room                       90                  341
+    ## 2 Private room                      45                  214
+    ## 3 Entire home/apt                   42                  229
+
+The median availability are 90 days for shared room, 45 days for private
+room, and 42 days for entire home/apartment. The range for shared room
+type is the highest with 341 days.
+
+Therefore, we will conduct a linear model to show the influence of room
+type on availability with entire home/apt as be our
+baseline:
 
 ``` r
 lm_avail_room_type <- lm(availability_365 ~ room_type, data = abnb_sample)
@@ -553,24 +671,24 @@ The linear model is:
 `price-hat = 115.774 -3.443*(room_typePrivateroom)
 +74.912*(room_typeShared room)`
 
-Intepreting the intercept:
-
 Given that the Airbnb has the roomtype of entire house/apt the expected
-availability, on average, is 115.8 days out of the year. In this case,
-the intercept does have a meaningful interpretation because an Airbnb
-could be available for 121 days out of 365 per year.
+median availability, on average, is 115.8 days out of the year. In this
+case, the intercept does have a meaningful interpretation because an
+Airbnb could be available for 115.8 days out of 365 per year.
 
-Interpreting the slopes using lm\_avail\_room\_type linear model:
+The availability of the other room types in relation to entire
+home/apartment is:
 
-For an Airbnb with roomtype of private room, the average availability is
+For an Airbnb with roomtype of private room, the median availability is
 expected, on average, to be 3.4 days less per year than an Airbnb in wth
 room type of entire house/apt, holding all else constant.
 
-For an Airbnb with roomtype of shared room, the average availability is
+For an Airbnb with roomtype of shared room, the median availability is
 expected, on average, to be 74.9 days more per year than an Airbnb in
 wth room type of entire house/apt, holding all else constant.
 
-We are now going to add R^2 to our linear model above.
+The R squared of the linear model lm\_avail\_room\_type to evaulaute the
+variability explained by the model:
 
 ``` r
 glance(lm_avail_room_type)$r.squared
@@ -578,47 +696,15 @@ glance(lm_avail_room_type)$r.squared
 
     ## [1] 0.008414499
 
-This means that roughly 0.841% of the variability in average
+This means that roughly 0.841% of the variability in median
 availiability can be explained by the type of room of Airbnb in New
-York.
+York. This is a relatively small R squared value. Perhaps there are
+other factors which influence availability.
 
-NOTE DISCREPENCY AND ADD EXPLORATORY
+### Listing Factors and Availability
 
-Constructing a bootstrap distribution for the median number of available
-days of Airbnbs in NYC:
-
-``` r
-set.seed(111519)
-boot_dist_avail <- abnb_sample %>%
-  specify(response = availability_365) %>%
-  generate(reps = 1000, type = "bootstrap") %>%
-  calculate(stat = "median")
-```
-
-Creating a 95% bootstrap confidence interval for the median number of
-available days of an Airbnb in NYC:
-
-``` r
-(ci_bounds <- get_ci(boot_dist_avail, level= 0.95))
-```
-
-    ## # A tibble: 1 x 2
-    ##   `2.5%` `97.5%`
-    ##    <dbl>   <dbl>
-    ## 1     42      57
-
-We are 95% confident that the median number of available days of Airbnbs
-in New York City is between 42 and 57 days.
-
-Creating a visualization of the bootstrap distribution for median price:
-
-``` r
-visualize(boot_dist_avail) + 
-  labs(title = "Bootstrap Dist of Median Number of Available Days of Airbnbs in NYC") +
-  shade_ci(ci_bounds)
-```
-
-![](data-analysis_files/figure-gfm/visualize_avail365-1.png)<!-- -->
+In order to look at these other factors, we will select a model AIC
+backwards selection.
 
 Removing NA values and creating a full model for availability\_365:
 
@@ -639,17 +725,31 @@ m_full_model <- lm(availability_365 ~ room_type +
                      reviews_per_month, data = abnb_model)
 ```
 
-Performing model selection using AIC for Availability:
+Performing model selection using AIC for availability using step
+function:
 
 ``` r
 selected_model <- step(m_full_model, direction = "backward")
+```
 
+``` r
 tidy(selected_model) %>%
   select(term, estimate) %>%
   kable(format = "markdown", digits = 3)
 ```
 
-The linear model for this model is:
+| term                              | estimate |
+| :-------------------------------- | -------: |
+| (Intercept)                       |   59.923 |
+| room\_typePrivate room            |   26.396 |
+| room\_typeShared room             |  115.908 |
+| minimum\_nights                   |    0.481 |
+| number\_of\_reviews               |    0.461 |
+| calculated\_host\_listings\_count |    0.853 |
+| price\_caseMedian or Above        |   29.622 |
+| reviews\_per\_month               |    5.936 |
+
+The selected linear model for this model is:
 
 `availability_365 = 59.923 + 26.396*(room_typePrivate room)
 + 115.98*(room_typeShared room) + 0.481*(minimum_nights)
@@ -668,10 +768,11 @@ The R-squared value is 10.49% of the variability in availibility can be
 explained by the way the property is listed - the room type, minimum
 nights required, number of reviews the listing has, the number of
 listings the host has, the median price and the reviews per month.
+Compared to our other models, this is a relatively higher R squared
+value. It is also important to note that room types have high
+coefficients.
 
-INTERPRET SLOPES
-
-PART 3
+### Host Volume
 
   - lets add what it tells us about the renter - profile
 
@@ -801,23 +902,6 @@ Constructing 95% confidence interval for this difference in medians:
 Based on the results, we are 95% confident that the median availibility
 of the listings held by high volume hosts is between 165.98 to 200.012
 higher than that of low volume hosts.
-
------
-
-TO DO: 1. Add R squared for models we have —\> Done (Brandon) 2.
-Bootstrap Distribution, Visualization, CI for Availability —\> Done
-(Brandon) 3. Evertything (Room Type, Min Night, Number of Reviews,
-Calculated Host Listing, price\_case, Reviews per month) AIC Model
-Selection for Availability — R squared and AIC Values 4. Host high
-volume or low volume 5. Hypothesis testing, visualization of p-value on
-the difference between Staten island and queens because they’re so close
-to each other —\> Done (Brandon) 6. I want to do more on the text
-analysis as I think this is a brilliant idea by Ellie/Drew and key to
-making our project stand out relative to others — what if we do
-hypothesis testing on the true difference in price listing between the
-word “spacious” and “cozy” as these seem to be polar opposite
-descriptive words yet they are very common? —\> In Debate/Progress
-(Brandon) \*\*\*
 
 ``` r
 abnb_sample <- abnb_sample %>%
