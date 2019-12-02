@@ -225,6 +225,9 @@ in median price of Airbnbs for listings in Manhattan and Brooklyn.
 
 ### Part D
 
+Creating new variable price\_case which describes whether the price of
+the listing is above or below the median price:
+
 ``` r
 abnb_sample <- abnb_sample %>%
    mutate(price_median = median(price), 
@@ -234,6 +237,9 @@ abnb_sample <- abnb_sample %>%
     ))
 ```
 
+Finding whether the prices at different longitudal and latitude
+co-ordinates in NYC are below or above the median price:
+
 ``` r
 abnb_sample %>%
   ggplot(mapping = aes (x = longitude, y = latitude, color = price_case)) +
@@ -242,6 +248,8 @@ abnb_sample %>%
 ```
 
 ![](data-analysis_files/figure-gfm/price-at-location-1.png)<!-- -->
+
+Checking by boroughs:
 
 ``` r
 abnb_sample %>%
@@ -372,7 +380,7 @@ ggplot(frequency_all %>% top_n(10, freq) %>%
   coord_flip()
 ```
 
-![](data-analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](data-analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ``` r
 tidy_description %>%
@@ -532,7 +540,136 @@ glance(selected_model)$r.squared
     ## [1] 0.1048801
 
 The R-squared value is 10.49% of the variability in availibility can be
-explained by this model.
+explained by the way the property is listed - the room type, minimum
+nights required, number of reviews the listing has, the number of
+listings the host has, the median price and the reviews per month.
+
+Looking at the hosts by the number of listings they hold and classifying
+into “high volume” or “low volume”:
+
+``` r
+abnb_host_volume <- abnb_sample %>%
+  mutate(host_volume = if_else(calculated_host_listings_count > 1, 
+                               "high volume", "low volume")) %>%
+  arrange(desc(calculated_host_listings_count))
+```
+
+Finding number of high volume hosts and low volume hosts:
+
+``` r
+abnb_host_volume %>%
+  count(host_volume)
+```
+
+    ## # A tibble: 2 x 2
+    ##   host_volume     n
+    ##   <chr>       <int>
+    ## 1 high volume  1355
+    ## 2 low volume   2645
+
+Thus, 1355 of the hosts are high volume and 2645 of the hosts are low.
+
+Conducting a hypothesis test if availability can be explained if someone
+is high volume or not:
+
+Ho = median availability of high volume hosts is the same as that of low
+volume hosts
+
+Ha = median availability of low volume hosts is the same as that of high
+volume hosts
+
+``` r
+abnb_host_volume %>%
+  group_by(host_volume) %>%
+  summarise(medianavail = 
+              median(availability_365))
+```
+
+    ## # A tibble: 2 x 2
+    ##   host_volume medianavail
+    ##   <chr>             <dbl>
+    ## 1 high volume         180
+    ## 2 low volume            7
+
+The observed median availability of high volume hosts is 180 and that of
+low volume hosts is 7. The observed sample median difference in
+availability is 180 - 7 = 173
+
+Constructing null distribution:
+
+``` r
+set.seed(111519)
+hypo_host_volume_listings <- abnb_host_volume %>%
+  specify(response =  availability_365, 
+          explanatory = host_volume) %>%
+  hypothesize(null ="independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  calculate(stat = "diff in medians",
+            order = c("high volume", "low volume"))
+```
+
+Visualizing null distribution:
+
+``` r
+visualise(hypo_host_volume_listings) +
+ labs(title = "Null distribution of differences in medians",
+ subtitle = "sampmed_highvolume - sampmed_lowvolume") +
+  shade_p_value(obs_stat = 173, 
+                direction = "two_sided")
+```
+
+![](data-analysis_files/figure-gfm/vis-hypo-hostvolume-1.png)<!-- -->
+
+Calculating p-value:
+
+``` r
+hypo_host_volume_listings%>%
+  filter(stat >= 173) %>%
+  summarise(p_value = 2*n()/nrow(hypo_host_volume_listings))
+```
+
+    ## # A tibble: 1 x 1
+    ##   p_value
+    ##     <dbl>
+    ## 1       0
+
+The p-value is 0. Since the p-value of this hypothesis test is p \<
+0.05, we reject the null hypothesis in favor of the alternative. This
+means that there is significant evidence that there is a difference in
+the median availability of high volume hosts and low volume hosts.
+
+…construct confidence interval if this makes sense…
+
+This means there is a significant difference. Thus, to estimate the
+difference we construct a bootstrap simulation and find the 95%
+confidence interval.
+
+Generating the bootstrap distribution:
+
+``` r
+set.seed(111519)
+boot_hostvolume <- abnb_host_volume %>%
+  specify(response = availability_365,
+          explanatory = host_volume) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "diff in medians", 
+            order = c("high volume", "low volume"))
+```
+
+Constructing 95% confidence interval for this difference in medians:
+
+``` r
+(cibounds1 <- get_ci(boot_hostvolume, level = 0.95))
+```
+
+    ## # A tibble: 1 x 2
+    ##   `2.5%` `97.5%`
+    ##    <dbl>   <dbl>
+    ## 1   166.    200.
+
+Based on the results, we are 95% confident that the median availibility
+of the listings held by high volume hosts is between 165.98 to 200.012
+higher than that of low volume hosts.
 
 -----
 
