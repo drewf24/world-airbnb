@@ -1,9 +1,11 @@
-NYC Airbnnb Popularity Factors
+NYC Airbnb Popularity Factors
 ================
 WORLD
 12/15/2019
 
 ### Load packages & data
+
+Loaded the following packages that will be needed to perform analysis:
 
 ``` r
 library(tidyverse) 
@@ -21,29 +23,31 @@ Uploaded the Airbnb data set from Kaggle via a csv file:
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
-Assuming that the data we have for Airbnbs in New York City represents
-the population. In order to perform the following analysis we used
-sample\_n to randomly select 31 sample observations.
+We are assuming that the data we have for Airbnbs in New York City
+represents the population given that there are 48,895 observations.
+Additionally, we concsulted Dr. Tackett and she thinks that the data was
+most likely web scapped from the Airbnb website.
 
-In part I, the following research question will be examined: How does
-location (borough and neighborhood, for example) influence the price of
-a listing?
-
-In part II, the following research question will be examined: How does
-the way in which a property is listed (type of room, for example)
-influence the availability of a listing?
-
-### Part A
-
-Creating the sample that we will perform the following analysis on:
+Therefore, in order to perform analysis, we used created a sample set
+called abnb\_sample of 4000 randomly selected observations.
 
 ``` r
 set.seed(111519)
 abnb_sample <- sample_n(abnb, 4000)
 ```
 
-Constructing a bootstrap distribution for the median price of Airbnbs in
-NYC:
+### Part I
+
+In part I, the following research question will be examined: How does
+location (borough and neighborhood, for example) influence the price of
+a listing?
+
+### Part A
+
+To start, a bootsrap distribution was constructed for the median price
+of Airbnbs in NYC. This will help to better understand the range of
+prices and the real estate landscape that the true median price would be
+within.
 
 ``` r
 set.seed(111519)
@@ -65,9 +69,6 @@ Airbnbs in NYC:
     ##    <dbl>   <dbl>
     ## 1    100     110
 
-We are 95% confident that the population median price per night of
-Airbnbs in NYC is between $100.00 and $110.00.
-
 Creating a visualizaing of the bootstrap distribution for median price:
 
 ``` r
@@ -76,9 +77,87 @@ visualize(boot_dist_median_price) +
   shade_ci(ci_bounds)
 ```
 
-![](data-analysis_files/figure-gfm/boot_dist_median_vis-1.png)<!-- -->
+![](data-analysis_files/figure-gfm/boot_dist_median_visu-1.png)<!-- -->
+
+As depicted in the output and visualization, we are 95% confident that
+the population median price per night of Airbnbs in NYC is between
+$100.00 and $110.00.
 
 ### Part B
+
+Creating a histogram that displays number of listings by neighborhood
+borough in New York City:
+
+``` r
+ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
+  geom_histogram(stat = "count") + 
+  labs(title = "Listings by Borough", x = "Borough", y = "Count")
+```
+
+    ## Warning: Ignoring unknown parameters: binwidth, bins, pad
+
+![](data-analysis_files/figure-gfm/visualization-univariate-1.png)<!-- -->
+
+Manhattan and Brooklyn dominate the number of listings on Airbnb in New
+York City. More specifically, there is roughly 20,000 listings in
+Brooklyn and slightly more than 20,000 listings in Manhattan. The Queens
+borough follows after with roughly 5,000 listings, followed by Bronx and
+Staten Island with fewer than 1,100 listings each.
+
+Creating summary statistics that will count the number of listings in
+each neighborhood group:
+
+``` r
+abnb %>%
+  count(neighbourhood_group) %>%
+  arrange(desc(n))
+```
+
+    ## # A tibble: 5 x 2
+    ##   neighbourhood_group     n
+    ##   <chr>               <int>
+    ## 1 Manhattan           21661
+    ## 2 Brooklyn            20104
+    ## 3 Queens               5666
+    ## 4 Bronx                1091
+    ## 5 Staten Island         373
+
+Manhattan has the most listings at 21,661 followed by Brooklyn at 20,104
+listings, followed by Queens at 5,666, Bronx at 1,091, and Staten Island
+last at only 373 listings.
+
+Creating summary statistics that displays the median and IQR price of
+each neighborhood group.
+
+``` r
+abnb %>%
+  group_by(neighbourhood_group) %>%
+  summarise(
+    med_price = median(price), 
+    IQR_price = IQR(price)
+    ) %>%
+  arrange(desc(med_price)) %>%
+  head(5)
+```
+
+    ## # A tibble: 5 x 3
+    ##   neighbourhood_group med_price IQR_price
+    ##   <chr>                   <dbl>     <dbl>
+    ## 1 Manhattan                 150       125
+    ## 2 Brooklyn                   90        90
+    ## 3 Queens                     75        60
+    ## 4 Staten Island              75        60
+    ## 5 Bronx                      65        54
+
+Manhattan has the highest median price at 150 followed by Brooklyn at
+90, Queens and Staten Island at 75, and Bronx last at 65.
+
+Create a linear model to describe how boroughs influence price. Borough
+is one of the main location classifiers we will use to see if there is a
+relationship between location and price.
+
+Since Manhattan had the largest volume of Airbnbs and the highest median
+price, that will be the baseline for comparison with other boroughs.
 
 Using fct\_relevel to make Manhattan the baseline level for
 neighbourhood\_group:
@@ -139,7 +218,7 @@ be $110.43 less than an Airbnb in Manhattan, holding all else constant.
 For an Airbnb in Bronx, the average price is expected, on average, to be
 $126.21 less than an Airbnb in Manhattan, holding all else constant.
 
-We are now going to add R^2 to our linear model above.
+We are now going to add R squared to our linear model above.
 
 ``` r
 glance(lm_price_borough)$r.squared
@@ -158,10 +237,16 @@ and the most expensive Airbnbs. Therefore we will attempt to answer the
 following: Is there is a difference in the true median prices between
 Manhattan and Brooklyn?
 
+To start, abnb\_sample was filtered to just include Manhattan and
+Brooklyn, which was saved to abnb\_sample\_filtered.
+
 ``` r
 abnb_sample_filtered <- abnb_sample %>%
   filter(neighbourhood_group == "Manhattan" | neighbourhood_group == "Brooklyn")
 ```
+
+Using the abnb\_sample\_filtered data frame, the observed sample median
+prices for Manhattand and Brooklyn were found.
 
 ``` r
 abnb_sample_filtered %>%
@@ -178,6 +263,8 @@ abnb_sample_filtered %>%
 The observed median prices for Manhattan and Brooklyn are $150.00 and
 $90.00, respectively. Therefore, the observed difference in median
 prices is $60.
+
+With this observed difference a hypothesis test was conducted:
 
 Null Hypothesis: There is no difference in median price between
 Manhattan and Brooklyn Airbnb per night.
@@ -202,11 +289,11 @@ visualize(null_dist_man_brook_med_price) +
   shade_p_value(obs_stat = 60, direction = "two_sided")
 ```
 
-    ## Warning: F usually corresponds to right-tailed tests. Proceed with caution.
-
 ![](data-analysis_files/figure-gfm/null_dist_diff_median_vis-1.png)<!-- -->
 
-Findng the p-value.
+From the visualization, there appears to be no overlap between the
+shaded region and the null distribution. A p-value was found to confirm
+this:
 
 ``` r
 get_p_value(null_dist_man_brook_med_price, 60, direction = "two_sided")
@@ -217,11 +304,12 @@ get_p_value(null_dist_man_brook_med_price, 60, direction = "two_sided")
     ##     <dbl>
     ## 1       0
 
-The p-value is 0 which is less than the significance value of 0.05.
-Therefore, we reject the null hypothesis that there is no difference in
-median price between Manhattan and Brooklyn Airbnb per night. We can
-conclude that the data does provide convincing evidence of a difference
-in median price of Airbnbs for listings in Manhattan and Brooklyn.
+As expected, the p-value is 0, which is less than the significance value
+of 0.05. Therefore, we reject the null hypothesis that there is no
+difference in median price between Manhattan and Brooklyn Airbnb per
+night. We can conclude that the data does provide convincing evidence of
+a difference in median price of Airbnbs for listings in Manhattan and
+Brooklyn.
 
 ### Part D
 
@@ -269,7 +357,8 @@ abnb_sample %>%
     ## 4 Queens              Median or Above   119    0.245
     ## 5 Bronx               Median or Above    13    0.153
 
-WANT TO SAY WHETHER PRICE IS DEPENDEDNT ON LOCATION OF BOROUGH\!
+WANT TO SAY WHETHER PRICE IS DEPENDEDNT ON LOCATION OF BOROUGH\! AIC for
+neighbouhoud\!\!\!\!
 
 ### Part E
 
@@ -297,6 +386,10 @@ abnb_sample %>%
     ## 10 Great Kills       Staten Island            235
 
 ### Part II
+
+In part II, the following research question will be examined: How does
+the way in which a property is listed (type of room, for example)
+influence the availability of a listing?
 
 Second research question: How does the way in which a property is listed
 (type of room, for example) influence the availability of a listing?
@@ -382,30 +475,6 @@ ggplot(frequency_all %>% top_n(10, freq) %>%
 
 ![](data-analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-``` r
-tidy_description %>%
-  group_by(availability_365_case) %>%
-  count(word, sort = T) %>% 
-  filter(availability_365_case == "Low") %>%
-  arrange(desc(n)) %>%
-  head(10)
-```
-
-    ## # A tibble: 10 x 3
-    ## # Groups:   availability_365_case [1]
-    ##    availability_365_case word          n
-    ##    <chr>                 <chr>     <int>
-    ##  1 Low                   bedroom     399
-    ##  2 Low                   apartment   356
-    ##  3 Low                   private     331
-    ##  4 Low                   cozy        252
-    ##  5 Low                   apt         239
-    ##  6 Low                   brooklyn    213
-    ##  7 Low                   spacious    199
-    ##  8 Low                   studio      197
-    ##  9 Low                   east        165
-    ## 10 Low                   sunny       147
-
 Creating a linear model to predict Airbnb availability by roomtype wth
 entire home/apt as be our
 baseline.
@@ -414,7 +483,7 @@ baseline.
 lm_avail_room_type <- lm(availability_365 ~ room_type, data = abnb_sample)
 
 lm_avail_room_type %>% 
-  tidy() %>% 
+  tidy() %>%
   select(term, estimate) %>%
   kable(format = "markdown", digits =3)
 ```
@@ -458,6 +527,8 @@ glance(lm_avail_room_type)$r.squared
 This means that roughly 0.841% of the variability in average
 availiability can be explained by the type of room of Airbnb in New
 York.
+
+NOTE DISCREPENCY AND ADD EXPLORATORY
 
 Constructing a bootstrap distribution for the median number of available
 days of Airbnbs in NYC:
@@ -543,6 +614,12 @@ The R-squared value is 10.49% of the variability in availibility can be
 explained by the way the property is listed - the room type, minimum
 nights required, number of reviews the listing has, the number of
 listings the host has, the median price and the reviews per month.
+
+INTERPRET SLOPES
+
+PART 3
+
+  - lets add what it tells us about the renter - profile
 
 Looking at the hosts by the number of listings they hold and classifying
 into “high volume” or “low volume”:
@@ -680,10 +757,29 @@ Calculated Host Listing, price\_case, Reviews per month) AIC Model
 Selection for Availability — R squared and AIC Values 4. Host high
 volume or low volume 5. Hypothesis testing, visualization of p-value on
 the difference between Staten island and queens because they’re so close
-to each other —\> In Progress (Brandon) 6. I want to do more on the text
+to each other —\> Done (Brandon) 6. I want to do more on the text
 analysis as I think this is a brilliant idea by Ellie/Drew and key to
 making our project stand out relative to others — what if we do
 hypothesis testing on the true difference in price listing between the
 word “spacious” and “cozy” as these seem to be polar opposite
 descriptive words yet they are very common? —\> In Debate/Progress
 (Brandon) \*\*\*
+
+``` r
+abnb_sample <- abnb_sample %>%
+  select(-(id))
+```
+
+``` r
+abnb_test <- abnb_sample %>%
+  count(host_id) %>%
+  mutate(host_volume = if_else(n> 1, "high volume", "low volume"))
+```
+
+``` r
+abnb_test <- abnb_test %>%
+  inner_join(abnb_sample, by = "host_id") %>%
+  arrange(desc(n))
+```
+
+AIC for everything price/availability

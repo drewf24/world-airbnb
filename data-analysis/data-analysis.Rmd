@@ -17,8 +17,6 @@ library(dplyr)
 library(knitr)
 library(broom)
 library(tidytext)
-library(OpenStreetMap)
-library(ggplot2)
 ```
 
 Uploaded the Airbnb data set from Kaggle via a csv file:
