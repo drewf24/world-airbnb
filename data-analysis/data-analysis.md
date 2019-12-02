@@ -1,7 +1,7 @@
 NYC Airbnb Popularity Factors
 ================
 WORLD
-12/15/2019
+12/3/2019
 
 ### Load packages & data
 
@@ -24,9 +24,9 @@ abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
 We are assuming that the data we have for Airbnbs in New York City
-represents the population given that there are 48,895 observations.
-Additionally, we concsulted Dr. Tackett and she thinks that the data was
-most likely web scapped from the Airbnb website.
+represents the population given that a) there are 48,895 observations
+and b) we concsulted Dr. Tackett and she thinks that the data was most
+likely web scapped from the Airbnb website.
 
 Therefore, in order to perform analysis, we used created a sample set
 called abnb\_sample of 4000 randomly selected observations.
@@ -36,13 +36,13 @@ set.seed(111519)
 abnb_sample <- sample_n(abnb, 4000)
 ```
 
-### Part I
+### Part I: Price and Location
 
 In part I, the following research question will be examined: How does
 location (borough and neighborhood, for example) influence the price of
 a listing?
 
-### Part A
+### Understanding Price
 
 To start, a bootsrap distribution was constructed for the median price
 of Airbnbs in NYC. This will help to better understand the range of
@@ -73,7 +73,7 @@ Creating a visualizaing of the bootstrap distribution for median price:
 
 ``` r
 visualize(boot_dist_median_price) + 
-  labs(title = "Bootstrap Dist of Median Price") +
+  labs(title = "Bootstrap Distribution of Median Price") +
   shade_ci(ci_bounds)
 ```
 
@@ -81,30 +81,33 @@ visualize(boot_dist_median_price) +
 
 As depicted in the output and visualization, we are 95% confident that
 the population median price per night of Airbnbs in NYC is between
-$100.00 and $110.00.
+$100.00 and $110.00. This information will help us understand prices in
+the Airbnb market as we go about attempting to draw comparisions.
 
-### Part B
+### Exploring Boroughs and Resulting Analysis
 
-Creating a histogram that displays number of listings by neighborhood
-borough in New York City:
+The first location variable that might be helpful to explore is borough
+(neighbourhood\_group) given that New York City is divided into five
+areas (The Bronx, Brooklyn, Manhattan, Queens, and Staten Island).
+
+Creating an exploratory bar graph that displays number of listings by
+neighborhood borough in New York City:
 
 ``` r
 ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
-  geom_histogram(stat = "count") + 
+  geom_bar() + 
   labs(title = "Listings by Borough", x = "Borough", y = "Count")
 ```
-
-    ## Warning: Ignoring unknown parameters: binwidth, bins, pad
 
 ![](data-analysis_files/figure-gfm/visualization-univariate-1.png)<!-- -->
 
 Manhattan and Brooklyn dominate the number of listings on Airbnb in New
 York City. More specifically, there is roughly 20,000 listings in
-Brooklyn and slightly more than 20,000 listings in Manhattan. The Queens
-borough follows after with roughly 5,000 listings, followed by Bronx and
+Brooklyn and slightly more than 20,000 listings in Manhattan. Queens
+follows after with roughly 5,000 listings, followed by the Bronx and
 Staten Island with fewer than 1,100 listings each.
 
-Creating summary statistics that will count the number of listings in
+Calculating summary statistics that will count the number of listings in
 each neighborhood group:
 
 ``` r
@@ -126,38 +129,32 @@ Manhattan has the most listings at 21,661 followed by Brooklyn at 20,104
 listings, followed by Queens at 5,666, Bronx at 1,091, and Staten Island
 last at only 373 listings.
 
-Creating summary statistics that displays the median and IQR price of
-each neighborhood group.
+Creating summary statistics that displays the median price of each
+neighborhood group.
 
 ``` r
 abnb %>%
   group_by(neighbourhood_group) %>%
-  summarise(
-    med_price = median(price), 
-    IQR_price = IQR(price)
-    ) %>%
+  summarise(med_price = median(price)) %>%
   arrange(desc(med_price)) %>%
   head(5)
 ```
 
-    ## # A tibble: 5 x 3
-    ##   neighbourhood_group med_price IQR_price
-    ##   <chr>                   <dbl>     <dbl>
-    ## 1 Manhattan                 150       125
-    ## 2 Brooklyn                   90        90
-    ## 3 Queens                     75        60
-    ## 4 Staten Island              75        60
-    ## 5 Bronx                      65        54
+    ## # A tibble: 5 x 2
+    ##   neighbourhood_group med_price
+    ##   <chr>                   <dbl>
+    ## 1 Manhattan                 150
+    ## 2 Brooklyn                   90
+    ## 3 Queens                     75
+    ## 4 Staten Island              75
+    ## 5 Bronx                      65
 
 Manhattan has the highest median price at 150 followed by Brooklyn at
-90, Queens and Staten Island at 75, and Bronx last at 65.
-
-Create a linear model to describe how boroughs influence price. Borough
-is one of the main location classifiers we will use to see if there is a
-relationship between location and price.
-
-Since Manhattan had the largest volume of Airbnbs and the highest median
-price, that will be the baseline for comparison with other boroughs.
+90, Queens and Staten Island at 75, and the Bronx last at 65. Therefore,
+we will develop a linear model to describe how boroughs influences
+price. Since Manhattan had the largest volume of Airbnbs and the highest
+median price, that will be the baseline for comparison with other
+boroughs.
 
 Using fct\_relevel to make Manhattan the baseline level for
 neighbourhood\_group:
@@ -172,7 +169,7 @@ abnb_sample <- abnb_sample %>%
                                            "Bronx"))
 ```
 
-Creating a linear model to predict Airbnb price by neighbourhood\_group:
+Creating a linear model to predict Airbnb price by borough:
 
 ``` r
 lm_price_borough <- lm(price ~ neighbourhood_group, data = abnb_sample)
@@ -197,28 +194,28 @@ The linear model is:
 -117.674*(neighbourhood_groupStaten Island)
 -110.432*(neighbourhood_groupQueens) -126.213(neighbourhood_groupBronx)`
 
-Intepreting the intercept:
+Given that the Airbnb is in Manhattan, the expected median price, on
+average, is $206.85. In this case, the intercept does have a meaningful
+interpretation because an Airbnb could have a price of $206.85 per
+night.
 
-Given that the Airbnb is in Manhattan the expected price, on average, is
-$206.85. In this case, the intercept does have a meaningful
-interpretation because an Airbnb could be $206.85 per night.
+The median price for the other boroughs in relation in Manhattan is:
 
-Interpreting the slopes using lm\_price\_borough linear model:
-
-For an Airbnb in Brooklyn, the average price is expected, on average, to
+For an Airbnb in Brooklyn, the median price is expected, on average, to
 be $85.11 less than an Airbnb in Manhattan, holding all else constant.
 
-For an Airbnb in Staten Island, the average price is expected, on
+For an Airbnb in Staten Island, the median price is expected, on
 average, to be $117.67 less than an Airbnb in Manhattan, holding all
 else constant.
 
-For an Airbnb in Queens, the average price is expected, on average, to
-be $110.43 less than an Airbnb in Manhattan, holding all else constant.
+For an Airbnb in Queens, the median price is expected, on average, to be
+$110.43 less than an Airbnb in Manhattan, holding all else constant.
 
-For an Airbnb in Bronx, the average price is expected, on average, to be
+For an Airbnb in Bronx, the median price is expected, on average, to be
 $126.21 less than an Airbnb in Manhattan, holding all else constant.
 
-We are now going to add R squared to our linear model above.
+The R squared of the linear model lm\_price\_borough to evaulaute the
+variability explained by the model:
 
 ``` r
 glance(lm_price_borough)$r.squared
@@ -226,19 +223,21 @@ glance(lm_price_borough)$r.squared
 
     ## [1] 0.03669659
 
-This means that roughly 3.670% of the variability in average price can
-be explained by the neighborhood type of Airbnbs in New York City.
+Thus, roughly 3.670% of the variability in median price can be explained
+by the borough of Airbnbs in New York City.
 
-### Part C
+### Comparing Manhattan and Brooklyn
 
 We are suspicious that there might be a relationship between median
 price in Manhattan and Brooklyn because they contain the largest amount
-and the most expensive Airbnbs. Therefore we will attempt to answer the
-following: Is there is a difference in the true median prices between
-Manhattan and Brooklyn?
+and the most expensive Airbnbs. Also, the linear model above showed that
+the expected difference of $85.11 in median price was the least between
+Brooklyn and Manhattan. Therefore we will attempt to answer the
+following: Is there is a significant difference in the true median
+prices between Manhattan and Brooklyn?
 
-To start, abnb\_sample was filtered to just include Manhattan and
-Brooklyn, which was saved to abnb\_sample\_filtered.
+The abnb\_sample was filtered to just include Manhattan and Brooklyn,
+which was saved to abnb\_sample\_filtered.
 
 ``` r
 abnb_sample_filtered <- abnb_sample %>%
@@ -307,14 +306,42 @@ get_p_value(null_dist_man_brook_med_price, 60, direction = "two_sided")
 As expected, the p-value is 0, which is less than the significance value
 of 0.05. Therefore, we reject the null hypothesis that there is no
 difference in median price between Manhattan and Brooklyn Airbnb per
-night. We can conclude that the data does provide convincing evidence of
-a difference in median price of Airbnbs for listings in Manhattan and
+night. We conclude that the data does provide convincing evidence of a
+difference in median price of Airbnbs for listings in Manhattan and
 Brooklyn.
 
-### Part D
+Constructing a confidence interval to find the difference in median
+prices between Manhattan and Brooklyn:
+
+``` r
+boot_man_brook_medprice <- abnb_sample_filtered %>%
+  specify(response = price, explanatory = neighbourhood_group) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "diff in medians", c("Manhattan", "Brooklyn"))
+```
+
+``` r
+(ci_bounds2 <- get_ci(boot_man_brook_medprice, level = 0.95))
+```
+
+    ## # A tibble: 1 x 2
+    ##   `2.5%` `97.5%`
+    ##    <dbl>   <dbl>
+    ## 1     55      65
+
+We are 95% confident that the median price in Manhattan is between $55
+and $65 higher than the median price in Brooklyn.
+
+### Visualizing Manhattan
+
+From the previous sections, it has become clear that Manhattan is the
+most expensive borough for Airbnbs. In order to confirm this visually,
+we will create a scatterplot. To simply the scatterplot, price will be
+broken down into two catergories based on the median price of all
+Airbnbs in NYC.
 
 Creating new variable price\_case which describes whether the price of
-the listing is above or below the median price:
+the listing is at or above the median price or below the median price:
 
 ``` r
 abnb_sample <- abnb_sample %>%
@@ -325,8 +352,8 @@ abnb_sample <- abnb_sample %>%
     ))
 ```
 
-Finding whether the prices at different longitudal and latitude
-co-ordinates in NYC are below or above the median price:
+Visualizing by latidude and longitude co-ordinates and using color to
+distinguish between the price types:
 
 ``` r
 abnb_sample %>%
@@ -337,14 +364,22 @@ abnb_sample %>%
 
 ![](data-analysis_files/figure-gfm/price-at-location-1.png)<!-- -->
 
-Checking by boroughs:
+It is clear from this map, that the at the cases in which the prices are
+at the median or above (blue dots) are clustered around Manhattan.
+Therefore, visualization confirms our previous findings. The area that
+appears to have the second most number of blue dots is Brooklyn, which
+is right next to Manhattan. We use summary statistics to confirm.
+
+Relative frequency of listings that are above or at the median price by
+borough:
 
 ``` r
 abnb_sample %>%
   count(neighbourhood_group, price_case) %>%
   group_by(neighbourhood_group) %>%
   mutate(rel_freq = n/sum(n)) %>%
-  filter(price_case == "Median or Above")
+  filter(price_case == "Median or Above") %>%
+  arrange(desc(rel_freq))
 ```
 
     ## # A tibble: 5 x 4
@@ -353,14 +388,24 @@ abnb_sample %>%
     ##   <fct>               <chr>           <int>    <dbl>
     ## 1 Manhattan           Median or Above  1184    0.688
     ## 2 Brooklyn            Median or Above   680    0.404
-    ## 3 Staten Island       Median or Above     5    0.217
-    ## 4 Queens              Median or Above   119    0.245
+    ## 3 Queens              Median or Above   119    0.245
+    ## 4 Staten Island       Median or Above     5    0.217
     ## 5 Bronx               Median or Above    13    0.153
 
-WANT TO SAY WHETHER PRICE IS DEPENDEDNT ON LOCATION OF BOROUGH\! AIC for
-neighbouhoud\!\!\!\!
+As visualized earlier, Manhattan has the greatest frequency of median or
+above listings at 68.757%, followed by Brooklyn at 40.380%. Queens has
+24.448%, Staten Island has 21.739% and the Bronx has 15.294%.
 
-### Part E
+### Neighborhood?
+
+We have looked at the borough, latitude, and longitude co-ordinates so
+far. However, the final location indicator we have yet to take into
+account is neighborhood. We will calculate the median price of the top
+10 neighborhoods and check their corresponding borough to see if they
+tend to lie in same borough, which we might expect to be Manhattan as it
+is the most expensive borough.
+
+Summary statistic of median price by neighborhood:
 
 ``` r
 abnb_sample %>%
@@ -384,6 +429,15 @@ abnb_sample %>%
     ##  8 DUMBO             Brooklyn                 250 
     ##  9 Highbridge        Bronx                    240 
     ## 10 Great Kills       Staten Island            235
+
+It appears that the neighborhoods with the most expensive Airbnbs come
+from a range of boroughs. In fact, all are represented in the top 10
+equally. Surprisingly, the Bronx contains the neighborhood, Eastchester,
+with the highest median price of $475.00. We will examine whether
+neighborhood has a significant influence on price by looking at an AIC
+selected linear model by backwards selection in the next section.
+
+### Looking At Everything
 
 ### Part II
 
