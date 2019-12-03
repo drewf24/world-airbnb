@@ -275,6 +275,45 @@ abnb_sample %>%
 
 It appears that the neighborhoods with the most expensive Airbnbs come from a range of boroughs. In fact, all are represented in the top 10 equally. Surprisingly, the Bronx contains the neighborhood, Eastchester, with the highest median price of $475.00. We will examine whether neighborhood has a significant influence on price by looking at an AIC selected linear model by backwards selection in the next section.
 
+### AIC and Price
+
+In order to look at these other factors, we will select a model AIC backwards selection.
+
+Removing NA values and creating a full model for price:
+
+```{r remove-na-price}
+abnb_model_price <- abnb_sample %>%
+  drop_na(price,
+          room_type, minimum_nights, 
+          number_of_reviews,
+          calculated_host_listings_count, 
+          price_case, 
+          reviews_per_month)
+
+m_full_model_price <- lm(price ~ room_type + 
+                     minimum_nights +  
+                     number_of_reviews + 
+                     calculated_host_listings_count + 
+                     price_case + 
+                     reviews_per_month, data = abnb_model_price)
+```
+
+Performing model selection using AIC for availability using step function:
+
+```{r AIC-backward-selection-price, results="hide"}
+selected_model_price <- step(m_full_model_price, direction = "backward")
+```
+
+```{r selected-kable-price}
+tidy(selected_model_price) %>%
+  select(term, estimate) %>%
+  kable(format = "markdown", digits = 3)
+```
+
+The selected linear model for this model is:
+
+`price = 98.658 - 32.520*(room_typePrivate room) - 53.220*(room_typeShared room) - 0.111*(number_of_reviews)`
+
 ### Looking At Everything
 
 
