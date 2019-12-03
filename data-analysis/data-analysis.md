@@ -25,11 +25,11 @@ abnb <- read_csv("AB_NYC_2019.csv")
 
 We are assuming that the data we have for Airbnbs in New York City
 represents the population given that a) there are 48,895 observations
-and b) we concsulted Dr. Tackett and she thinks that the data was most
+and b) we consulted Dr. Tackett and she thinks that the data was most
 likely web scapped from the Airbnb website.
 
-Therefore, in order to perform analysis, we used created a sample set
-called abnb\_sample of 4000 randomly selected observations.
+Therefore, in order to perform analysis, we created a sample set called
+abnb\_sample of 4000 randomly selected observations.
 
 ``` r
 set.seed(111519)
@@ -368,11 +368,11 @@ abnb_sample %>%
 
 ![](data-analysis_files/figure-gfm/price-at-location-1.png)<!-- -->
 
-It is clear from this map, that the at the cases in which the prices are
-at the median or above (blue dots) are clustered around Manhattan.
-Therefore, visualization confirms our previous findings. The area that
-appears to have the second most number of blue dots is Brooklyn, which
-is right next to Manhattan. We use summary statistics to confirm.
+It is clear from this map, that the cases in which the prices are at the
+median or above (blue dots) are clustered around Manhattan. Therefore,
+visualization confirms our previous findings. The area that appears to
+have the second most number of blue dots is Brooklyn, which is right
+next to Manhattan. We use summary statistics to confirm.
 
 Relative frequency of listings that are above or at the median price by
 borough:
@@ -440,6 +440,239 @@ equally. Surprisingly, the Bronx contains the neighborhood, Eastchester,
 with the highest median price of $475.00. We will examine whether
 neighborhood has a significant influence on price by looking at an AIC
 selected linear model by backwards selection in the next section.
+
+### Location Factors and Price
+
+In order to look at these other factors, we will select a model AIC
+backwards selection.
+
+Removing NA values and creating a full model for price:
+
+``` r
+abnb_model_price <- abnb_sample %>%
+  drop_na(neighbourhood,
+          neighbourhood_group,
+          latitude,
+          longitude)
+
+m_full_model_price <- lm(price ~ neighbourhood +
+          neighbourhood_group +
+          latitude +
+          longitude, data = abnb_model_price)
+```
+
+Performing model selection using AIC for availability using step
+function:
+
+``` r
+selected_model_price <- step(m_full_model_price, direction = "backward")
+```
+
+``` r
+tidy(selected_model_price) %>%
+  select(term, estimate) %>%
+  kable(format = "markdown", digits = 3)
+```
+
+| term                                   |    estimate |
+| :------------------------------------- | ----------: |
+| (Intercept)                            | \-57037.928 |
+| neighbourhoodArden Heights             |   \-287.333 |
+| neighbourhoodArverne                   |     126.315 |
+| neighbourhoodAstoria                   |    \-10.537 |
+| neighbourhoodBath Beach                |    \-96.508 |
+| neighbourhoodBattery Park City         |     195.706 |
+| neighbourhoodBay Ridge                 |    \-89.718 |
+| neighbourhoodBaychester                |      29.568 |
+| neighbourhoodBayside                   |      30.871 |
+| neighbourhoodBedford-Stuyvesant        |    \-46.558 |
+| neighbourhoodBellerose                 |      74.866 |
+| neighbourhoodBelmont                   |    \-20.496 |
+| neighbourhoodBensonhurst               |   \-118.896 |
+| neighbourhoodBoerum Hill               |      78.680 |
+| neighbourhoodBorough Park              |   \-123.918 |
+| neighbourhoodBriarwood                 |      19.544 |
+| neighbourhoodBrighton Beach            |    \-66.544 |
+| neighbourhoodBronxdale                 |    \-54.023 |
+| neighbourhoodBrooklyn Heights          |      78.006 |
+| neighbourhoodBrownsville               |    \-88.773 |
+| neighbourhoodBushwick                  |    \-40.677 |
+| neighbourhoodCanarsie                  |      32.035 |
+| neighbourhoodCarroll Gardens           |      29.044 |
+| neighbourhoodCastle Hill               |    \-36.657 |
+| neighbourhoodCastleton Corners         |      10.195 |
+| neighbourhoodChelsea                   |      77.849 |
+| neighbourhoodChinatown                 |    \-15.186 |
+| neighbourhoodCity Island               |      49.833 |
+| neighbourhoodCivic Center              |    \-88.350 |
+| neighbourhoodClaremont Village         |    \-59.361 |
+| neighbourhoodClason Point              |      75.746 |
+| neighbourhoodClifton                   |   \-219.995 |
+| neighbourhoodClinton Hill              |    \-29.660 |
+| neighbourhoodCobble Hill               |    \-93.311 |
+| neighbourhoodCollege Point             |    \-20.319 |
+| neighbourhoodColumbia St               |    \-36.615 |
+| neighbourhoodConcord                   |   \-190.108 |
+| neighbourhoodConcourse Village         |    \-85.111 |
+| neighbourhoodConey Island              |   \-113.521 |
+| neighbourhoodCorona                    |    \-23.162 |
+| neighbourhoodCrown Heights             |    \-41.417 |
+| neighbourhoodCypress Hills             |    \-38.960 |
+| neighbourhoodDitmars Steinway          |    \-34.566 |
+| neighbourhoodDongan Hills              |   \-215.984 |
+| neighbourhoodDouglaston                |      57.909 |
+| neighbourhoodDowntown Brooklyn         |    \-73.215 |
+| neighbourhoodDUMBO                     |      67.198 |
+| neighbourhoodEast Elmhurst             |    \-28.234 |
+| neighbourhoodEast Flatbush             |    \-62.842 |
+| neighbourhoodEast Harlem               |    \-35.318 |
+| neighbourhoodEast Morrisania           |   \-106.212 |
+| neighbourhoodEast New York             |    \-15.318 |
+| neighbourhoodEast Village              |      18.220 |
+| neighbourhoodEastchester               |     408.185 |
+| neighbourhoodEdenwald                  |       8.618 |
+| neighbourhoodEdgemere                  |      61.237 |
+| neighbourhoodElmhurst                  |    \-18.513 |
+| neighbourhoodEmerson Hill              |   \-247.956 |
+| neighbourhoodFar Rockaway              |     464.765 |
+| neighbourhoodFinancial District        |      17.993 |
+| neighbourhoodFlatbush                  |    \-85.514 |
+| neighbourhoodFlatiron District         |     261.250 |
+| neighbourhoodFlatlands                 |    \-33.857 |
+| neighbourhoodFlushing                  |      16.621 |
+| neighbourhoodFordham                   |    \-45.669 |
+| neighbourhoodForest Hills              |       9.604 |
+| neighbourhoodFort Greene               |    \-23.493 |
+| neighbourhoodFort Hamilton             |   \-123.715 |
+| neighbourhoodFresh Meadows             |      46.274 |
+| neighbourhoodGlendale                  |    \-14.132 |
+| neighbourhoodGowanus                   |    \-12.293 |
+| neighbourhoodGramercy                  |     148.606 |
+| neighbourhoodGravesend                 |   \-111.340 |
+| neighbourhoodGreat Kills               |    \-69.257 |
+| neighbourhoodGreenpoint                |    \-19.236 |
+| neighbourhoodGreenwich Village         |     113.474 |
+| neighbourhoodHarlem                    |    \-25.226 |
+| neighbourhoodHell’s Kitchen            |      13.705 |
+| neighbourhoodHighbridge                |      99.519 |
+| neighbourhoodHollis                    |      49.942 |
+| neighbourhoodHoward Beach              |      36.756 |
+| neighbourhoodHunts Point               |    \-59.852 |
+| neighbourhoodInwood                    |    \-49.253 |
+| neighbourhoodJackson Heights           |     \-4.540 |
+| neighbourhoodJamaica                   |      70.530 |
+| neighbourhoodJamaica Estates           |     139.106 |
+| neighbourhoodJamaica Hills             |     121.637 |
+| neighbourhoodKensington                |   \-107.439 |
+| neighbourhoodKew Gardens               |    \-15.201 |
+| neighbourhoodKew Gardens Hills         |      24.764 |
+| neighbourhoodKingsbridge               |    \-45.632 |
+| neighbourhoodKips Bay                  |     \-2.745 |
+| neighbourhoodLaurelton                 |      77.993 |
+| neighbourhoodLittle Italy              |      67.783 |
+| neighbourhoodLong Island City          |    \-31.100 |
+| neighbourhoodLongwood                  |    \-40.649 |
+| neighbourhoodLower East Side           |     \-3.321 |
+| neighbourhoodManhattan Beach           |     \-7.867 |
+| neighbourhoodMariners Harbor           |   \-185.966 |
+| neighbourhoodMaspeth                   |    \-19.405 |
+| neighbourhoodMelrose                   |    \-60.631 |
+| neighbourhoodMiddle Village            |    \-46.707 |
+| neighbourhoodMidtown                   |      91.928 |
+| neighbourhoodMidwood                   |    \-77.026 |
+| neighbourhoodMorningside Heights       |    \-58.195 |
+| neighbourhoodMorris Heights            |    \-60.168 |
+| neighbourhoodMorris Park               |    \-26.815 |
+| neighbourhoodMorrisania                |    \-47.982 |
+| neighbourhoodMott Haven                |    \-65.769 |
+| neighbourhoodMount Eden                |      16.812 |
+| neighbourhoodMount Hope                |      26.382 |
+| neighbourhoodMurray Hill               |      56.965 |
+| neighbourhoodNew Brighton              |   \-150.703 |
+| neighbourhoodNew Dorp                  |   \-227.705 |
+| neighbourhoodNew Dorp Beach            |   \-209.194 |
+| neighbourhoodNoHo                      |     145.447 |
+| neighbourhoodNolita                    |       3.609 |
+| neighbourhoodNorwood                   |    \-73.383 |
+| neighbourhoodOzone Park                |      36.200 |
+| neighbourhoodPark Slope                |    \-32.427 |
+| neighbourhoodParkchester               |    \-38.319 |
+| neighbourhoodPelham Bay                |      17.323 |
+| neighbourhoodPelham Gardens            |      26.506 |
+| neighbourhoodPort Morris               |    \-67.111 |
+| neighbourhoodPort Richmond             |   \-241.129 |
+| neighbourhoodProspect Heights          |       8.363 |
+| neighbourhoodProspect-Lefferts Gardens |    \-35.977 |
+| neighbourhoodQueens Village            |     101.407 |
+| neighbourhoodRandall Manor             |   \-178.869 |
+| neighbourhoodRed Hook                  |    \-64.873 |
+| neighbourhoodRego Park                 |    \-34.731 |
+| neighbourhoodRichmond Hill             |      40.145 |
+| neighbourhoodRidgewood                 |    \-42.305 |
+| neighbourhoodRockaway Beach            |     246.566 |
+| neighbourhoodRoosevelt Island          |    \-24.370 |
+| neighbourhoodRosedale                  |      65.234 |
+| neighbourhoodSchuylerville             |       6.529 |
+| neighbourhoodSheepshead Bay            |    \-78.814 |
+| neighbourhoodSoHo                      |      56.731 |
+| neighbourhoodSoundview                 |    \-54.468 |
+| neighbourhoodSouth Ozone Park          |      48.851 |
+| neighbourhoodSouth Slope               |    \-31.991 |
+| neighbourhoodSpringfield Gardens       |      68.388 |
+| neighbourhoodSt. Albans                |      66.854 |
+| neighbourhoodSt. George                |   \-170.119 |
+| neighbourhoodStapleton                 |   \-188.990 |
+| neighbourhoodStuyvesant Town           |   \-126.839 |
+| neighbourhoodSunnyside                 |    \-64.908 |
+| neighbourhoodSunset Park               |    \-79.404 |
+| neighbourhoodTheater District          |      41.114 |
+| neighbourhoodThrogs Neck               |     \-5.351 |
+| neighbourhoodTodt Hill                 |   \-215.227 |
+| neighbourhoodTompkinsville             |   \-170.177 |
+| neighbourhoodTremont                   |    \-43.053 |
+| neighbourhoodTribeca                   |    1153.820 |
+| neighbourhoodTwo Bridges               |    \-80.918 |
+| neighbourhoodUnionport                 |    \-17.511 |
+| neighbourhoodUpper East Side           |      77.434 |
+| neighbourhoodUpper West Side           |       5.476 |
+| neighbourhoodVan Nest                  |      10.347 |
+| neighbourhoodVinegar Hill              |     173.121 |
+| neighbourhoodWakefield                 |    \-47.719 |
+| neighbourhoodWashington Heights        |    \-66.912 |
+| neighbourhoodWest Village              |     117.772 |
+| neighbourhoodWestchester Square        |    \-26.838 |
+| neighbourhoodWesterleigh               |   \-255.688 |
+| neighbourhoodWilliamsbridge            |      19.608 |
+| neighbourhoodWilliamsburg              |     \-8.167 |
+| neighbourhoodWindsor Terrace           |    \-46.603 |
+| neighbourhoodWoodhaven                 |    \-33.037 |
+| neighbourhoodWoodside                  |    \-27.994 |
+| longitude                              |   \-773.402 |
+
+The intercept for our linear model is: -57037.928 The expected price, on
+average, is -$57037.93. In this case, the intercept does not have a
+meaningful interpretation because an Airbnb would not have a price
+listing of -$57037.93 per night.
+
+Determining R-squared:
+
+``` r
+glance(selected_model_price)$r.squared
+```
+
+    ## [1] 0.1299448
+
+The R-squared value is 12.99% of the variability in price can be
+explained by the location of the listng - latitude, longitude,
+neighbourhood\_group (borough), and neighbourhood.
+
+It is important to note that the only variables selected by the AIC
+model were neighborhoods that were significant in predicting price of
+the Airbnb rather than any of the original variables included (latitude,
+longitude, borough).
+
+Compared to our other models, this is a relatively higher R squared
+value.
 
 ### Looking At Everything
 
