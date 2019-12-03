@@ -518,7 +518,7 @@ Creating a linear model to predict Airbnb availability by room type. It is first
 
 In addition to independence, there are other assumptions that need to be discussed. Thus, a residuals plot will be made:
 
-```{r lm_price_borough_aug}
+```{r lm_avail_borough_aug}
 lm_avail_room_type_aug <- augment(lm_avail_room_type)
 ggplot(data = lm_avail_room_type_aug, aes(x = .fitted, y = .resid)) +
   geom_point() +
@@ -532,7 +532,7 @@ As the predicted values increase, the spread of the residuals decreases. This vi
 
 As depicted in the normality of residuals graph below, the residuals are randomly distributed around 0 AND nearly normal. 
 
-```{r lm_price_borough_aug-nomality}
+```{r lm_avail_borough_aug-nomality}
 ggplot(data = lm_avail_room_type_aug, aes(x = .resid)) +
   geom_histogram(binwidth = 300) +
   labs(x = "Residuals", 

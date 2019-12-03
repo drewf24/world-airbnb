@@ -43,7 +43,7 @@ be drawn from the sample.
 ### Part I: Price and Location
 
 In part I, the following research question will be examined: How does
-location (borough and neighborhood, for example) influence the price of
+location (borough and co-ordinates, for example) influence the price of
 a listing?
 
 ### Understanding Price
@@ -88,14 +88,14 @@ the population median price per night of Airbnbs in NYC is between
 $100.00 and $110.00. This information will help us understand prices in
 the Airbnb market as we go about attempting to draw comparisions.
 
-### Exploring Boroughs and Resulting Analysis
+### Exploring Boroughs
 
 The first location variable that might be helpful to explore is borough
 (neighbourhood\_group) given that New York City is divided into five
 areas (The Bronx, Brooklyn, Manhattan, Queens, and Staten Island).
 
 Creating an exploratory bar graph that displays number of listings by
-neighborhood borough in New York City:
+borough in New York City:
 
 ``` r
 ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
@@ -154,11 +154,10 @@ abnb %>%
     ## 5 Bronx                      65
 
 Manhattan has the highest median price at 150 followed by Brooklyn at
-90, Queens and Staten Island at 75, and the Bronx last at 65. Therefore,
-we will develop a linear model to describe how boroughs influences
-price. Since Manhattan had the largest volume of Airbnbs and the highest
-median price, that will be the baseline for comparison with other
-boroughs.
+90, Queens and Staten Island at 75, and the Bronx last at 65. We will
+develop a linear model to describe how boroughs influence price and,
+since Manhattan had the largest volume of Airbnbs and the highest median
+price, that will be the baseline for comparison with other boroughs.
 
 Using fct\_relevel to make Manhattan the baseline level for
 neighbourhood\_group:
@@ -173,24 +172,83 @@ abnb_sample <- abnb_sample %>%
                                            "Bronx"))
 ```
 
-Creating a linear model to predict Airbnb price by borough:
+Creating a linear model to predict Airbnb price by borough. It is first
+important to discuss the assumptions we are making when performing this
+regression. We are assuming each listing is independent because the
+pricing of one space does not driectly influence the other. While some
+might argue there is dependence between listings to some extent, the
+market for Airbnbs in NYC is free and competitive so renters, ideally,
+don’t collude.
 
 ``` r
 lm_price_borough <- lm(price ~ neighbourhood_group, data = abnb_sample)
+```
 
+In addition to independence, there are other assumptions that need to be
+discussed. Thus, a residuals plot will be made:
+
+``` r
+lm_price_borough_aug <- augment(lm_price_borough)
+ggplot(data = lm_price_borough_aug, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, lty = 3, color = "gray") +
+  labs(y = "Residuals", 
+       x = "Predicted values, y-hat", 
+       title = "Residual Plot")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-residuals-1.png)<!-- -->
+
+As the predicted values increase, the spread of the residuals increase
+in a “fan” like shape. This violates the constant variance assumption
+needed for regression. Therefore, we will proceed with caution when
+drawing assumptions from the linear regression.
+
+As depicted in the normality of residuals graph below, the residuals are
+randomly distributed around 0.
+
+``` r
+ggplot(data = lm_price_borough_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 300) +
+  labs(x = "Residuals", 
+       title = "Normality of Residuals")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-nomalities-1.png)<!-- -->
+
+However, the residuals are not nearly normally distributed. Therefore,
+we will filter out outliers to filtered when take out outliers to get a
+filtered normality of residuals graph that has a nearly normal
+distribution.
+
+``` r
+lm_price_borough_aug_filter <- lm_price_borough_aug %>%
+  filter(.resid <= 250 & .resid >= -170 )
+
+ggplot(data = lm_price_borough_aug_filter, aes(x = .resid)) +
+  geom_histogram(binwidth = 100) +
+  labs(x = "Residuals", 
+       title = "Filtered Normality of Residuals")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-nomality-filtered-1.png)<!-- -->
+
+Using tidy to show the output for the linear model:
+
+``` r
 lm_price_borough %>% 
   tidy() %>% 
-  select(term, estimate) %>%
+  select(term, estimate, p.value) %>%
   kable(format = "markdown", digits =3)
 ```
 
-| term                              |  estimate |
-| :-------------------------------- | --------: |
-| (Intercept)                       |   206.848 |
-| neighbourhood\_groupBrooklyn      |  \-85.106 |
-| neighbourhood\_groupStaten Island | \-117.674 |
-| neighbourhood\_groupQueens        | \-110.432 |
-| neighbourhood\_groupBronx         | \-126.213 |
+| term                              |  estimate | p.value |
+| :-------------------------------- | --------: | ------: |
+| (Intercept)                       |   206.848 |   0.000 |
+| neighbourhood\_groupBrooklyn      |  \-85.106 |   0.000 |
+| neighbourhood\_groupStaten Island | \-117.674 |   0.019 |
+| neighbourhood\_groupQueens        | \-110.432 |   0.000 |
+| neighbourhood\_groupBronx         | \-126.213 |   0.000 |
 
 The linear model is:
 
@@ -218,6 +276,10 @@ $110.43 less than an Airbnb in Manhattan, holding all else constant.
 For an Airbnb in Bronx, the median price is expected, on average, to be
 $126.21 less than an Airbnb in Manhattan, holding all else constant.
 
+As depicted in the output, all the p-values are less than the threshold
+of 0.05; therefore, the expected median prices predicted by the
+regression model are significant.
+
 The R squared of the linear model lm\_price\_borough to evaulaute the
 variability explained by the model:
 
@@ -236,9 +298,9 @@ We are suspicious that there might be a relationship between median
 price in Manhattan and Brooklyn because they contain the largest amount
 and the most expensive Airbnbs. Also, the linear model above showed that
 the expected difference of $85.11 in median price was the least between
-Brooklyn and Manhattan. Therefore we will attempt to answer the
-following: Is there is a significant difference in the true median
-prices between Manhattan and Brooklyn?
+Brooklyn and Manhattan and the p-value was less than 0.05. Therefore, we
+will attempt to answer the following: Is there is a significant
+difference in the true median prices between Manhattan and Brooklyn?
 
 The abnb\_sample was filtered to just include Manhattan and Brooklyn,
 which was saved to abnb\_sample\_filtered.
@@ -314,8 +376,8 @@ night. We conclude that the data does provide convincing evidence of a
 difference in median price of Airbnbs for listings in Manhattan and
 Brooklyn.
 
-Constructing a confidence interval to find the difference in median
-prices between Manhattan and Brooklyn:
+Finding the bootstrap distribution of the difference in median prices
+between listings in Manhattan and Brooklyn.
 
 ``` r
 boot_man_brook_medprice <- abnb_sample_filtered %>%
@@ -323,6 +385,9 @@ boot_man_brook_medprice <- abnb_sample_filtered %>%
   generate(reps = 1000, type = "bootstrap") %>%
   calculate(stat = "diff in medians", c("Manhattan", "Brooklyn"))
 ```
+
+Constructing a confidence interval to find the difference in median
+prices between Manhattan and Brooklyn:
 
 ``` r
 (ci_bounds2 <- get_ci(boot_man_brook_medprice, level = 0.95))
@@ -361,9 +426,14 @@ distinguish between the price types:
 
 ``` r
 abnb_sample %>%
-  ggplot(mapping = aes (x = longitude, y = latitude, color = price_case)) +
+  ggplot(mapping = aes (x = longitude, 
+                        y = latitude, 
+                        color = price_case)) +
   geom_jitter(alpha = 0.5) +
-  labs(title = "Prices at Latitude and Longitude Coordinates", x = "Longitude", y = "Latitude", color = "Price Case")
+  labs(title = "Prices at Latitude and Longitude Coordinates", 
+       x = "Longitude", 
+       y = "Latitude", 
+       color = "Price Case")
 ```
 
 ![](data-analysis_files/figure-gfm/price-at-location-1.png)<!-- -->
@@ -437,14 +507,18 @@ abnb_sample %>%
 It appears that the neighborhoods with the most expensive Airbnbs come
 from a range of boroughs. In fact, all are represented in the top 10
 equally. Surprisingly, the Bronx contains the neighborhood, Eastchester,
-with the highest median price of $475.00. We will examine whether
-neighborhood has a significant influence on price by looking at an AIC
-selected linear model by backwards selection in the next section.
+with the highest median price of $475.00. Given the extensive analysis
+already done for location by borough and co-ordinates, neighborhood will
+not be analyzed further as it is beyond the initial scope of our focus.
 
 ### Location Factors and Price
 
-In order to look at these other factors, we will select a model AIC
-backwards selection.
+ELLIE - see sentence above – good?
+
+Given that there are so many neighborhoods in the dataframe, has a
+significant influence on price by looking at an AIC selected linear
+model by backwards selection in the next section. In order to look at
+these other factors, we will select a model AIC backwards selection.
 
 Removing NA values and creating a full model for price:
 
@@ -470,184 +544,184 @@ selected_model_price <- step(m_full_model_price, direction = "backward")
 
 ``` r
 tidy(selected_model_price) %>%
-  select(term, estimate) %>%
+  select(term, estimate, p.value) %>%
   kable(format = "markdown", digits = 3)
 ```
 
-| term                                   |    estimate |
-| :------------------------------------- | ----------: |
-| (Intercept)                            | \-57037.928 |
-| neighbourhoodArden Heights             |   \-287.333 |
-| neighbourhoodArverne                   |     126.315 |
-| neighbourhoodAstoria                   |    \-10.537 |
-| neighbourhoodBath Beach                |    \-96.508 |
-| neighbourhoodBattery Park City         |     195.706 |
-| neighbourhoodBay Ridge                 |    \-89.718 |
-| neighbourhoodBaychester                |      29.568 |
-| neighbourhoodBayside                   |      30.871 |
-| neighbourhoodBedford-Stuyvesant        |    \-46.558 |
-| neighbourhoodBellerose                 |      74.866 |
-| neighbourhoodBelmont                   |    \-20.496 |
-| neighbourhoodBensonhurst               |   \-118.896 |
-| neighbourhoodBoerum Hill               |      78.680 |
-| neighbourhoodBorough Park              |   \-123.918 |
-| neighbourhoodBriarwood                 |      19.544 |
-| neighbourhoodBrighton Beach            |    \-66.544 |
-| neighbourhoodBronxdale                 |    \-54.023 |
-| neighbourhoodBrooklyn Heights          |      78.006 |
-| neighbourhoodBrownsville               |    \-88.773 |
-| neighbourhoodBushwick                  |    \-40.677 |
-| neighbourhoodCanarsie                  |      32.035 |
-| neighbourhoodCarroll Gardens           |      29.044 |
-| neighbourhoodCastle Hill               |    \-36.657 |
-| neighbourhoodCastleton Corners         |      10.195 |
-| neighbourhoodChelsea                   |      77.849 |
-| neighbourhoodChinatown                 |    \-15.186 |
-| neighbourhoodCity Island               |      49.833 |
-| neighbourhoodCivic Center              |    \-88.350 |
-| neighbourhoodClaremont Village         |    \-59.361 |
-| neighbourhoodClason Point              |      75.746 |
-| neighbourhoodClifton                   |   \-219.995 |
-| neighbourhoodClinton Hill              |    \-29.660 |
-| neighbourhoodCobble Hill               |    \-93.311 |
-| neighbourhoodCollege Point             |    \-20.319 |
-| neighbourhoodColumbia St               |    \-36.615 |
-| neighbourhoodConcord                   |   \-190.108 |
-| neighbourhoodConcourse Village         |    \-85.111 |
-| neighbourhoodConey Island              |   \-113.521 |
-| neighbourhoodCorona                    |    \-23.162 |
-| neighbourhoodCrown Heights             |    \-41.417 |
-| neighbourhoodCypress Hills             |    \-38.960 |
-| neighbourhoodDitmars Steinway          |    \-34.566 |
-| neighbourhoodDongan Hills              |   \-215.984 |
-| neighbourhoodDouglaston                |      57.909 |
-| neighbourhoodDowntown Brooklyn         |    \-73.215 |
-| neighbourhoodDUMBO                     |      67.198 |
-| neighbourhoodEast Elmhurst             |    \-28.234 |
-| neighbourhoodEast Flatbush             |    \-62.842 |
-| neighbourhoodEast Harlem               |    \-35.318 |
-| neighbourhoodEast Morrisania           |   \-106.212 |
-| neighbourhoodEast New York             |    \-15.318 |
-| neighbourhoodEast Village              |      18.220 |
-| neighbourhoodEastchester               |     408.185 |
-| neighbourhoodEdenwald                  |       8.618 |
-| neighbourhoodEdgemere                  |      61.237 |
-| neighbourhoodElmhurst                  |    \-18.513 |
-| neighbourhoodEmerson Hill              |   \-247.956 |
-| neighbourhoodFar Rockaway              |     464.765 |
-| neighbourhoodFinancial District        |      17.993 |
-| neighbourhoodFlatbush                  |    \-85.514 |
-| neighbourhoodFlatiron District         |     261.250 |
-| neighbourhoodFlatlands                 |    \-33.857 |
-| neighbourhoodFlushing                  |      16.621 |
-| neighbourhoodFordham                   |    \-45.669 |
-| neighbourhoodForest Hills              |       9.604 |
-| neighbourhoodFort Greene               |    \-23.493 |
-| neighbourhoodFort Hamilton             |   \-123.715 |
-| neighbourhoodFresh Meadows             |      46.274 |
-| neighbourhoodGlendale                  |    \-14.132 |
-| neighbourhoodGowanus                   |    \-12.293 |
-| neighbourhoodGramercy                  |     148.606 |
-| neighbourhoodGravesend                 |   \-111.340 |
-| neighbourhoodGreat Kills               |    \-69.257 |
-| neighbourhoodGreenpoint                |    \-19.236 |
-| neighbourhoodGreenwich Village         |     113.474 |
-| neighbourhoodHarlem                    |    \-25.226 |
-| neighbourhoodHell’s Kitchen            |      13.705 |
-| neighbourhoodHighbridge                |      99.519 |
-| neighbourhoodHollis                    |      49.942 |
-| neighbourhoodHoward Beach              |      36.756 |
-| neighbourhoodHunts Point               |    \-59.852 |
-| neighbourhoodInwood                    |    \-49.253 |
-| neighbourhoodJackson Heights           |     \-4.540 |
-| neighbourhoodJamaica                   |      70.530 |
-| neighbourhoodJamaica Estates           |     139.106 |
-| neighbourhoodJamaica Hills             |     121.637 |
-| neighbourhoodKensington                |   \-107.439 |
-| neighbourhoodKew Gardens               |    \-15.201 |
-| neighbourhoodKew Gardens Hills         |      24.764 |
-| neighbourhoodKingsbridge               |    \-45.632 |
-| neighbourhoodKips Bay                  |     \-2.745 |
-| neighbourhoodLaurelton                 |      77.993 |
-| neighbourhoodLittle Italy              |      67.783 |
-| neighbourhoodLong Island City          |    \-31.100 |
-| neighbourhoodLongwood                  |    \-40.649 |
-| neighbourhoodLower East Side           |     \-3.321 |
-| neighbourhoodManhattan Beach           |     \-7.867 |
-| neighbourhoodMariners Harbor           |   \-185.966 |
-| neighbourhoodMaspeth                   |    \-19.405 |
-| neighbourhoodMelrose                   |    \-60.631 |
-| neighbourhoodMiddle Village            |    \-46.707 |
-| neighbourhoodMidtown                   |      91.928 |
-| neighbourhoodMidwood                   |    \-77.026 |
-| neighbourhoodMorningside Heights       |    \-58.195 |
-| neighbourhoodMorris Heights            |    \-60.168 |
-| neighbourhoodMorris Park               |    \-26.815 |
-| neighbourhoodMorrisania                |    \-47.982 |
-| neighbourhoodMott Haven                |    \-65.769 |
-| neighbourhoodMount Eden                |      16.812 |
-| neighbourhoodMount Hope                |      26.382 |
-| neighbourhoodMurray Hill               |      56.965 |
-| neighbourhoodNew Brighton              |   \-150.703 |
-| neighbourhoodNew Dorp                  |   \-227.705 |
-| neighbourhoodNew Dorp Beach            |   \-209.194 |
-| neighbourhoodNoHo                      |     145.447 |
-| neighbourhoodNolita                    |       3.609 |
-| neighbourhoodNorwood                   |    \-73.383 |
-| neighbourhoodOzone Park                |      36.200 |
-| neighbourhoodPark Slope                |    \-32.427 |
-| neighbourhoodParkchester               |    \-38.319 |
-| neighbourhoodPelham Bay                |      17.323 |
-| neighbourhoodPelham Gardens            |      26.506 |
-| neighbourhoodPort Morris               |    \-67.111 |
-| neighbourhoodPort Richmond             |   \-241.129 |
-| neighbourhoodProspect Heights          |       8.363 |
-| neighbourhoodProspect-Lefferts Gardens |    \-35.977 |
-| neighbourhoodQueens Village            |     101.407 |
-| neighbourhoodRandall Manor             |   \-178.869 |
-| neighbourhoodRed Hook                  |    \-64.873 |
-| neighbourhoodRego Park                 |    \-34.731 |
-| neighbourhoodRichmond Hill             |      40.145 |
-| neighbourhoodRidgewood                 |    \-42.305 |
-| neighbourhoodRockaway Beach            |     246.566 |
-| neighbourhoodRoosevelt Island          |    \-24.370 |
-| neighbourhoodRosedale                  |      65.234 |
-| neighbourhoodSchuylerville             |       6.529 |
-| neighbourhoodSheepshead Bay            |    \-78.814 |
-| neighbourhoodSoHo                      |      56.731 |
-| neighbourhoodSoundview                 |    \-54.468 |
-| neighbourhoodSouth Ozone Park          |      48.851 |
-| neighbourhoodSouth Slope               |    \-31.991 |
-| neighbourhoodSpringfield Gardens       |      68.388 |
-| neighbourhoodSt. Albans                |      66.854 |
-| neighbourhoodSt. George                |   \-170.119 |
-| neighbourhoodStapleton                 |   \-188.990 |
-| neighbourhoodStuyvesant Town           |   \-126.839 |
-| neighbourhoodSunnyside                 |    \-64.908 |
-| neighbourhoodSunset Park               |    \-79.404 |
-| neighbourhoodTheater District          |      41.114 |
-| neighbourhoodThrogs Neck               |     \-5.351 |
-| neighbourhoodTodt Hill                 |   \-215.227 |
-| neighbourhoodTompkinsville             |   \-170.177 |
-| neighbourhoodTremont                   |    \-43.053 |
-| neighbourhoodTribeca                   |    1153.820 |
-| neighbourhoodTwo Bridges               |    \-80.918 |
-| neighbourhoodUnionport                 |    \-17.511 |
-| neighbourhoodUpper East Side           |      77.434 |
-| neighbourhoodUpper West Side           |       5.476 |
-| neighbourhoodVan Nest                  |      10.347 |
-| neighbourhoodVinegar Hill              |     173.121 |
-| neighbourhoodWakefield                 |    \-47.719 |
-| neighbourhoodWashington Heights        |    \-66.912 |
-| neighbourhoodWest Village              |     117.772 |
-| neighbourhoodWestchester Square        |    \-26.838 |
-| neighbourhoodWesterleigh               |   \-255.688 |
-| neighbourhoodWilliamsbridge            |      19.608 |
-| neighbourhoodWilliamsburg              |     \-8.167 |
-| neighbourhoodWindsor Terrace           |    \-46.603 |
-| neighbourhoodWoodhaven                 |    \-33.037 |
-| neighbourhoodWoodside                  |    \-27.994 |
-| longitude                              |   \-773.402 |
+| term                                   |    estimate | p.value |
+| :------------------------------------- | ----------: | ------: |
+| (Intercept)                            | \-57037.928 |   0.128 |
+| neighbourhoodArden Heights             |   \-287.333 |   0.346 |
+| neighbourhoodArverne                   |     126.315 |   0.428 |
+| neighbourhoodAstoria                   |    \-10.537 |   0.932 |
+| neighbourhoodBath Beach                |    \-96.508 |   0.652 |
+| neighbourhoodBattery Park City         |     195.706 |   0.315 |
+| neighbourhoodBay Ridge                 |    \-89.718 |   0.569 |
+| neighbourhoodBaychester                |      29.568 |   0.909 |
+| neighbourhoodBayside                   |      30.871 |   0.866 |
+| neighbourhoodBedford-Stuyvesant        |    \-46.558 |   0.708 |
+| neighbourhoodBellerose                 |      74.866 |   0.723 |
+| neighbourhoodBelmont                   |    \-20.496 |   0.896 |
+| neighbourhoodBensonhurst               |   \-118.896 |   0.470 |
+| neighbourhoodBoerum Hill               |      78.680 |   0.592 |
+| neighbourhoodBorough Park              |   \-123.918 |   0.423 |
+| neighbourhoodBriarwood                 |      19.544 |   0.901 |
+| neighbourhoodBrighton Beach            |    \-66.544 |   0.643 |
+| neighbourhoodBronxdale                 |    \-54.023 |   0.761 |
+| neighbourhoodBrooklyn Heights          |      78.006 |   0.612 |
+| neighbourhoodBrownsville               |    \-88.773 |   0.663 |
+| neighbourhoodBushwick                  |    \-40.677 |   0.738 |
+| neighbourhoodCanarsie                  |      32.035 |   0.810 |
+| neighbourhoodCarroll Gardens           |      29.044 |   0.843 |
+| neighbourhoodCastle Hill               |    \-36.657 |   0.888 |
+| neighbourhoodCastleton Corners         |      10.195 |   0.972 |
+| neighbourhoodChelsea                   |      77.849 |   0.572 |
+| neighbourhoodChinatown                 |    \-15.186 |   0.914 |
+| neighbourhoodCity Island               |      49.833 |   0.807 |
+| neighbourhoodCivic Center              |    \-88.350 |   0.646 |
+| neighbourhoodClaremont Village         |    \-59.361 |   0.741 |
+| neighbourhoodClason Point              |      75.746 |   0.670 |
+| neighbourhoodClifton                   |   \-219.995 |   0.439 |
+| neighbourhoodClinton Hill              |    \-29.660 |   0.822 |
+| neighbourhoodCobble Hill               |    \-93.311 |   0.601 |
+| neighbourhoodCollege Point             |    \-20.319 |   0.902 |
+| neighbourhoodColumbia St               |    \-36.615 |   0.892 |
+| neighbourhoodConcord                   |   \-190.108 |   0.368 |
+| neighbourhoodConcourse Village         |    \-85.111 |   0.636 |
+| neighbourhoodConey Island              |   \-113.521 |   0.672 |
+| neighbourhoodCorona                    |    \-23.162 |   0.877 |
+| neighbourhoodCrown Heights             |    \-41.417 |   0.743 |
+| neighbourhoodCypress Hills             |    \-38.960 |   0.776 |
+| neighbourhoodDitmars Steinway          |    \-34.566 |   0.791 |
+| neighbourhoodDongan Hills              |   \-215.984 |   0.450 |
+| neighbourhoodDouglaston                |      57.909 |   0.785 |
+| neighbourhoodDowntown Brooklyn         |    \-73.215 |   0.678 |
+| neighbourhoodDUMBO                     |      67.198 |   0.802 |
+| neighbourhoodEast Elmhurst             |    \-28.234 |   0.831 |
+| neighbourhoodEast Flatbush             |    \-62.842 |   0.624 |
+| neighbourhoodEast Harlem               |    \-35.318 |   0.780 |
+| neighbourhoodEast Morrisania           |   \-106.212 |   0.683 |
+| neighbourhoodEast New York             |    \-15.318 |   0.909 |
+| neighbourhoodEast Village              |      18.220 |   0.892 |
+| neighbourhoodEastchester               |     408.185 |   0.117 |
+| neighbourhoodEdenwald                  |       8.618 |   0.974 |
+| neighbourhoodEdgemere                  |      61.237 |   0.816 |
+| neighbourhoodElmhurst                  |    \-18.513 |   0.883 |
+| neighbourhoodEmerson Hill              |   \-247.956 |   0.400 |
+| neighbourhoodFar Rockaway              |     464.765 |   0.013 |
+| neighbourhoodFinancial District        |      17.993 |   0.899 |
+| neighbourhoodFlatbush                  |    \-85.514 |   0.517 |
+| neighbourhoodFlatiron District         |     261.250 |   0.123 |
+| neighbourhoodFlatlands                 |    \-33.857 |   0.832 |
+| neighbourhoodFlushing                  |      16.621 |   0.893 |
+| neighbourhoodFordham                   |    \-45.669 |   0.771 |
+| neighbourhoodForest Hills              |       9.604 |   0.948 |
+| neighbourhoodFort Greene               |    \-23.493 |   0.862 |
+| neighbourhoodFort Hamilton             |   \-123.715 |   0.444 |
+| neighbourhoodFresh Meadows             |      46.274 |   0.821 |
+| neighbourhoodGlendale                  |    \-14.132 |   0.944 |
+| neighbourhoodGowanus                   |    \-12.293 |   0.933 |
+| neighbourhoodGramercy                  |     148.606 |   0.293 |
+| neighbourhoodGravesend                 |   \-111.340 |   0.506 |
+| neighbourhoodGreat Kills               |    \-69.257 |   0.816 |
+| neighbourhoodGreenpoint                |    \-19.236 |   0.880 |
+| neighbourhoodGreenwich Village         |     113.474 |   0.421 |
+| neighbourhoodHarlem                    |    \-25.226 |   0.841 |
+| neighbourhoodHell’s Kitchen            |      13.705 |   0.919 |
+| neighbourhoodHighbridge                |      99.519 |   0.705 |
+| neighbourhoodHollis                    |      49.942 |   0.850 |
+| neighbourhoodHoward Beach              |      36.756 |   0.836 |
+| neighbourhoodHunts Point               |    \-59.852 |   0.767 |
+| neighbourhoodInwood                    |    \-49.253 |   0.717 |
+| neighbourhoodJackson Heights           |     \-4.540 |   0.972 |
+| neighbourhoodJamaica                   |      70.530 |   0.589 |
+| neighbourhoodJamaica Estates           |     139.106 |   0.496 |
+| neighbourhoodJamaica Hills             |     121.637 |   0.550 |
+| neighbourhoodKensington                |   \-107.439 |   0.455 |
+| neighbourhoodKew Gardens               |    \-15.201 |   0.932 |
+| neighbourhoodKew Gardens Hills         |      24.764 |   0.890 |
+| neighbourhoodKingsbridge               |    \-45.632 |   0.772 |
+| neighbourhoodKips Bay                  |     \-2.745 |   0.984 |
+| neighbourhoodLaurelton                 |      77.993 |   0.770 |
+| neighbourhoodLittle Italy              |      67.783 |   0.640 |
+| neighbourhoodLong Island City          |    \-31.100 |   0.807 |
+| neighbourhoodLongwood                  |    \-40.649 |   0.783 |
+| neighbourhoodLower East Side           |     \-3.321 |   0.981 |
+| neighbourhoodManhattan Beach           |     \-7.867 |   0.976 |
+| neighbourhoodMariners Harbor           |   \-185.966 |   0.537 |
+| neighbourhoodMaspeth                   |    \-19.405 |   0.884 |
+| neighbourhoodMelrose                   |    \-60.631 |   0.817 |
+| neighbourhoodMiddle Village            |    \-46.707 |   0.857 |
+| neighbourhoodMidtown                   |      91.928 |   0.487 |
+| neighbourhoodMidwood                   |    \-77.026 |   0.609 |
+| neighbourhoodMorningside Heights       |    \-58.195 |   0.666 |
+| neighbourhoodMorris Heights            |    \-60.168 |   0.818 |
+| neighbourhoodMorris Park               |    \-26.815 |   0.894 |
+| neighbourhoodMorrisania                |    \-47.982 |   0.854 |
+| neighbourhoodMott Haven                |    \-65.769 |   0.714 |
+| neighbourhoodMount Eden                |      16.812 |   0.949 |
+| neighbourhoodMount Hope                |      26.382 |   0.920 |
+| neighbourhoodMurray Hill               |      56.965 |   0.680 |
+| neighbourhoodNew Brighton              |   \-150.703 |   0.598 |
+| neighbourhoodNew Dorp                  |   \-227.705 |   0.434 |
+| neighbourhoodNew Dorp Beach            |   \-209.194 |   0.467 |
+| neighbourhoodNoHo                      |     145.447 |   0.350 |
+| neighbourhoodNolita                    |       3.609 |   0.980 |
+| neighbourhoodNorwood                   |    \-73.383 |   0.778 |
+| neighbourhoodOzone Park                |      36.200 |   0.817 |
+| neighbourhoodPark Slope                |    \-32.427 |   0.811 |
+| neighbourhoodParkchester               |    \-38.319 |   0.883 |
+| neighbourhoodPelham Bay                |      17.323 |   0.947 |
+| neighbourhoodPelham Gardens            |      26.506 |   0.872 |
+| neighbourhoodPort Morris               |    \-67.111 |   0.675 |
+| neighbourhoodPort Richmond             |   \-241.129 |   0.413 |
+| neighbourhoodProspect Heights          |       8.363 |   0.951 |
+| neighbourhoodProspect-Lefferts Gardens |    \-35.977 |   0.783 |
+| neighbourhoodQueens Village            |     101.407 |   0.544 |
+| neighbourhoodRandall Manor             |   \-178.869 |   0.461 |
+| neighbourhoodRed Hook                  |    \-64.873 |   0.710 |
+| neighbourhoodRego Park                 |    \-34.731 |   0.894 |
+| neighbourhoodRichmond Hill             |      40.145 |   0.784 |
+| neighbourhoodRidgewood                 |    \-42.305 |   0.733 |
+| neighbourhoodRockaway Beach            |     246.566 |   0.224 |
+| neighbourhoodRoosevelt Island          |    \-24.370 |   0.894 |
+| neighbourhoodRosedale                  |      65.234 |   0.682 |
+| neighbourhoodSchuylerville             |       6.529 |   0.974 |
+| neighbourhoodSheepshead Bay            |    \-78.814 |   0.607 |
+| neighbourhoodSoHo                      |      56.731 |   0.694 |
+| neighbourhoodSoundview                 |    \-54.468 |   0.787 |
+| neighbourhoodSouth Ozone Park          |      48.851 |   0.759 |
+| neighbourhoodSouth Slope               |    \-31.991 |   0.820 |
+| neighbourhoodSpringfield Gardens       |      68.388 |   0.648 |
+| neighbourhoodSt. Albans                |      66.854 |   0.673 |
+| neighbourhoodSt. George                |   \-170.119 |   0.460 |
+| neighbourhoodStapleton                 |   \-188.990 |   0.411 |
+| neighbourhoodStuyvesant Town           |   \-126.839 |   0.546 |
+| neighbourhoodSunnyside                 |    \-64.908 |   0.617 |
+| neighbourhoodSunset Park               |    \-79.404 |   0.578 |
+| neighbourhoodTheater District          |      41.114 |   0.773 |
+| neighbourhoodThrogs Neck               |     \-5.351 |   0.979 |
+| neighbourhoodTodt Hill                 |   \-215.227 |   0.456 |
+| neighbourhoodTompkinsville             |   \-170.177 |   0.548 |
+| neighbourhoodTremont                   |    \-43.053 |   0.869 |
+| neighbourhoodTribeca                   |    1153.820 |   0.000 |
+| neighbourhoodTwo Bridges               |    \-80.918 |   0.596 |
+| neighbourhoodUnionport                 |    \-17.511 |   0.946 |
+| neighbourhoodUpper East Side           |      77.434 |   0.543 |
+| neighbourhoodUpper West Side           |       5.476 |   0.967 |
+| neighbourhoodVan Nest                  |      10.347 |   0.968 |
+| neighbourhoodVinegar Hill              |     173.121 |   0.412 |
+| neighbourhoodWakefield                 |    \-47.719 |   0.854 |
+| neighbourhoodWashington Heights        |    \-66.912 |   0.596 |
+| neighbourhoodWest Village              |     117.772 |   0.403 |
+| neighbourhoodWestchester Square        |    \-26.838 |   0.918 |
+| neighbourhoodWesterleigh               |   \-255.688 |   0.385 |
+| neighbourhoodWilliamsbridge            |      19.608 |   0.905 |
+| neighbourhoodWilliamsburg              |     \-8.167 |   0.948 |
+| neighbourhoodWindsor Terrace           |    \-46.603 |   0.754 |
+| neighbourhoodWoodhaven                 |    \-33.037 |   0.841 |
+| neighbourhoodWoodside                  |    \-27.994 |   0.828 |
+| longitude                              |   \-773.402 |   0.128 |
 
 The intercept for our linear model is: -57037.928 The expected price, on
 average, is -$57037.93. In this case, the intercept does not have a
@@ -673,8 +747,6 @@ longitude, borough).
 
 Compared to our other models, this is a relatively higher R squared
 value.
-
-### Looking At Everything
 
 ### Part II: Availability and Property Listing
 
@@ -840,9 +912,10 @@ house/apartment) is available for the most amount of days per year:
 
 ``` r
 abnb %>%
-  ggplot(mapping = aes(x =  room_type, y = availability_365, fill = room_type)) +
-  geom_boxplot() + 
-  labs(
+  ggplot(mapping = aes(x =  room_type, 
+                       y = availability_365, 
+                       fill = room_type)) +
+  geom_boxplot() + labs(
     title = "Availability by Room Type",
     x = "Room Type", 
     y = "Availability (days per year)")
@@ -886,18 +959,60 @@ baseline:
 
 ``` r
 lm_avail_room_type <- lm(availability_365 ~ room_type, data = abnb_sample)
+```
 
+Creating a linear model to predict Airbnb availability by room type. It
+is first important to discuss the assumptions we are making when
+performing this regression. We are assuming each room type is
+independent because the availability of one room type doesn’t affect the
+availability of another room type.
+
+In addition to independence, there are other assumptions that need to be
+discussed. Thus, a residuals plot will be made:
+
+``` r
+lm_avail_room_type_aug <- augment(lm_avail_room_type)
+ggplot(data = lm_avail_room_type_aug, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, lty = 3, color = "gray") +
+  labs(y = "Residuals", 
+       x = "Predicted values, y-hat", 
+       title = "Residual Plot")
+```
+
+![](data-analysis_files/figure-gfm/lm_avail_borough_aug-1.png)<!-- -->
+
+As the predicted values increase, the spread of the residuals decreases.
+This violates the constant variance assumption needed for regression.
+Therefore, we will proceed with caution when drawing assumptions from
+the linear regression.
+
+As depicted in the normality of residuals graph below, the residuals are
+randomly distributed around 0 AND nearly normal.
+
+``` r
+ggplot(data = lm_avail_room_type_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 300) +
+  labs(x = "Residuals", 
+       title = "Normality of Residuals")
+```
+
+![](data-analysis_files/figure-gfm/lm_avail_borough_aug-nomality-1.png)<!-- -->
+
+Using tidy to show the output for the linear model:
+
+``` r
 lm_avail_room_type %>% 
   tidy() %>%
-  select(term, estimate) %>%
+  select(term, estimate, p.value) %>%
   kable(format = "markdown", digits =3)
 ```
 
-| term                   | estimate |
-| :--------------------- | -------: |
-| (Intercept)            |  115.774 |
-| room\_typePrivate room |  \-3.443 |
-| room\_typeShared room  |   74.912 |
+| term                   | estimate | p.value |
+| :--------------------- | -------: | ------: |
+| (Intercept)            |  115.774 |   0.000 |
+| room\_typePrivate room |  \-3.443 |   0.418 |
+| room\_typeShared room  |   74.912 |   0.000 |
 
 The linear model is:
 
@@ -910,11 +1025,10 @@ case, the intercept does have a meaningful interpretation because an
 Airbnb could be available for 115.8 days out of 365 per year.
 
 The availability of the other room types in relation to entire
-home/apartment is:
-
-For an Airbnb with roomtype of private room, the median availability is
-expected, on average, to be 3.4 days less per year than an Airbnb in wth
-room type of entire house/apt, holding all else constant.
+home/apartment is: For an Airbnb with roomtype of private room, the
+median availability is expected, on average, to be 3.4 days less per
+year than an Airbnb in wth room type of entire house/apt, holding all
+else constant.
 
 For an Airbnb with roomtype of shared room, the median availability is
 expected, on average, to be 74.9 days more per year than an Airbnb in
@@ -933,6 +1047,11 @@ This means that roughly 0.841% of the variability in median
 availiability can be explained by the type of room of Airbnb in New
 York. This is a relatively small R squared value. Perhaps there are
 other factors which influence availability.
+
+As depicted in the output, all the p-values, except for private room,
+are less than the threshold of 0.05; therefore, the expected median
+availabilty predicted by the regression model for shared rooms is
+significant.
 
 ### Listing Factors and Availability
 
@@ -959,28 +1078,70 @@ m_full_model <- lm(availability_365 ~ room_type +
 ```
 
 Performing model selection using AIC for availability using step
-function:
+function.
 
 ``` r
 selected_model <- step(m_full_model, direction = "backward")
 ```
 
+Creating a linear model to predict Airbnb availability by reviews per
+month, minimum number of nights, whether the price was at the
+median/above or not, the room type, number of reviews, and the
+calculated number of host listings. It is first important to discuss the
+assumptions we are making when performing this regression. We are
+assuming each of these factors is independent because they do not
+directly influence each other.
+
+In addition to independence, there are other assumptions that need to be
+discussed. Thus, a residuals plot will be made:
+
+``` r
+selected_model_aug <- augment(selected_model)
+ggplot(data = selected_model_aug, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, lty = 3, color = "gray") +
+  labs(y = "Residuals", 
+       x = "Predicted values, y-hat", 
+       title = "Residual Plot")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-1.png)<!-- -->
+
+As the predicted values increase, the spread of the residuals shifts
+downward. This violates the constant variance assumption needed for
+regression. Therefore, we will proceed with caution when drawing
+assumptions from the linear regression.
+
+As depicted in the normality of residuals graph below, the residuals are
+randomly distributed around 0 AND nearly normal.
+
+``` r
+ggplot(data = lm_price_borough_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 300) +
+  labs(x = "Residuals", 
+       title = "Normality of Residuals")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-nomality-1.png)<!-- -->
+
+Output for the selected model:
+
 ``` r
 tidy(selected_model) %>%
-  select(term, estimate) %>%
+  select(term, estimate, p.value) %>%
   kable(format = "markdown", digits = 3)
 ```
 
-| term                              | estimate |
-| :-------------------------------- | -------: |
-| (Intercept)                       |   59.923 |
-| room\_typePrivate room            |   26.396 |
-| room\_typeShared room             |  115.908 |
-| minimum\_nights                   |    0.481 |
-| number\_of\_reviews               |    0.461 |
-| calculated\_host\_listings\_count |    0.853 |
-| price\_caseMedian or Above        |   29.622 |
-| reviews\_per\_month               |    5.936 |
+| term                              | estimate | p.value |
+| :-------------------------------- | -------: | ------: |
+| (Intercept)                       |   59.923 |       0 |
+| room\_typePrivate room            |   26.396 |       0 |
+| room\_typeShared room             |  115.908 |       0 |
+| minimum\_nights                   |    0.481 |       0 |
+| number\_of\_reviews               |    0.461 |       0 |
+| calculated\_host\_listings\_count |    0.853 |       0 |
+| price\_caseMedian or Above        |   29.622 |       0 |
+| reviews\_per\_month               |    5.936 |       0 |
 
 The selected linear model for this model is:
 
@@ -1004,6 +1165,10 @@ listings the host has, the median price and the reviews per month.
 Compared to our other models, this is a relatively higher R squared
 value. It is also important to note that room types have high
 coefficients.
+
+As depicted in the output, all the p-values are less than the threshold
+of 0.05; therefore, the expected median availabilities predicted by the
+regression model are significant.
 
 ### Host Volume
 
@@ -1060,11 +1225,6 @@ abnb_host_volume %>%
 
 Thus, 436 of the hosts are high volume and 3564 of the hosts are low
 volume.
-
-We assume, before doing the hypothesis test, that there is a true
-difference in the median availability of high volume and low volume
-hosts because high volume hosts have more listings, therefore we assume
-that with more listings means more available days.
 
 Conducting a hypothesis test if availability can be explained if someone
 is high volume or not:
@@ -1165,7 +1325,5 @@ Constructing 95% confidence interval:
 
 We are 95% confident that the median availability for high volume hosts
 is between 219 to 261.025 days greater than that of low volume hosts.
-
-### Looking At Everything
 
 ### Overall
