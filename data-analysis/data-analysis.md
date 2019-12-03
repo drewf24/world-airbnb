@@ -757,21 +757,24 @@ York City such as median price and number of listings to get a basic
 understanding of the dataset we are working with. After finding out that
 both Manhattan and Brooklyn dominated the Airbnb scene in terms of
 number of listings, we wanted to see how these two locations play a role
-in the price of Airbnbs. So, we conducted a hypothesis test to determine
-if there is a true median price difference between these two cities. We
-concluded that we did indeed have enough convincing evidence to conclude
-that there is a true median price difference with Manhattan’s median
-price being higher than Brookly’s median price. After conducting a
-confidence interval for different in true median price, we are 95%
-confident that the median price in Manhattan is between $55 and $65
-higher than the median price in Brooklyn. We then created a colored
-scatterplot map to see how coordinates play a role in the price of
-Airbnbs. We concluded that Manhattan has the greatest frequency of
-median or above listings at 68.757%, followed by Brooklyn at 40.380%.
-Queens has 24.448%, Staten Island has 21.739% and the Bronx has 15.294%.
-We then decided to look into the top ten neighborhoods and surprisngly
-we found that the Bronx contains the neighborhood, Eastchester, with the
-highest median price of $475.00.
+in the price of Airbnbs. We predicted that Manhattan would have a higher
+true median price than Brooklyn because Manhattan is known from previous
+knowledge to be a higher-class neighborhood. So, we conducted a
+hypothesis test to determine if there is a true median price difference
+between these two cities. We concluded that we did indeed have enough
+convincing evidence to conclude that there is a true median price
+difference with Manhattan’s median price being higher than Brookly’s
+median price. After conducting a confidence interval for different in
+true median price, we are 95% confident that the median price in
+Manhattan is between $55 and $65 higher than the median price in
+Brooklyn. We then created a colored scatterplot map to see how
+coordinates play a role in the price of Airbnbs. We concluded that
+Manhattan has the greatest frequency of median or above listings at
+68.757%, followed by Brooklyn at 40.380%. Queens has 24.448%, Staten
+Island has 21.739% and the Bronx has 15.294%. We then decided to look
+into the top ten neighborhoods and surprisngly we found that the Bronx
+contains the neighborhood, Eastchester, with the highest median price of
+$475.00.
 
 ### Part II: Availability and Property Listing
 
@@ -1351,4 +1354,15 @@ Constructing 95% confidence interval:
 We are 95% confident that the median availability for high volume hosts
 is between 219 to 261.025 days greater than that of low volume hosts.
 
-### Overall
+### Conclusion For Part 2
+
+Based on the hypothesis of our proposal, we wanted to see how the way in
+which a property is listed (type of room, for example) influences the
+availability of a listing. We predicted that words like “spacious” and
+“private” would influence our availability of a listing. Turns out,
+words associated with private were highly sought after such as
+“private”, “apartment” indicating a private enclave, and “bedroom”
+indicating one’s private space. We also predicted that more experienced
+hosts with more listings would have more availability days because they
+have more listings and our hypothesis test indicated that we were right.
+\#\#\# Overall
