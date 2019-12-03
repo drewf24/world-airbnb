@@ -1061,6 +1061,11 @@ abnb_host_volume %>%
 Thus, 436 of the hosts are high volume and 3564 of the hosts are low
 volume.
 
+We assume, before doing the hypothesis test, that there is a true
+difference in the median availability of high volume and low volume
+hosts because high volume hosts have more listings, therefore we assume
+that with more listings means more available days.
+
 Conducting a hypothesis test if availability can be explained if someone
 is high volume or not:
 
