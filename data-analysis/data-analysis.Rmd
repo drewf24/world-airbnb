@@ -275,48 +275,63 @@ abnb_sample %>%
 
 It appears that the neighborhoods with the most expensive Airbnbs come from a range of boroughs. In fact, all are represented in the top 10 equally. Surprisingly, the Bronx contains the neighborhood, Eastchester, with the highest median price of $475.00. We will examine whether neighborhood has a significant influence on price by looking at an AIC selected linear model by backwards selection in the next section.
 
-### AIC and Price
 
-In order to look at these other factors, we will select a model AIC backwards selection.
+### Looking At Everything
+
+NOTE
+-- did not do final selection so that it would push to git 
+-- we are getting neighborhood in our final selection and that is leading to an output with EVERY neighborhood in the table -- not a good idea since there are soooo many
+
+To conclude our analysis we will look at the influence of all the variables on price. 
 
 Removing NA values and creating a full model for price:
 
 ```{r remove-na-price}
 abnb_model_price <- abnb_sample %>%
-  drop_na(price,
-          room_type, minimum_nights, 
-          number_of_reviews,
-          calculated_host_listings_count, 
-          price_case, 
-          reviews_per_month)
+  drop_na(neighbourhood_group, neighbourhood, latitude, 
+          longitude, room_type, minimum_nights, number_of_reviews,
+          last_review, reviews_per_month, calculated_host_listings_count,
+          availability_365, reviews_per_month)
 
-m_full_model_price <- lm(price ~ room_type + 
-                     minimum_nights +  
-                     number_of_reviews + 
-                     calculated_host_listings_count + 
-                     price_case + 
-                     reviews_per_month, data = abnb_model_price)
+m_full_model_price <- lm(price ~ neighbourhood_group +
+                           neighbourhood + latitude +
+                           longitude + room_type + 
+                           minimum_nights +  
+                           number_of_reviews + last_review +
+                           reviews_per_month +
+                           calculated_host_listings_count + 
+                           availability_365 + 
+                           reviews_per_month, data = abnb_model_price)
 ```
 
 Performing model selection using AIC for availability using step function:
 
-```{r AIC-backward-selection-price, results="hide"}
-selected_model_price <- step(m_full_model_price, direction = "backward")
-```
+CODE CHUNK 
 
-```{r selected-kable-price}
+{r AIC-backward-selection-price, results="hide"}
+selected_model_price <- step(m_full_model_price, direction = "backward")
+
+{r selected-kable-price}
 tidy(selected_model_price) %>%
   select(term, estimate) %>%
   kable(format = "markdown", digits = 3)
-```
+ 
+CODE CHUNK ^^
 
 The selected linear model for this model is:
 
-`price = 98.658 - 32.520*(room_typePrivate room) - 53.220*(room_typeShared room) - 0.111*(number_of_reviews)`
+`price-hat = `
 
-### Looking At Everything
+Determining R-squared value:
 
+CODE CHUNK 
 
+{r r-square-selectedmodel-price}
+glance(selected_model_price)$r.squared
+
+CODE CHUNK
+
+The R squared value is . This means that  % of the variability in price can be explained using this model.
 
 ### Part II: Availability and Property Listing
 
@@ -339,6 +354,7 @@ boot_dist_avail <- abnb_sample %>%
 Creating a 95% bootstrap confidence interval for the median number of available days of an Airbnb in NYC:
 
 ```{r boot_dist_availability_365}
+set.seed(111519)
 (ci_bounds <- get_ci(boot_dist_avail, level= 0.95))
 ```
 
@@ -466,7 +482,7 @@ lm_avail_room_type %>%
 
 The linear model is:
 
-`price-hat = 115.774 -3.443*(room_typePrivateroom) +74.912*(room_typeShared room)`
+`availability_365-hat = 115.774 -3.443*(room_typePrivateroom) +74.912*(room_typeShared room)`
 
 Given that the Airbnb has the roomtype of entire house/apt the expected median availability, on average, is 115.8 days out of the year. In this case, the intercept does have a meaningful interpretation because an Airbnb could be available for 115.8 days out of 365 per year.
 
@@ -521,7 +537,7 @@ tidy(selected_model) %>%
 
 The selected linear model for this model is:
 
-`availability_365 = 59.923 + 26.396*(room_typePrivate room) +115.98*(room_typeShared room) + 0.481*(minimum_nights) +0.461*(number_of_reviews) + 0.853*(calculated_host_listings_count) +29.622*(price_caseMedian or Above) + 5.93*(reviews_per_month)`
+`availability_365-hat = 59.923 + 26.396*(room_typePrivate room) +115.98*(room_typeShared room) + 0.481*(minimum_nights) +0.461*(number_of_reviews) + 0.853*(calculated_host_listings_count) +29.622*(price_caseMedian or Above) + 5.93*(reviews_per_month)`
 
 Determining R-squared:
 
@@ -632,6 +648,7 @@ boot_hostvolume <- abnb_host_volume %>%
 Constructing 95% confidence interval:
 
 ```{r ci-boot-hostvolume}
+set.seed(111519)
 (cibounds1 <- get_ci(boot_hostvolume, level = 0.95))
 ```
 
@@ -639,6 +656,48 @@ We are 95% confident that the median availability for high volume hosts is betwe
 
 ### Looking At Everything
 
+-- I COULD NOT INCLUDE NAME WITHOUT IT DYING ON ME
 
+To conclude our analysis we will look at the influence of all the variables on availibility (not including host_id, name and host_name) 
+
+Removing NA values and creating a full model for price:
+
+```{r remove-na-avail}
+abnb_model_availability <- abnb_sample %>%
+  drop_na(neighbourhood_group, neighbourhood, latitude, 
+          longitude, room_type, minimum_nights, number_of_reviews,
+          last_review, reviews_per_month, calculated_host_listings_count,
+          availability_365, reviews_per_month, price)
+
+m_full_model_price <- lm(availability_365 ~ neighbourhood_group +
+                           neighbourhood + latitude +
+                           longitude + room_type + 
+                           minimum_nights +  
+                           number_of_reviews + last_review +
+                           reviews_per_month +
+                           calculated_host_listings_count + 
+                           price + 
+                           reviews_per_month, data = abnb_model_availability)
+```
+
+Performing model selection using AIC for availability using step function:
+
+```{r AIC-backward-selection-availability, results="hide"}
+selected_model_availability <- step(m_full_model_price, direction = "backward")
+
+tidy(selected_model_availability) %>%
+  select(term, estimate) %>%
+  kable(format = "markdown", digits = 3)
+```
+
+The selected linear model by backward selection is:
+
+`availability_365-hat = 21575.102 - 90.533*(latitude) + 260.527*(longitude) + 11.112*(room_typePrivate room) + 92.026*(room_typeShared room) + 0.453*(minimum_nights) + 0.364*(number_of_review) + 0.082(last_review) + 0.819(calculated_host_listinga_count) + 0.075*(price)`
+
+```{r r-square-selectedmodel-avail}
+glance(selected_model_availability)$r.squared
+```
+
+The R-squared value is 18.127% of the variability in availibility can be explained by the selected model. 
 
 ### Overall
