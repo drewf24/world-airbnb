@@ -25,7 +25,7 @@ Uploaded the Airbnb data set from Kaggle via a csv file:
 abnb <- read_csv("AB_NYC_2019.csv")
 ```
 
-We are assuming that the data we have for Airbnbs in New York City represents the population given that a) there are 48,895 observations and b) we consulted Dr. Tackett and she thinks that the data was most likely web scapped from the Airbnb website.
+We are assuming that the data we have for Airbnbs in New York City represents the population given that a) there are 48,895 observations and b) we consulted Dr. Tackett and she thinks that the data was most likely web scapped from the Airbnb website. 
 
 Therefore, in order to perform analysis, we created a sample set called abnb_sample of 4000 randomly selected observations.
 
@@ -124,7 +124,7 @@ lm_price_borough <- lm(price ~ neighbourhood_group, data = abnb_sample)
 
 In addition to independence, there are other assumptions that need to be discussed. Thus, a residuals plot will be made:
 
-```{r lm_price_borough_aug}
+```{r lm_price_borough_aug-residuals}
 lm_price_borough_aug <- augment(lm_price_borough)
 ggplot(data = lm_price_borough_aug, aes(x = .fitted, y = .resid)) +
   geom_point() +
@@ -138,7 +138,7 @@ As the predicted values increase, the spread of the residuals increase in a "fan
 
 As depicted in the normality of residuals graph below, the residuals are randomly distributed around 0. 
 
-```{r lm_price_borough_aug-nomality}
+```{r lm_price_borough_aug-nomalities}
 ggplot(data = lm_price_borough_aug, aes(x = .resid)) +
   geom_histogram(binwidth = 300) +
   labs(x = "Residuals", 
@@ -682,8 +682,6 @@ abnb_host_volume %>%
 ```
 
 Thus, 436 of the hosts are high volume and 3564 of the hosts are low volume.
-
-We assume, before doing the hypothesis test, that there is a true difference in the median availability of high volume and low volume hosts because high volume hosts have more listings, therefore we assume that with more listings means more available days.
 
 Conducting a hypothesis test if availability can be explained if someone is high volume or not:
 
