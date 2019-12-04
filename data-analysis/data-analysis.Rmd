@@ -293,7 +293,7 @@ abnb_sample %>%
        color = "Price Case")
 ```
 
-It is clear from this map, that the cases in which the prices are at the median or above (blue dots) are clustered around Manhattan. Therefore, visualization confirms our previous findings. The area that appears to have the second most number of blue dots is Brooklyn, which is right next to Manhattan. We use summary statistics to confirm. 
+It is clear from this map, that the cases in which the prices are at the median or above, represented by the blot dots, are clustered around Manhattan. Therefore, visualization confirms our previous findings. The area that appears to have the second most number of blue dots is Brooklyn, which is right next to Manhattan. We use summary statistics to confirm. 
 
 Relative frequency of listings that are above or at the median price by borough:
 
@@ -718,4 +718,3 @@ We are 95% confident that the median availability for high volume hosts is betwe
 ### Conclusion For Part 2
 
 Based on our second research question in our proposal, we wanted to see how the way in which a property is listed (type of room and description for example) influences the availability of a listing. Assuming availibility is a good predictor of desirability (more availible, less desireable). In our proposal we looked at how the variable “room_type” affects the availability of the listing. We hypothesized that room_type would be a major factor in predicting availability because our exploratory analysis showed that a shared room is likely the least desired of the three room types due to the largest IQR and highest median availability of the three roomtypes. Through our text analysis of the descriptions we found words associated with private were highly sought after such as "private", "apartment" indicating a private enclave, and "bedroom" indicating one's private space. In additon, our linear model predicting availability by all variables regarding listing showed room type to be a relevant predictor. In additon, we predicted that more experienced hosts with more listings would have more availability days because they have more listings and our hypothesis test indicated that we were right.
-### Overall
