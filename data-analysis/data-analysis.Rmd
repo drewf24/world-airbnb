@@ -324,54 +324,6 @@ abnb_sample %>%
 
 It appears that the neighborhoods with the most expensive Airbnbs come from a range of boroughs. In fact, all are represented in the top 10 equally. Surprisingly, the Bronx contains the neighborhood, Eastchester, with the highest median price of $475.00. Given the extensive analysis already done for location by borough and co-ordinates, neighborhood will not be analyzed further as it is beyond the initial scope of our focus.
 
-### Location Factors and Price
-
-ELLIE - see sentence above -- good?
-
-Given that there are so many neighborhoods in the dataframe, has a significant influence on price by looking at an AIC selected linear model by backwards selection in the next section.
-In order to look at these other factors, we will select a model AIC backwards selection.
-
-Removing NA values and creating a full model for price:
-
-```{r remove-na-price}
-abnb_model_price <- abnb_sample %>%
-  drop_na(neighbourhood,
-          neighbourhood_group,
-          latitude,
-          longitude)
-
-m_full_model_price <- lm(price ~ neighbourhood +
-          neighbourhood_group +
-          latitude +
-          longitude, data = abnb_model_price)
-```
-
-Performing model selection using AIC for availability using step function:
-
-```{r AIC-backward-selection-price, results="hide"}
-selected_model_price <- step(m_full_model_price, direction = "backward")
-```
-
-```{r selected-kable-price}
-tidy(selected_model_price) %>%
-  select(term, estimate, p.value) %>%
-  kable(format = "markdown", digits = 3)
-```
-
-The intercept for our linear model is: -57037.928
-The expected price, on average, is -$57037.93. In this case, the intercept does not have a meaningful interpretation because an Airbnb would not have a price listing of -$57037.93 per night.
-
-Determining R-squared:
-
-```{r r-square-selectedmodel-price}
-glance(selected_model_price)$r.squared
-```
-
-The R-squared value is 12.99% of the variability in price can be explained by the location of the listng - latitude, longitude, neighbourhood_group (borough), and neighbourhood.
-
-It is important to note that the only variables selected by the AIC model were neighborhoods that were significant in predicting price of the Airbnb rather than any of the original variables included (latitude, longitude, borough). 
-
-Compared to our other models, this is a relatively higher R squared value.
 
 ### Conclusion for Part I
 
@@ -639,6 +591,14 @@ tidy(selected_model) %>%
 The selected linear model for this model is:
 
 `availability_365 = 59.923 + 26.396*(room_typePrivate room) +115.98*(room_typeShared room) + 0.481*(minimum_nights) +0.461*(number_of_reviews) + 0.853*(calculated_host_listings_count) +29.622*(price_caseMedian or Above) + 5.93*(reviews_per_month)`
+
+Interpretation of two slopes for final model:
+
+Categorical predictor:
+Listings that are of room_type: Private room, are expected to have, on average, an average availibility of 26.396 higher than the average availability of listings that are of room_type: Whole house/APT, holding all else constant.
+
+Numerical predictor:
+With each additional number of minimum nights required to stay at the airbnb (minimum_nights), it is expected, on average, that availibility increases by 0.481 days, holding all else constant.
 
 Determining R-squared:
 
