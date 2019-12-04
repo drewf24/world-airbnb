@@ -518,7 +518,7 @@ Based on our research question from our proposal, we wanted to determine
 how location played a role in determining the price of Airbnbs in New
 York City. First, we summarized the sample statistics of the boroughs in
 New York City such as median price and number of listings to get a basic
-understanding of the count and dsitribution of price in relation to
+understanding of the count and distribution of price in relation to
 borough. After finding out that both Manhattan and Brooklyn dominated
 the Airbnb scene in terms of number of listings, we wanted to see how
 these two locations play a role in the price of Airbnbs. We predicted
