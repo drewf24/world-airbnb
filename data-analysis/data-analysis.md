@@ -25,11 +25,11 @@ abnb <- read_csv("AB_NYC_2019.csv")
 
 We are assuming that the data we have for Airbnbs in New York City
 represents the population given that a) there are 48,895 observations
-and b) we concsulted Dr. Tackett and she thinks that the data was most
+and b) we consulted Dr. Tackett and she thinks that the data was most
 likely web scapped from the Airbnb website.
 
-Therefore, in order to perform analysis, we used created a sample set
-called abnb\_sample of 4000 randomly selected observations.
+Therefore, in order to perform analysis, we created a sample set called
+abnb\_sample of 4000 randomly selected observations.
 
 ``` r
 set.seed(111519)
@@ -43,7 +43,7 @@ be drawn from the sample.
 ### Part I: Price and Location
 
 In part I, the following research question will be examined: How does
-location (borough and neighborhood, for example) influence the price of
+location (borough and co-ordinates, for example) influence the price of
 a listing?
 
 ### Understanding Price
@@ -88,14 +88,14 @@ the population median price per night of Airbnbs in NYC is between
 $100.00 and $110.00. This information will help us understand prices in
 the Airbnb market as we go about attempting to draw comparisions.
 
-### Exploring Boroughs and Resulting Analysis
+### Exploring Boroughs
 
 The first location variable that might be helpful to explore is borough
 (neighbourhood\_group) given that New York City is divided into five
 areas (The Bronx, Brooklyn, Manhattan, Queens, and Staten Island).
 
 Creating an exploratory bar graph that displays number of listings by
-neighborhood borough in New York City:
+borough in New York City:
 
 ``` r
 ggplot(data = abnb, mapping = aes(x = neighbourhood_group)) +
@@ -154,11 +154,10 @@ abnb %>%
     ## 5 Bronx                      65
 
 Manhattan has the highest median price at 150 followed by Brooklyn at
-90, Queens and Staten Island at 75, and the Bronx last at 65. Therefore,
-we will develop a linear model to describe how boroughs influences
-price. Since Manhattan had the largest volume of Airbnbs and the highest
-median price, that will be the baseline for comparison with other
-boroughs.
+90, Queens and Staten Island at 75, and the Bronx last at 65. We will
+develop a linear model to describe how boroughs influence price and,
+since Manhattan had the largest volume of Airbnbs and the highest median
+price, that will be the baseline for comparison with other boroughs.
 
 Using fct\_relevel to make Manhattan the baseline level for
 neighbourhood\_group:
@@ -173,24 +172,82 @@ abnb_sample <- abnb_sample %>%
                                            "Bronx"))
 ```
 
-Creating a linear model to predict Airbnb price by borough:
+Creating a linear model to predict Airbnb price by borough. It is first
+important to discuss the assumptions we are making when performing this
+regression. We are assuming each listing is independent because the
+pricing of one space does not driectly influence the other. While some
+might argue there is dependence between listings to some extent, the
+market for Airbnbs in NYC is free and competitive so renters, ideally,
+don’t collude.
 
 ``` r
 lm_price_borough <- lm(price ~ neighbourhood_group, data = abnb_sample)
+```
 
+In addition to independence, there are other assumptions that need to be
+discussed. Thus, a residuals plot will be made:
+
+``` r
+lm_price_borough_aug <- augment(lm_price_borough)
+ggplot(data = lm_price_borough_aug, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, lty = 3, color = "gray") +
+  labs(y = "Residuals", 
+       x = "Predicted values, y-hat", 
+       title = "Residual Plot")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-residuals-1.png)<!-- -->
+
+As the predicted values increase, the spread of the residuals increase
+in a “fan” like shape. This violates the constant variance assumption
+needed for regression. Therefore, we will proceed with caution when
+drawing assumptions from the linear regression.
+
+As depicted in the normality of residuals graph below, the residuals are
+randomly distributed around 0.
+
+``` r
+ggplot(data = lm_price_borough_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 300) +
+  labs(x = "Residuals", 
+       title = "Normality of Residuals")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-nomalities-1.png)<!-- -->
+
+However, the residuals are not nearly normally distributed. Therefore,
+we will filter out outliers to filtered when take out outliers to get a
+filtered normality of residuals graph that has a nearly normal
+distribution.
+
+``` r
+lm_price_borough_aug_filter <- lm_price_borough_aug %>%
+  filter(.resid <= 250 & .resid >= -170 )
+ggplot(data = lm_price_borough_aug_filter, aes(x = .resid)) +
+  geom_histogram(binwidth = 100) +
+  labs(x = "Residuals", 
+       title = "Filtered Normality of Residuals")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-nomality-filtered-1.png)<!-- -->
+
+Using tidy to show the output for the linear model:
+
+``` r
 lm_price_borough %>% 
   tidy() %>% 
-  select(term, estimate) %>%
+  select(term, estimate, p.value) %>%
   kable(format = "markdown", digits =3)
 ```
 
-| term                              |  estimate |
-| :-------------------------------- | --------: |
-| (Intercept)                       |   206.848 |
-| neighbourhood\_groupBrooklyn      |  \-85.106 |
-| neighbourhood\_groupStaten Island | \-117.674 |
-| neighbourhood\_groupQueens        | \-110.432 |
-| neighbourhood\_groupBronx         | \-126.213 |
+| term                              |  estimate | p.value |
+| :-------------------------------- | --------: | ------: |
+| (Intercept)                       |   206.848 |   0.000 |
+| neighbourhood\_groupBrooklyn      |  \-85.106 |   0.000 |
+| neighbourhood\_groupStaten Island | \-117.674 |   0.019 |
+| neighbourhood\_groupQueens        | \-110.432 |   0.000 |
+| neighbourhood\_groupBronx         | \-126.213 |   0.000 |
 
 The linear model is:
 
@@ -218,6 +275,10 @@ $110.43 less than an Airbnb in Manhattan, holding all else constant.
 For an Airbnb in Bronx, the median price is expected, on average, to be
 $126.21 less than an Airbnb in Manhattan, holding all else constant.
 
+As depicted in the output, all the p-values are less than the threshold
+of 0.05; therefore, the expected median prices predicted by the
+regression model are significant.
+
 The R squared of the linear model lm\_price\_borough to evaulaute the
 variability explained by the model:
 
@@ -236,9 +297,9 @@ We are suspicious that there might be a relationship between median
 price in Manhattan and Brooklyn because they contain the largest amount
 and the most expensive Airbnbs. Also, the linear model above showed that
 the expected difference of $85.11 in median price was the least between
-Brooklyn and Manhattan. Therefore we will attempt to answer the
-following: Is there is a significant difference in the true median
-prices between Manhattan and Brooklyn?
+Brooklyn and Manhattan and the p-value was less than 0.05. Therefore, we
+will attempt to answer the following: Is there is a significant
+difference in the true median prices between Manhattan and Brooklyn?
 
 The abnb\_sample was filtered to just include Manhattan and Brooklyn,
 which was saved to abnb\_sample\_filtered.
@@ -314,8 +375,8 @@ night. We conclude that the data does provide convincing evidence of a
 difference in median price of Airbnbs for listings in Manhattan and
 Brooklyn.
 
-Constructing a confidence interval to find the difference in median
-prices between Manhattan and Brooklyn:
+Finding the bootstrap distribution of the difference in median prices
+between listings in Manhattan and Brooklyn.
 
 ``` r
 boot_man_brook_medprice <- abnb_sample_filtered %>%
@@ -323,6 +384,9 @@ boot_man_brook_medprice <- abnb_sample_filtered %>%
   generate(reps = 1000, type = "bootstrap") %>%
   calculate(stat = "diff in medians", c("Manhattan", "Brooklyn"))
 ```
+
+Constructing a confidence interval to find the difference in median
+prices between Manhattan and Brooklyn:
 
 ``` r
 (ci_bounds2 <- get_ci(boot_man_brook_medprice, level = 0.95))
@@ -361,18 +425,24 @@ distinguish between the price types:
 
 ``` r
 abnb_sample %>%
-  ggplot(mapping = aes (x = longitude, y = latitude, color = price_case)) +
+  ggplot(mapping = aes (x = longitude, 
+                        y = latitude, 
+                        color = price_case)) +
   geom_jitter(alpha = 0.5) +
-  labs(title = "Prices at Latitude and Longitude Coordinates", x = "Longitude", y = "Latitude", color = "Price Case")
+  labs(title = "Prices at Latitude and Longitude Coordinates", 
+       x = "Longitude", 
+       y = "Latitude", 
+       color = "Price Case")
 ```
 
 ![](data-analysis_files/figure-gfm/price-at-location-1.png)<!-- -->
 
-It is clear from this map, that the at the cases in which the prices are
-at the median or above (blue dots) are clustered around Manhattan.
-Therefore, visualization confirms our previous findings. The area that
-appears to have the second most number of blue dots is Brooklyn, which
-is right next to Manhattan. We use summary statistics to confirm.
+It is clear from this map, that the cases in which the prices are at the
+median or above, represented by the blot dots, are clustered around
+Manhattan. Therefore, visualization confirms our previous findings. The
+area that appears to have the second most number of blue dots is
+Brooklyn, which is right next to Manhattan. We use summary statistics to
+confirm.
 
 Relative frequency of listings that are above or at the median price by
 borough:
@@ -437,11 +507,41 @@ abnb_sample %>%
 It appears that the neighborhoods with the most expensive Airbnbs come
 from a range of boroughs. In fact, all are represented in the top 10
 equally. Surprisingly, the Bronx contains the neighborhood, Eastchester,
-with the highest median price of $475.00. We will examine whether
-neighborhood has a significant influence on price by looking at an AIC
-selected linear model by backwards selection in the next section.
+with the highest median price of $475.00. Given the extensive analysis
+already done for location by borough and co-ordinates, neighborhood will
+not be analyzed further as it is beyond the initial scope of our focus.
 
-### Looking At Everything
+### Conclusion for Part I
+
+Based on our research question from our proposal, we wanted to determine
+how location played a role in determining the price of Airbnbs in New
+York City. First, we summarized the sample statistics of the boroughs in
+New York City such as median price and number of listings to get a basic
+understanding of the count and distribution of price in relation to
+borough. After finding out that both Manhattan and Brooklyn dominated
+the Airbnb scene in terms of number of listings, we wanted to see how
+these two locations play a role in the price of Airbnbs. We predicted
+that Manhattan would have a higher true median price than Brooklyn
+because Manhattan is known from previous knowledge to be a higher-class
+neighborhood. So, we conducted a hypothesis test to determine if there
+is a true median price difference between these two cities. We concluded
+that we did indeed have sufficent evidence to conclude that there is a
+true median price difference with Manhattan’s median price being higher
+than Brooklyn’s median price. After conducting a confidence interval for
+different in true median price, we are 95% confident that the median
+price in Manhattan is between $55 and $65 higher than the median price
+in Brooklyn. We then created a new variable called “price\_median” which
+is a catagorical variable which indicated whether the price is at or
+above the median price of a listing or not. We then used this new
+variable to create a scatterplot map with color indicating price median
+to see how coordinates play a role in the price of Airbnbs. We concluded
+that Manhattan has the greatest frequency of median or above listings at
+68.757%, followed by Brooklyn at 40.380%. Queens has 24.448%, Staten
+Island has 21.739% and the Bronx has 15.294%. Finally, we investigated
+last variable corresponding to location: neighbourhood. Looking into the
+top ten median priced neighborhoods for Airbnb’s we surprisngly found
+that the Bronx contains the neighborhood, Eastchester, with the highest
+median price of $475.00.
 
 ### Part II: Availability and Property Listing
 
@@ -544,7 +644,6 @@ tidy_description <- tidy_description %>%
   filter(!word %in% stop_words $ word,
          !word %in% str_remove_all(stop_words$word, "'"),
          str_detect(word, "[a-z]"))
-
 tidy_description %>%
   count(word, availability_365, sort = T) %>%
   arrange(availability_365) %>%
@@ -575,7 +674,6 @@ words:
 frequency_all <- tidy_description %>%
   count(word, sort = T) %>%
   mutate(freq = n / sum(n)) 
-
 ggplot(frequency_all %>% top_n(10, freq) %>%
          mutate(word = reorder(word, freq)), aes(x = word, y = freq))+
   geom_col()+ 
@@ -607,9 +705,10 @@ house/apartment) is available for the most amount of days per year:
 
 ``` r
 abnb %>%
-  ggplot(mapping = aes(x =  room_type, y = availability_365, fill = room_type)) +
-  geom_boxplot() + 
-  labs(
+  ggplot(mapping = aes(x =  room_type, 
+                       y = availability_365, 
+                       fill = room_type)) +
+  geom_boxplot() + labs(
     title = "Availability by Room Type",
     x = "Room Type", 
     y = "Availability (days per year)")
@@ -653,18 +752,60 @@ baseline:
 
 ``` r
 lm_avail_room_type <- lm(availability_365 ~ room_type, data = abnb_sample)
+```
 
+Creating a linear model to predict Airbnb availability by room type. It
+is first important to discuss the assumptions we are making when
+performing this regression. We are assuming each room type is
+independent because the availability of one room type doesn’t affect the
+availability of another room type.
+
+In addition to independence, there are other assumptions that need to be
+discussed. Thus, a residuals plot will be made:
+
+``` r
+lm_avail_room_type_aug <- augment(lm_avail_room_type)
+ggplot(data = lm_avail_room_type_aug, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, lty = 3, color = "gray") +
+  labs(y = "Residuals", 
+       x = "Predicted values, y-hat", 
+       title = "Residual Plot")
+```
+
+![](data-analysis_files/figure-gfm/lm_avail_borough_aug-1.png)<!-- -->
+
+As the predicted values increase, the spread of the residuals decreases.
+This violates the constant variance assumption needed for regression.
+Therefore, we will proceed with caution when drawing assumptions from
+the linear regression.
+
+As depicted in the normality of residuals graph below, the residuals are
+randomly distributed around 0 AND nearly normal.
+
+``` r
+ggplot(data = lm_avail_room_type_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 300) +
+  labs(x = "Residuals", 
+       title = "Normality of Residuals")
+```
+
+![](data-analysis_files/figure-gfm/lm_avail_borough_aug-nomality-1.png)<!-- -->
+
+Using tidy to show the output for the linear model:
+
+``` r
 lm_avail_room_type %>% 
   tidy() %>%
-  select(term, estimate) %>%
+  select(term, estimate, p.value) %>%
   kable(format = "markdown", digits =3)
 ```
 
-| term                   | estimate |
-| :--------------------- | -------: |
-| (Intercept)            |  115.774 |
-| room\_typePrivate room |  \-3.443 |
-| room\_typeShared room  |   74.912 |
+| term                   | estimate | p.value |
+| :--------------------- | -------: | ------: |
+| (Intercept)            |  115.774 |   0.000 |
+| room\_typePrivate room |  \-3.443 |   0.418 |
+| room\_typeShared room  |   74.912 |   0.000 |
 
 The linear model is:
 
@@ -677,11 +818,10 @@ case, the intercept does have a meaningful interpretation because an
 Airbnb could be available for 115.8 days out of 365 per year.
 
 The availability of the other room types in relation to entire
-home/apartment is:
-
-For an Airbnb with roomtype of private room, the median availability is
-expected, on average, to be 3.4 days less per year than an Airbnb in wth
-room type of entire house/apt, holding all else constant.
+home/apartment is: For an Airbnb with roomtype of private room, the
+median availability is expected, on average, to be 3.4 days less per
+year than an Airbnb in wth room type of entire house/apt, holding all
+else constant.
 
 For an Airbnb with roomtype of shared room, the median availability is
 expected, on average, to be 74.9 days more per year than an Airbnb in
@@ -701,6 +841,11 @@ availiability can be explained by the type of room of Airbnb in New
 York. This is a relatively small R squared value. Perhaps there are
 other factors which influence availability.
 
+As depicted in the output, all the p-values, except for private room,
+are less than the threshold of 0.05; therefore, the expected median
+availabilty predicted by the regression model for shared rooms is
+significant.
+
 ### Listing Factors and Availability
 
 In order to look at these other factors, we will select a model AIC
@@ -716,7 +861,6 @@ abnb_model <- abnb_sample %>%
           calculated_host_listings_count, 
           price_case, 
           reviews_per_month)
-
 m_full_model <- lm(availability_365 ~ room_type + 
                      minimum_nights +  
                      number_of_reviews + 
@@ -726,28 +870,70 @@ m_full_model <- lm(availability_365 ~ room_type +
 ```
 
 Performing model selection using AIC for availability using step
-function:
+function.
 
 ``` r
 selected_model <- step(m_full_model, direction = "backward")
 ```
 
+Creating a linear model to predict Airbnb availability by reviews per
+month, minimum number of nights, whether the price was at the
+median/above or not, the room type, number of reviews, and the
+calculated number of host listings. It is first important to discuss the
+assumptions we are making when performing this regression. We are
+assuming each of these factors is independent because they do not
+directly influence each other.
+
+In addition to independence, there are other assumptions that need to be
+discussed. Thus, a residuals plot will be made:
+
+``` r
+selected_model_aug <- augment(selected_model)
+ggplot(data = selected_model_aug, aes(x = .fitted, y = .resid)) +
+  geom_point() +
+  geom_hline(yintercept = 0, lty = 3, color = "gray") +
+  labs(y = "Residuals", 
+       x = "Predicted values, y-hat", 
+       title = "Residual Plot")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-1.png)<!-- -->
+
+As the predicted values increase, the spread of the residuals shifts
+downward. This violates the constant variance assumption needed for
+regression. Therefore, we will proceed with caution when drawing
+assumptions from the linear regression.
+
+As depicted in the normality of residuals graph below, the residuals are
+randomly distributed around 0 AND nearly normal.
+
+``` r
+ggplot(data = lm_price_borough_aug, aes(x = .resid)) +
+  geom_histogram(binwidth = 300) +
+  labs(x = "Residuals", 
+       title = "Normality of Residuals")
+```
+
+![](data-analysis_files/figure-gfm/lm_price_borough_aug-nomality-1.png)<!-- -->
+
+Output for the selected model:
+
 ``` r
 tidy(selected_model) %>%
-  select(term, estimate) %>%
+  select(term, estimate, p.value) %>%
   kable(format = "markdown", digits = 3)
 ```
 
-| term                              | estimate |
-| :-------------------------------- | -------: |
-| (Intercept)                       |   59.923 |
-| room\_typePrivate room            |   26.396 |
-| room\_typeShared room             |  115.908 |
-| minimum\_nights                   |    0.481 |
-| number\_of\_reviews               |    0.461 |
-| calculated\_host\_listings\_count |    0.853 |
-| price\_caseMedian or Above        |   29.622 |
-| reviews\_per\_month               |    5.936 |
+| term                              | estimate | p.value |
+| :-------------------------------- | -------: | ------: |
+| (Intercept)                       |   59.923 |       0 |
+| room\_typePrivate room            |   26.396 |       0 |
+| room\_typeShared room             |  115.908 |       0 |
+| minimum\_nights                   |    0.481 |       0 |
+| number\_of\_reviews               |    0.461 |       0 |
+| calculated\_host\_listings\_count |    0.853 |       0 |
+| price\_caseMedian or Above        |   29.622 |       0 |
+| reviews\_per\_month               |    5.936 |       0 |
 
 The selected linear model for this model is:
 
@@ -755,6 +941,18 @@ The selected linear model for this model is:
 +115.98*(room_typeShared room) + 0.481*(minimum_nights)
 +0.461*(number_of_reviews) + 0.853*(calculated_host_listings_count)
 +29.622*(price_caseMedian or Above) + 5.93*(reviews_per_month)`
+
+Interpretation of two slopes for final model:
+
+Categorical predictor: Listings that are of room\_type: Private room,
+are expected to have, on average, an average availibility of 26.396
+higher than the average availability of listings that are of room\_type:
+Whole house/APT, holding all else constant.
+
+Numerical predictor: With each additional number of minimum nights
+required to stay at the airbnb (minimum\_nights), it is expected, on
+average, that availibility increases by 0.481 days, holding all else
+constant.
 
 Determining R-squared:
 
@@ -771,6 +969,10 @@ listings the host has, the median price and the reviews per month.
 Compared to our other models, this is a relatively higher R squared
 value. It is also important to note that room types have high
 coefficients.
+
+As depicted in the output, all the p-values are less than the threshold
+of 0.05; therefore, the expected median availabilities predicted by the
+regression model are significant.
 
 ### Host Volume
 
@@ -928,6 +1130,23 @@ Constructing 95% confidence interval:
 We are 95% confident that the median availability for high volume hosts
 is between 219 to 261.025 days greater than that of low volume hosts.
 
-### Looking At Everything
+### Conclusion For Part 2
 
-### Overall
+Based on our second research question in our proposal, we wanted to see
+how the way in which a property is listed (type of room and description
+for example) influences the availability of a listing. Assuming
+availibility is a good predictor of desirability (more availible, less
+desireable). In our proposal we looked at how the variable “room\_type”
+affects the availability of the listing. We hypothesized that room\_type
+would be a major factor in predicting availability because our
+exploratory analysis showed that a shared room is likely the least
+desired of the three room types due to the largest IQR and highest
+median availability of the three roomtypes. Through our text analysis of
+the descriptions we found words associated with private were highly
+sought after such as “private”, “apartment” indicating a private
+enclave, and “bedroom” indicating one’s private space. In additon, our
+linear model predicting availability by all variables regarding listing
+showed room type to be a relevant predictor. In additon, we predicted
+that more experienced hosts with more listings would have more
+availability days because they have more listings and our hypothesis
+test indicated that we were right.
