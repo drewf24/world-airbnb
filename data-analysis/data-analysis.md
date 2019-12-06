@@ -3,6 +3,10 @@ NYC Airbnb Popularity Factors
 WORLD
 12/3/2019
 
+``` 
+ --
+```
+
 ### Load packages & data
 
 Loaded the following packages that will be needed to perform analysis:

@@ -4,7 +4,7 @@ author: "WORLD"
 date: "12/3/2019"
 output: github_document
 ---   
-     
+     --
 ### Load packages & data
 
 Loaded the following packages that will be needed to perform analysis:
@@ -394,7 +394,7 @@ tidy_description <- abnb_text %>%
   unnest_tokens(word, name)
 ```
 
-Removing stop words to get the top 10 most common words used in descriptions of significance for Airbnb listings with the least availability:
+Removing stop words to get the top 10 most common words used in descriptions of significance for Airbnb listings with the least availability:   
 
 ```{r words-common}
 tidy_description <- tidy_description %>%
