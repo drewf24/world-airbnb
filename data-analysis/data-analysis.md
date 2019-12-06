@@ -3,6 +3,10 @@ NYC Airbnb Popularity Factors
 WORLD
 12/3/2019
 
+``` 
+ --
+```
+
 ### Load packages & data
 
 Loaded the following packages that will be needed to perform analysis:
@@ -224,7 +228,6 @@ distribution.
 ``` r
 lm_price_borough_aug_filter <- lm_price_borough_aug %>%
   filter(.resid <= 250 & .resid >= -170 )
-
 ggplot(data = lm_price_borough_aug_filter, aes(x = .resid)) +
   geom_histogram(binwidth = 100) +
   labs(x = "Residuals", 
@@ -439,10 +442,11 @@ abnb_sample %>%
 ![](data-analysis_files/figure-gfm/price-at-location-1.png)<!-- -->
 
 It is clear from this map, that the cases in which the prices are at the
-median or above (blue dots) are clustered around Manhattan. Therefore,
-visualization confirms our previous findings. The area that appears to
-have the second most number of blue dots is Brooklyn, which is right
-next to Manhattan. We use summary statistics to confirm.
+median or above, represented by the blot dots, are clustered around
+Manhattan. Therefore, visualization confirms our previous findings. The
+area that appears to have the second most number of blue dots is
+Brooklyn, which is right next to Manhattan. We use summary statistics to
+confirm.
 
 Relative frequency of listings that are above or at the median price by
 borough:
@@ -511,270 +515,37 @@ with the highest median price of $475.00. Given the extensive analysis
 already done for location by borough and co-ordinates, neighborhood will
 not be analyzed further as it is beyond the initial scope of our focus.
 
-### Location Factors and Price
-
-ELLIE - see sentence above – good?
-
-Given that there are so many neighborhoods in the dataframe, has a
-significant influence on price by looking at an AIC selected linear
-model by backwards selection in the next section. In order to look at
-these other factors, we will select a model AIC backwards selection.
-
-Removing NA values and creating a full model for price:
-
-``` r
-abnb_model_price <- abnb_sample %>%
-  drop_na(neighbourhood,
-          neighbourhood_group,
-          latitude,
-          longitude)
-
-m_full_model_price <- lm(price ~ neighbourhood +
-          neighbourhood_group +
-          latitude +
-          longitude, data = abnb_model_price)
-```
-
-Performing model selection using AIC for availability using step
-function:
-
-``` r
-selected_model_price <- step(m_full_model_price, direction = "backward")
-```
-
-``` r
-tidy(selected_model_price) %>%
-  select(term, estimate, p.value) %>%
-  kable(format = "markdown", digits = 3)
-```
-
-| term                                   |    estimate | p.value |
-| :------------------------------------- | ----------: | ------: |
-| (Intercept)                            | \-57037.928 |   0.128 |
-| neighbourhoodArden Heights             |   \-287.333 |   0.346 |
-| neighbourhoodArverne                   |     126.315 |   0.428 |
-| neighbourhoodAstoria                   |    \-10.537 |   0.932 |
-| neighbourhoodBath Beach                |    \-96.508 |   0.652 |
-| neighbourhoodBattery Park City         |     195.706 |   0.315 |
-| neighbourhoodBay Ridge                 |    \-89.718 |   0.569 |
-| neighbourhoodBaychester                |      29.568 |   0.909 |
-| neighbourhoodBayside                   |      30.871 |   0.866 |
-| neighbourhoodBedford-Stuyvesant        |    \-46.558 |   0.708 |
-| neighbourhoodBellerose                 |      74.866 |   0.723 |
-| neighbourhoodBelmont                   |    \-20.496 |   0.896 |
-| neighbourhoodBensonhurst               |   \-118.896 |   0.470 |
-| neighbourhoodBoerum Hill               |      78.680 |   0.592 |
-| neighbourhoodBorough Park              |   \-123.918 |   0.423 |
-| neighbourhoodBriarwood                 |      19.544 |   0.901 |
-| neighbourhoodBrighton Beach            |    \-66.544 |   0.643 |
-| neighbourhoodBronxdale                 |    \-54.023 |   0.761 |
-| neighbourhoodBrooklyn Heights          |      78.006 |   0.612 |
-| neighbourhoodBrownsville               |    \-88.773 |   0.663 |
-| neighbourhoodBushwick                  |    \-40.677 |   0.738 |
-| neighbourhoodCanarsie                  |      32.035 |   0.810 |
-| neighbourhoodCarroll Gardens           |      29.044 |   0.843 |
-| neighbourhoodCastle Hill               |    \-36.657 |   0.888 |
-| neighbourhoodCastleton Corners         |      10.195 |   0.972 |
-| neighbourhoodChelsea                   |      77.849 |   0.572 |
-| neighbourhoodChinatown                 |    \-15.186 |   0.914 |
-| neighbourhoodCity Island               |      49.833 |   0.807 |
-| neighbourhoodCivic Center              |    \-88.350 |   0.646 |
-| neighbourhoodClaremont Village         |    \-59.361 |   0.741 |
-| neighbourhoodClason Point              |      75.746 |   0.670 |
-| neighbourhoodClifton                   |   \-219.995 |   0.439 |
-| neighbourhoodClinton Hill              |    \-29.660 |   0.822 |
-| neighbourhoodCobble Hill               |    \-93.311 |   0.601 |
-| neighbourhoodCollege Point             |    \-20.319 |   0.902 |
-| neighbourhoodColumbia St               |    \-36.615 |   0.892 |
-| neighbourhoodConcord                   |   \-190.108 |   0.368 |
-| neighbourhoodConcourse Village         |    \-85.111 |   0.636 |
-| neighbourhoodConey Island              |   \-113.521 |   0.672 |
-| neighbourhoodCorona                    |    \-23.162 |   0.877 |
-| neighbourhoodCrown Heights             |    \-41.417 |   0.743 |
-| neighbourhoodCypress Hills             |    \-38.960 |   0.776 |
-| neighbourhoodDitmars Steinway          |    \-34.566 |   0.791 |
-| neighbourhoodDongan Hills              |   \-215.984 |   0.450 |
-| neighbourhoodDouglaston                |      57.909 |   0.785 |
-| neighbourhoodDowntown Brooklyn         |    \-73.215 |   0.678 |
-| neighbourhoodDUMBO                     |      67.198 |   0.802 |
-| neighbourhoodEast Elmhurst             |    \-28.234 |   0.831 |
-| neighbourhoodEast Flatbush             |    \-62.842 |   0.624 |
-| neighbourhoodEast Harlem               |    \-35.318 |   0.780 |
-| neighbourhoodEast Morrisania           |   \-106.212 |   0.683 |
-| neighbourhoodEast New York             |    \-15.318 |   0.909 |
-| neighbourhoodEast Village              |      18.220 |   0.892 |
-| neighbourhoodEastchester               |     408.185 |   0.117 |
-| neighbourhoodEdenwald                  |       8.618 |   0.974 |
-| neighbourhoodEdgemere                  |      61.237 |   0.816 |
-| neighbourhoodElmhurst                  |    \-18.513 |   0.883 |
-| neighbourhoodEmerson Hill              |   \-247.956 |   0.400 |
-| neighbourhoodFar Rockaway              |     464.765 |   0.013 |
-| neighbourhoodFinancial District        |      17.993 |   0.899 |
-| neighbourhoodFlatbush                  |    \-85.514 |   0.517 |
-| neighbourhoodFlatiron District         |     261.250 |   0.123 |
-| neighbourhoodFlatlands                 |    \-33.857 |   0.832 |
-| neighbourhoodFlushing                  |      16.621 |   0.893 |
-| neighbourhoodFordham                   |    \-45.669 |   0.771 |
-| neighbourhoodForest Hills              |       9.604 |   0.948 |
-| neighbourhoodFort Greene               |    \-23.493 |   0.862 |
-| neighbourhoodFort Hamilton             |   \-123.715 |   0.444 |
-| neighbourhoodFresh Meadows             |      46.274 |   0.821 |
-| neighbourhoodGlendale                  |    \-14.132 |   0.944 |
-| neighbourhoodGowanus                   |    \-12.293 |   0.933 |
-| neighbourhoodGramercy                  |     148.606 |   0.293 |
-| neighbourhoodGravesend                 |   \-111.340 |   0.506 |
-| neighbourhoodGreat Kills               |    \-69.257 |   0.816 |
-| neighbourhoodGreenpoint                |    \-19.236 |   0.880 |
-| neighbourhoodGreenwich Village         |     113.474 |   0.421 |
-| neighbourhoodHarlem                    |    \-25.226 |   0.841 |
-| neighbourhoodHell’s Kitchen            |      13.705 |   0.919 |
-| neighbourhoodHighbridge                |      99.519 |   0.705 |
-| neighbourhoodHollis                    |      49.942 |   0.850 |
-| neighbourhoodHoward Beach              |      36.756 |   0.836 |
-| neighbourhoodHunts Point               |    \-59.852 |   0.767 |
-| neighbourhoodInwood                    |    \-49.253 |   0.717 |
-| neighbourhoodJackson Heights           |     \-4.540 |   0.972 |
-| neighbourhoodJamaica                   |      70.530 |   0.589 |
-| neighbourhoodJamaica Estates           |     139.106 |   0.496 |
-| neighbourhoodJamaica Hills             |     121.637 |   0.550 |
-| neighbourhoodKensington                |   \-107.439 |   0.455 |
-| neighbourhoodKew Gardens               |    \-15.201 |   0.932 |
-| neighbourhoodKew Gardens Hills         |      24.764 |   0.890 |
-| neighbourhoodKingsbridge               |    \-45.632 |   0.772 |
-| neighbourhoodKips Bay                  |     \-2.745 |   0.984 |
-| neighbourhoodLaurelton                 |      77.993 |   0.770 |
-| neighbourhoodLittle Italy              |      67.783 |   0.640 |
-| neighbourhoodLong Island City          |    \-31.100 |   0.807 |
-| neighbourhoodLongwood                  |    \-40.649 |   0.783 |
-| neighbourhoodLower East Side           |     \-3.321 |   0.981 |
-| neighbourhoodManhattan Beach           |     \-7.867 |   0.976 |
-| neighbourhoodMariners Harbor           |   \-185.966 |   0.537 |
-| neighbourhoodMaspeth                   |    \-19.405 |   0.884 |
-| neighbourhoodMelrose                   |    \-60.631 |   0.817 |
-| neighbourhoodMiddle Village            |    \-46.707 |   0.857 |
-| neighbourhoodMidtown                   |      91.928 |   0.487 |
-| neighbourhoodMidwood                   |    \-77.026 |   0.609 |
-| neighbourhoodMorningside Heights       |    \-58.195 |   0.666 |
-| neighbourhoodMorris Heights            |    \-60.168 |   0.818 |
-| neighbourhoodMorris Park               |    \-26.815 |   0.894 |
-| neighbourhoodMorrisania                |    \-47.982 |   0.854 |
-| neighbourhoodMott Haven                |    \-65.769 |   0.714 |
-| neighbourhoodMount Eden                |      16.812 |   0.949 |
-| neighbourhoodMount Hope                |      26.382 |   0.920 |
-| neighbourhoodMurray Hill               |      56.965 |   0.680 |
-| neighbourhoodNew Brighton              |   \-150.703 |   0.598 |
-| neighbourhoodNew Dorp                  |   \-227.705 |   0.434 |
-| neighbourhoodNew Dorp Beach            |   \-209.194 |   0.467 |
-| neighbourhoodNoHo                      |     145.447 |   0.350 |
-| neighbourhoodNolita                    |       3.609 |   0.980 |
-| neighbourhoodNorwood                   |    \-73.383 |   0.778 |
-| neighbourhoodOzone Park                |      36.200 |   0.817 |
-| neighbourhoodPark Slope                |    \-32.427 |   0.811 |
-| neighbourhoodParkchester               |    \-38.319 |   0.883 |
-| neighbourhoodPelham Bay                |      17.323 |   0.947 |
-| neighbourhoodPelham Gardens            |      26.506 |   0.872 |
-| neighbourhoodPort Morris               |    \-67.111 |   0.675 |
-| neighbourhoodPort Richmond             |   \-241.129 |   0.413 |
-| neighbourhoodProspect Heights          |       8.363 |   0.951 |
-| neighbourhoodProspect-Lefferts Gardens |    \-35.977 |   0.783 |
-| neighbourhoodQueens Village            |     101.407 |   0.544 |
-| neighbourhoodRandall Manor             |   \-178.869 |   0.461 |
-| neighbourhoodRed Hook                  |    \-64.873 |   0.710 |
-| neighbourhoodRego Park                 |    \-34.731 |   0.894 |
-| neighbourhoodRichmond Hill             |      40.145 |   0.784 |
-| neighbourhoodRidgewood                 |    \-42.305 |   0.733 |
-| neighbourhoodRockaway Beach            |     246.566 |   0.224 |
-| neighbourhoodRoosevelt Island          |    \-24.370 |   0.894 |
-| neighbourhoodRosedale                  |      65.234 |   0.682 |
-| neighbourhoodSchuylerville             |       6.529 |   0.974 |
-| neighbourhoodSheepshead Bay            |    \-78.814 |   0.607 |
-| neighbourhoodSoHo                      |      56.731 |   0.694 |
-| neighbourhoodSoundview                 |    \-54.468 |   0.787 |
-| neighbourhoodSouth Ozone Park          |      48.851 |   0.759 |
-| neighbourhoodSouth Slope               |    \-31.991 |   0.820 |
-| neighbourhoodSpringfield Gardens       |      68.388 |   0.648 |
-| neighbourhoodSt. Albans                |      66.854 |   0.673 |
-| neighbourhoodSt. George                |   \-170.119 |   0.460 |
-| neighbourhoodStapleton                 |   \-188.990 |   0.411 |
-| neighbourhoodStuyvesant Town           |   \-126.839 |   0.546 |
-| neighbourhoodSunnyside                 |    \-64.908 |   0.617 |
-| neighbourhoodSunset Park               |    \-79.404 |   0.578 |
-| neighbourhoodTheater District          |      41.114 |   0.773 |
-| neighbourhoodThrogs Neck               |     \-5.351 |   0.979 |
-| neighbourhoodTodt Hill                 |   \-215.227 |   0.456 |
-| neighbourhoodTompkinsville             |   \-170.177 |   0.548 |
-| neighbourhoodTremont                   |    \-43.053 |   0.869 |
-| neighbourhoodTribeca                   |    1153.820 |   0.000 |
-| neighbourhoodTwo Bridges               |    \-80.918 |   0.596 |
-| neighbourhoodUnionport                 |    \-17.511 |   0.946 |
-| neighbourhoodUpper East Side           |      77.434 |   0.543 |
-| neighbourhoodUpper West Side           |       5.476 |   0.967 |
-| neighbourhoodVan Nest                  |      10.347 |   0.968 |
-| neighbourhoodVinegar Hill              |     173.121 |   0.412 |
-| neighbourhoodWakefield                 |    \-47.719 |   0.854 |
-| neighbourhoodWashington Heights        |    \-66.912 |   0.596 |
-| neighbourhoodWest Village              |     117.772 |   0.403 |
-| neighbourhoodWestchester Square        |    \-26.838 |   0.918 |
-| neighbourhoodWesterleigh               |   \-255.688 |   0.385 |
-| neighbourhoodWilliamsbridge            |      19.608 |   0.905 |
-| neighbourhoodWilliamsburg              |     \-8.167 |   0.948 |
-| neighbourhoodWindsor Terrace           |    \-46.603 |   0.754 |
-| neighbourhoodWoodhaven                 |    \-33.037 |   0.841 |
-| neighbourhoodWoodside                  |    \-27.994 |   0.828 |
-| longitude                              |   \-773.402 |   0.128 |
-
-The intercept for our linear model is: -57037.928 The expected price, on
-average, is -$57037.93. In this case, the intercept does not have a
-meaningful interpretation because an Airbnb would not have a price
-listing of -$57037.93 per night.
-
-Determining R-squared:
-
-``` r
-glance(selected_model_price)$r.squared
-```
-
-    ## [1] 0.1299448
-
-The R-squared value is 12.99% of the variability in price can be
-explained by the location of the listng - latitude, longitude,
-neighbourhood\_group (borough), and neighbourhood.
-
-It is important to note that the only variables selected by the AIC
-model were neighborhoods that were significant in predicting price of
-the Airbnb rather than any of the original variables included (latitude,
-longitude, borough).
-
-Compared to our other models, this is a relatively higher R squared
-value.
-
 ### Conclusion for Part I
 
-Based on our hypothesis from our proposal, we wanted to determine how
-location played a role in determining the price of Airbnbs in New York
-City. Firstly, we took some fundamental variables of the boroughs in New
-York City such as median price and number of listings to get a basic
-understanding of the dataset we are working with. After finding out that
-both Manhattan and Brooklyn dominated the Airbnb scene in terms of
-number of listings, we wanted to see how these two locations play a role
-in the price of Airbnbs. We predicted that Manhattan would have a higher
-true median price than Brooklyn because Manhattan is known from previous
-knowledge to be a higher-class neighborhood. So, we conducted a
-hypothesis test to determine if there is a true median price difference
-between these two cities. We concluded that we did indeed have enough
-convincing evidence to conclude that there is a true median price
-difference with Manhattan’s median price being higher than Brookly’s
-median price. After conducting a confidence interval for different in
-true median price, we are 95% confident that the median price in
-Manhattan is between $55 and $65 higher than the median price in
-Brooklyn. We then created a colored scatterplot map to see how
-coordinates play a role in the price of Airbnbs. We concluded that
-Manhattan has the greatest frequency of median or above listings at
+Based on our research question from our proposal, we wanted to determine
+how location played a role in determining the price of Airbnbs in New
+York City. First, we summarized the sample statistics of the boroughs in
+New York City such as median price and number of listings to get a basic
+understanding of the count and distribution of price in relation to
+borough. After finding out that both Manhattan and Brooklyn dominated
+the Airbnb scene in terms of number of listings, we wanted to see how
+these two locations play a role in the price of Airbnbs. We predicted
+that Manhattan would have a higher true median price than Brooklyn
+because Manhattan is known from previous knowledge to be a higher-class
+neighborhood. So, we conducted a hypothesis test to determine if there
+is a true median price difference between these two cities. We concluded
+that we did indeed have sufficent evidence to conclude that there is a
+true median price difference with Manhattan’s median price being higher
+than Brooklyn’s median price. After conducting a confidence interval for
+different in true median price, we are 95% confident that the median
+price in Manhattan is between $55 and $65 higher than the median price
+in Brooklyn. We then created a new variable called “price\_median” which
+is a catagorical variable which indicated whether the price is at or
+above the median price of a listing or not. We then used this new
+variable to create a scatterplot map with color indicating price median
+to see how coordinates play a role in the price of Airbnbs. We concluded
+that Manhattan has the greatest frequency of median or above listings at
 68.757%, followed by Brooklyn at 40.380%. Queens has 24.448%, Staten
-Island has 21.739% and the Bronx has 15.294%. We then decided to look
-into the top ten neighborhoods and surprisngly we found that the Bronx
-contains the neighborhood, Eastchester, with the highest median price of
-$475.00.
+Island has 21.739% and the Bronx has 15.294%. Finally, we investigated
+last variable corresponding to location: neighbourhood. Looking into the
+top ten median priced neighborhoods for Airbnb’s we surprisngly found
+that the Bronx contains the neighborhood, Eastchester, with the highest
+median price of $475.00.
 
 ### Part II: Availability and Property Listing
 
@@ -877,7 +648,6 @@ tidy_description <- tidy_description %>%
   filter(!word %in% stop_words $ word,
          !word %in% str_remove_all(stop_words$word, "'"),
          str_detect(word, "[a-z]"))
-
 tidy_description %>%
   count(word, availability_365, sort = T) %>%
   arrange(availability_365) %>%
@@ -908,7 +678,6 @@ words:
 frequency_all <- tidy_description %>%
   count(word, sort = T) %>%
   mutate(freq = n / sum(n)) 
-
 ggplot(frequency_all %>% top_n(10, freq) %>%
          mutate(word = reorder(word, freq)), aes(x = word, y = freq))+
   geom_col()+ 
@@ -1096,7 +865,6 @@ abnb_model <- abnb_sample %>%
           calculated_host_listings_count, 
           price_case, 
           reviews_per_month)
-
 m_full_model <- lm(availability_365 ~ room_type + 
                      minimum_nights +  
                      number_of_reviews + 
@@ -1177,6 +945,18 @@ The selected linear model for this model is:
 +115.98*(room_typeShared room) + 0.481*(minimum_nights)
 +0.461*(number_of_reviews) + 0.853*(calculated_host_listings_count)
 +29.622*(price_caseMedian or Above) + 5.93*(reviews_per_month)`
+
+Interpretation of two slopes for final model:
+
+Categorical predictor: Listings that are of room\_type: Private room,
+are expected to have, on average, an average availibility of 26.396
+higher than the average availability of listings that are of room\_type:
+Whole house/APT, holding all else constant.
+
+Numerical predictor: With each additional number of minimum nights
+required to stay at the airbnb (minimum\_nights), it is expected, on
+average, that availibility increases by 0.481 days, holding all else
+constant.
 
 Determining R-squared:
 
@@ -1356,13 +1136,21 @@ is between 219 to 261.025 days greater than that of low volume hosts.
 
 ### Conclusion For Part 2
 
-Based on the hypothesis of our proposal, we wanted to see how the way in
-which a property is listed (type of room, for example) influences the
-availability of a listing. We predicted that words like “spacious” and
-“private” would influence our availability of a listing. Turns out,
-words associated with private were highly sought after such as
-“private”, “apartment” indicating a private enclave, and “bedroom”
-indicating one’s private space. We also predicted that more experienced
-hosts with more listings would have more availability days because they
-have more listings and our hypothesis test indicated that we were right.
-\#\#\# Overall
+Based on our second research question in our proposal, we wanted to see
+how the way in which a property is listed (type of room and description
+for example) influences the availability of a listing. Assuming
+availibility is a good predictor of desirability (more availible, less
+desireable). In our proposal we looked at how the variable “room\_type”
+affects the availability of the listing. We hypothesized that room\_type
+would be a major factor in predicting availability because our
+exploratory analysis showed that a shared room is likely the least
+desired of the three room types due to the largest IQR and highest
+median availability of the three roomtypes. Through our text analysis of
+the descriptions we found words associated with private were highly
+sought after such as “private”, “apartment” indicating a private
+enclave, and “bedroom” indicating one’s private space. In additon, our
+linear model predicting availability by all variables regarding listing
+showed room type to be a relevant predictor. In additon, we predicted
+that more experienced hosts with more listings would have more
+availability days because they have more listings and our hypothesis
+test indicated that we were right.
