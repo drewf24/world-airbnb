@@ -3,32 +3,96 @@ NYC Airbnb Popularity Factors
 WORLD
 12/6/2019
 
-Your project writeup goes here\! Before you submit, make sure your
-chunks are turned off with `echo = FALSE`.
+### Introduction:
 
-You can add sections as you see fit. Make sure you have a section called
-Introduction at the beginning and a section called Conclusion at the
-end. The rest is up to you\!
+Every day, thousands of tourists visit the historic city of New York. It
+is the most populous city in the United States and is a popular
+attraction for tourists, not only from the United States but around the
+world. Given the popularity of tourists, the lodging and hotel industry
+has benefited tremendously. Airbnb is an online marketplace for
+arranging and offering homestays to thousands of tourists every day in
+the beloved city of New York. Our data analysis investigates the Airbnb
+dataset of New York City. Our central focus will be on predicting,
+analyzing, and performing tests on the price and availability of Airbnb
+listings in New York City. For our final project, we want to answer two
+major research questions: How does location influence the price of
+Airbnb listings in New York City and how does the way in which an Airbnb
+is described influence price?
 
-### Load packages & data
+Using the Airbnb dataset, we hope to gain a better understanding of the
+gig hospitality market in New York City for 2019. Specifically, we want
+to find, explore and understand trends in the market as they relate to
+supply (availability) and demand (what people are willing to pay). The
+data set we chose allows us to draw conclusions and understand the
+factors that contribute to the New York City Airbnb scene.
 
-Loaded the following packages that will be needed to perform analysis:
+Through Kaggle, we found this data set
+(<https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data>) that
+was collected, and continues to be updated, in 2019 on Airbnb listings
+in New York City. This data set continues to be curated by a 4th year
+data science student at Drexel University (Dgomonov). We are unable to
+reach out to him to get more information on the data set, such as where
+he got it from or how he collected it, because our account on Kaggle is
+not at the “Contributor tier.” However, we can reasonably infer that the
+dataset was created by web scraping Airbnb’s website. Since the dataset
+is looking at all the listings in NYC, we are assuming that the dataset
+is indicative of a population. Therefore, we have created a sample
+dataset for our data analysis.
 
-Uploaded the Airbnb data set from Kaggle via a csv file:
+To analyze this data set, it is first important to understand its
+variables: listing ID, name of the listing, host ID, the name of the
+host, location, neighbourhood, latitude and longitude coordinates, room
+type, price in dollars, minimum\_nights, number of reviews, latest
+review, number of reviews per month, amount of listing per host and
+availability. A description of each of these is included in the
+codebook, as well as shown below
 
-We are assuming that the data we have for Airbnbs in New York City
-represents the population given that a) there are 48,895 observations
-and b) we consulted Dr. Tackett and she thinks that the data was most
-likely web scapped from the Airbnb website.
+### Dimensions:
 
-Therefore, in order to perform analysis, we created a sample set called
-abnb\_sample of 4000 randomly selected observations.
+`Observations: 48,895` `Variables: 16`
 
-It is important to note that we were advised that our exploratory data
-analysis should involve the entire dataset while our conclusions should
-be drawn from the sample.
+### Codebook:
+
+`Variable Name --> Description` `id --> The specific listing's ID value
+from the Airbnb website.` `name --> Host-produced description of the
+listing.` `host_id --> The ID unique for the listing's owner.`
+`host_name --> First name of host/hosts.` `neighbourhood_group --> One
+of the NYC five boroughs (Manhattan, Brooklyn, Queens, Staten Island,
+Bronx)` `neighbourhood --> Specific area within each of the boroughs.`
+`latitude --> Horizontal global coordinate.` `longitude --> Vertical
+global coordinate.` `room_type --> One of three classifications (Etire
+home/apartment, Private Room, or Shared Room).` `price --> The listing's
+price in United States dollars per night.` `minimum_nights --> The
+minimum nights required by the host to stay.` `number_of_reviews -->
+Quantity of online reviews given for a listing.` `last_review -->
+Year/Month/Date of the most recent review.` `reviews_per_month -->
+Quantity of reviews on average in a given month.`
+`calculated_host_listings_count --> Number of listings per one host.`
+`availability_365 --> Quantity of days in which the listing is
+available.`
+
+Based on these factors, it seems as though price and availability would
+make the most interesting response variables because they are very
+important to understand the economic landscape. For example, someone who
+is looking to book an Airbnb is going to be very interested in what is
+available within their budget. Of course, there are going to be other
+factors that are important to a consumer, such as location within NYC.
+However, we expect availability and price to be the most predictive and
+representative of the Airbnbs in New York City.
+
+In order to perform analysis, we created a sample set of 4000 randomly
+selected observations. The following analysis and conclusions are drawn
+from that sample set.
 
 ### Part I: Price and Location
+
+For our first research question, we hope to explore how location
+influences the price as a response variable. Some variables from the
+dataset that pertains to price and would be interesting to explore are
+borough, neighborhood, latitude, and longitude. We know that in real
+estate location highly influences the value of properties and rent
+rates, especially in a large, wealthy, productive city like New York.
+Thus, we believe that this would likely have a relationship with price.
 
 In part I, the following research question will be examined: How does
 location (borough and co-ordinates, for example) influence the price of
@@ -36,27 +100,25 @@ a listing?
 
 ### Understanding Price
 
-To start, a bootstrap distribution was constructed for the median price
-of Airbnbs in NYC. This will help to better understand the range of
-prices and the real estate landscape that the true median price would be
-within.
-
-Creating a 95% bootstrap confidence interval for the the median price of
-Airbnbs in NYC:
+To start, a bootstrap distribution and 95% bootstrap confidence interval
+was constructed for the median price of Airbnbs in NYC. This will help
+to better understand the range of prices and the real estate landscape
+that the true median price would be within.
 
     ## # A tibble: 1 x 2
     ##   `2.5%` `97.5%`
     ##    <dbl>   <dbl>
     ## 1    100     110
 
-Creating a visualizaing of the bootstrap distribution for median price:
+A visualizaing of the bootstrap distribution for median price is shown
+below:
 
 ![](writeup_files/figure-gfm/boot_dist_median_visu-1.png)<!-- -->
 
-As depicted in the output and visualization, we are 95% confident that
-the population median price per night of Airbnbs in NYC is between
-$100.00 and $110.00. This information will help us understand prices in
-the Airbnb market as we go about attempting to draw comparisions.
+We are 95% confident that the population median price per night of
+Airbnbs in NYC is between $100.00 and $110.00. This information will
+help us understand prices in the Airbnb market as we go about attempting
+to draw comparisions.
 
 ### Exploring Boroughs
 
@@ -64,8 +126,8 @@ The first location variable that might be helpful to explore is borough
 (neighbourhood\_group) given that New York City is divided into five
 areas (The Bronx, Brooklyn, Manhattan, Queens, and Staten Island).
 
-Creating an exploratory bar graph that displays number of listings by
-borough in New York City:
+A bar graph that displays number of listings by borough in New York City
+is shown below:
 
 ![](writeup_files/figure-gfm/visualization-univariate-1.png)<!-- -->
 
@@ -74,9 +136,6 @@ York City. More specifically, there is roughly 20,000 listings in
 Brooklyn and slightly more than 20,000 listings in Manhattan. Queens
 follows after with roughly 5,000 listings, followed by the Bronx and
 Staten Island with fewer than 1,100 listings each.
-
-Calculating summary statistics that will count the number of listings in
-each neighborhood group:
 
     ## # A tibble: 5 x 2
     ##   neighbourhood_group     n
@@ -91,9 +150,6 @@ Manhattan has the most listings at 21,661 followed by Brooklyn at 20,104
 listings, followed by Queens at 5,666, Bronx at 1,091, and Staten Island
 last at only 373 listings.
 
-Creating summary statistics that displays the median price of each
-neighborhood group.
-
     ## # A tibble: 5 x 2
     ##   neighbourhood_group med_price
     ##   <chr>                   <dbl>
@@ -104,48 +160,126 @@ neighborhood group.
     ## 5 Bronx                      65
 
 Manhattan has the highest median price at 150 followed by Brooklyn at
-90, Queens and Staten Island at 75, and the Bronx last at 65. We will
-develop a linear model to describe how boroughs influence price and,
-since Manhattan had the largest volume of Airbnbs and the highest median
-price, that will be the baseline for comparison with other boroughs.
+90, Queens and Staten Island at 75, and the Bronx last at 65.
 
-Using fct\_relevel to make Manhattan the baseline level for
-neighbourhood\_group:
+It is clear that quantity of listings as well as median price varies
+greatly across each of the five boroughs. After further exploration of
+the relevant location variables we will predict how much these variables
+influence price by developing a linear model.
 
-Creating a boxplot to show price by borough
+First we would liketo visualize the distribution of price by borough,
+below is a boxplot to show price by borough
 (neighbourhood\_group):
 
 ![](writeup_files/figure-gfm/price_box_neighbourhood_group-1.png)<!-- -->
 
-The graph above are boxplots that show the price of renting an Airbnb
-per night based on the borough that the Airbnb is located. Due to
-extremely right skewed data and very expensive outliers this box plot
-does not display the actual distribution as well as we hoped. In order
-to make a more useful visualization, we filtered for price below $1000
-and recreated the box plot above.
-
-Creating a boxplot to show price by borough
-(neighbourhood\_group):
+The boxplot above shows the price of renting an Airbnb per night based
+on the borough that the Airbnb is located. Due to extremely right skewed
+data and very expensive outliers this box plot does not display the
+actual distribution as well as we hoped. In order to make a more useful
+visualization, we filtered for price below $1000 and recreated the box
+plot
+above.
 
 ![](writeup_files/figure-gfm/price_box_neighbourhood_group_filter-1.png)<!-- -->
 
-We know from the summary statistics above that Manhattan has the highest
-median price, followed by Brooklyn,Queens and Staten Island, and finally
-the Bronx has the lowest median available price for Airbnb’s in
-Manhattan per night. Manhattan and Queens have the most (largest)
-ouliers, Manhattan also has the largerst IQR.
+We have already found above, that Manhattan has the highest median
+price, followed by Brooklyn, Queens and Staten Island, and finally the
+Bronx has the lowest median available price for Airbnb’s in Manhattan
+per night. What we did not know that is evident in both the origianl and
+the above graph is that Manhattan and Queens have the largest ouliers
+(Manhattan’s largest outlier stands at \>$8,000 per night and Queen’s is
+about $2,000 per night). Staten Island has the lowest IQR and Manhattan
+has the largerst IQR, this is not surprising considering the number of
+listings that we found above, Manhattan with 21,661 vs Staten Island
+with only 373.
 
-Creating a linear model to predict Airbnb price by borough. It is first
-important to discuss the assumptions we are making when performing this
-regression. We are assuming each listing is independent because the
+### Visualizing Manhattan
+
+From the previous sections, it has become clear that Manhattan is the
+most expensive borough for Airbnbs. In order to confirm this visually,
+we will create a scatterplot. To simplify the scatterplot, price will be
+broken down into two catergories based on the median price of all
+Airbnbs in NYC. In order to do this we creae and use a new variable
+(price\_case) which describes whether the price of the listing is at or
+above the median price or below the median price. A visualization of
+Airbnbs by latidude and longitude co-ordinates and using color to
+distinguish between the price types is shown below.
+
+![](writeup_files/figure-gfm/price-at-location-1.png)<!-- -->
+
+It is clear from this map, that the cases in which the prices are at the
+median or above (blue dots) are clustered around Manhattan. Therefore,
+visualization once again confirms our previous findings. The area that
+appears to have the second most number of blue dots is Brooklyn, which
+is right next to Manhattan. We determined the relative frequency of
+listings that are above or at the median price by borough and found
+Manhattan has the greatest frequency of median or above listings at
+68.757%, followed by Brooklyn at 40.380%. Queens has 24.448%, Staten
+Island has 21.739% and the Bronx has 15.294%.
+
+    ## # A tibble: 5 x 4
+    ## # Groups:   neighbourhood_group [5]
+    ##   neighbourhood_group price_case          n rel_freq
+    ##   <chr>               <chr>           <int>    <dbl>
+    ## 1 Manhattan           Median or Above  1184    0.688
+    ## 2 Brooklyn            Median or Above   680    0.404
+    ## 3 Queens              Median or Above   119    0.245
+    ## 4 Staten Island       Median or Above     5    0.217
+    ## 5 Bronx               Median or Above    13    0.153
+
+### Neighborhood?
+
+After discovering the vairation in price between borough, we were very
+interested in exploring how price was affected by neighbourhood (within
+each borough). We calculated the median price of the top 10
+neighborhoods and check their corresponding borough to see if they tend
+to lie in same borough, which we might expect to be Manhattan as it is
+the most expensive borough.
+
+    ## # A tibble: 10 x 3
+    ## # Groups:   neighbourhood [10]
+    ##    neighbourhood     neighbourhood_group med_price
+    ##    <chr>             <chr>                   <dbl>
+    ##  1 Eastchester       Bronx                    475 
+    ##  2 Far Rockaway      Queens                   450 
+    ##  3 Tribeca           Manhattan                450 
+    ##  4 Vinegar Hill      Brooklyn                 354.
+    ##  5 NoHo              Manhattan                325 
+    ##  6 Castleton Corners Staten Island            299 
+    ##  7 Rockaway Beach    Queens                   297 
+    ##  8 DUMBO             Brooklyn                 250 
+    ##  9 Highbridge        Bronx                    240 
+    ## 10 Great Kills       Staten Island            235
+
+The neighborhoods with the most expensive Airbnbs come from a range of
+boroughs. In fact, all are represented in the top 10 equally.
+Surprisingly, the Bronx contains the neighborhood, Eastchester, with the
+highest median price of $475.00. Given the extensive analysis already
+done for location by borough and co-ordinates, neighborhood will not be
+analyzed further as it is beyond the initial scope of our focus. Next we
+will investigate other location variables such as latitude and longitude
+as well was borough to predict price by location
+
+### Regression analysis
+
+As stated above, we would like to predict how much these location
+variables influence price. To do this we develop a linear model to
+describe how boroughs influence price and, since Manhattan had the
+largest volume of Airbnbs and the highest median price, that will be the
+baseline for comparison with other boroughs.
+
+When creating a linear model to predict Airbnb price by borough. It is
+first important to discuss the assumptions we are making when performing
+this regression. We are assuming each listing is independent because the
 pricing of one space does not driectly influence the other. While some
 might argue there is dependence between listings to some extent, the
 market for Airbnbs in NYC is free and competitive so renters, ideally,
 don’t collude.
 
 In addition to independence, there are other assumptions that need to be
-discussed. Thus, a residuals plot will be
-made:
+discussed. Thus, a residuals plot is shown
+below:
 
 ![](writeup_files/figure-gfm/lm_price_borough_aug-residuals-1.png)<!-- -->
 
@@ -167,8 +301,6 @@ distribution.
 
 ![](writeup_files/figure-gfm/lm_price_borough_aug-nomality-filtered-1.png)<!-- -->
 
-Using tidy to show the output for the linear model:
-
 | term                              |  estimate | p.value |
 | :-------------------------------- | --------: | ------: |
 | (Intercept)                       |   206.848 |   0.000 |
@@ -177,7 +309,7 @@ Using tidy to show the output for the linear model:
 | neighbourhood\_groupQueens        | \-110.432 |   0.000 |
 | neighbourhood\_groupBronx         | \-126.213 |   0.000 |
 
-The linear model is:
+The linear model that describes how boroughs influence price:
 
 `price-hat = 206.848 -85.106*(neighbourhood_groupBrooklyn)
 -117.674*(neighbourhood_groupStaten Island)
@@ -203,17 +335,15 @@ $110.43 less than an Airbnb in Manhattan, holding all else constant.
 For an Airbnb in Bronx, the median price is expected, on average, to be
 $126.21 less than an Airbnb in Manhattan, holding all else constant.
 
-As depicted in the output, all the p-values are less than the threshold
-of 0.05; therefore, the expected median prices predicted by the
-regression model are significant.
-
-The R squared of the linear model lm\_price\_borough to evaulaute the
-variability explained by the model:
+We have confirmed that all the p-values are less than the threshold of
+0.05; therefore, the expected median prices predicted by the regression
+model are significant.
 
     ## [1] 0.03669659
 
-Thus, roughly 3.670% of the variability in median price can be explained
-by the borough of Airbnbs in New York City.
+The R squared of the linear model lm\_price\_borough is .0367. Thus,
+roughly 3.670% of the variability in median price can be explained by
+the borough of Airbnbs in New York City.
 
 ### Comparing Manhattan and Brooklyn
 
@@ -224,12 +354,6 @@ the expected difference of $85.11 in median price was the least between
 Brooklyn and Manhattan and the p-value was less than 0.05. Therefore, we
 will attempt to answer the following: Is there is a significant
 difference in the true median prices between Manhattan and Brooklyn?
-
-The abnb\_sample was filtered to just include Manhattan and Brooklyn,
-which was saved to abnb\_sample\_filtered.
-
-Using the abnb\_sample\_filtered data frame, the observed sample median
-prices for Manhattand and Brooklyn were found.
 
     ## # A tibble: 2 x 2
     ##   neighbourhood_group med_price
@@ -249,111 +373,36 @@ Manhattan and Brooklyn Airbnb per night.
 Alternative Hypothesis: There is a difference in median price between
 Manhattan and Brooklyn Airbnb per night.
 
-Visualizing the null distribution.
+Below is a visualization of the null distribution:
 
 ![](writeup_files/figure-gfm/null_dist_diff_median_vis-1.png)<!-- -->
 
 From the visualization, there appears to be no overlap between the
-shaded region and the null distribution. A p-value was found to confirm
-this:
+shaded region and the null distribution.
 
     ## # A tibble: 1 x 1
     ##   p_value
     ##     <dbl>
     ## 1       0
 
-As expected, the p-value is 0, which is less than the significance value
-of 0.05. Therefore, we reject the null hypothesis that there is no
+To confirm what is clear in the visualization we found the p-value. As
+expected, the p-value is 0, which is less than the significance value of
+0.05. Therefore, we reject the null hypothesis that there is no
 difference in median price between Manhattan and Brooklyn Airbnb per
 night. We conclude that the data does provide convincing evidence of a
 difference in median price of Airbnbs for listings in Manhattan and
 Brooklyn.
 
-Finding the bootstrap distribution of the difference in median prices
-between listings in Manhattan and Brooklyn.
-
-Constructing a confidence interval to find the difference in median
-prices between Manhattan and Brooklyn:
+Next we create a bootstrap distribution and 95% confidence interval of
+the difference in median prices between listings in Manhattan and
+Brooklyn. To conclude we are 95% confident that the median price in
+Manhattan is between $55 and $65 higher than the median price in
+Brooklyn.
 
     ## # A tibble: 1 x 2
     ##   `2.5%` `97.5%`
     ##    <dbl>   <dbl>
     ## 1     55      65
-
-We are 95% confident that the median price in Manhattan is between $55
-and $65 higher than the median price in Brooklyn.
-
-### Visualizing Manhattan
-
-From the previous sections, it has become clear that Manhattan is the
-most expensive borough for Airbnbs. In order to confirm this visually,
-we will create a scatterplot. To simply the scatterplot, price will be
-broken down into two catergories based on the median price of all
-Airbnbs in NYC.
-
-Creating new variable price\_case which describes whether the price of
-the listing is at or above the median price or below the median price:
-
-Visualizing by latidude and longitude co-ordinates and using color to
-distinguish between the price types:
-
-![](writeup_files/figure-gfm/price-at-location-1.png)<!-- -->
-
-It is clear from this map, that the cases in which the prices are at the
-median or above (blue dots) are clustered around Manhattan. Therefore,
-visualization confirms our previous findings. The area that appears to
-have the second most number of blue dots is Brooklyn, which is right
-next to Manhattan. We use summary statistics to confirm.
-
-Relative frequency of listings that are above or at the median price by
-borough:
-
-    ## # A tibble: 5 x 4
-    ## # Groups:   neighbourhood_group [5]
-    ##   neighbourhood_group price_case          n rel_freq
-    ##   <fct>               <chr>           <int>    <dbl>
-    ## 1 Manhattan           Median or Above  1184    0.688
-    ## 2 Brooklyn            Median or Above   680    0.404
-    ## 3 Queens              Median or Above   119    0.245
-    ## 4 Staten Island       Median or Above     5    0.217
-    ## 5 Bronx               Median or Above    13    0.153
-
-As visualized earlier, Manhattan has the greatest frequency of median or
-above listings at 68.757%, followed by Brooklyn at 40.380%. Queens has
-24.448%, Staten Island has 21.739% and the Bronx has 15.294%.
-
-### Neighborhood?
-
-We have looked at the borough, latitude, and longitude co-ordinates so
-far. However, the final location indicator we have yet to take into
-account is neighborhood. We will calculate the median price of the top
-10 neighborhoods and check their corresponding borough to see if they
-tend to lie in same borough, which we might expect to be Manhattan as it
-is the most expensive borough.
-
-Summary statistic of median price by neighborhood:
-
-    ## # A tibble: 10 x 3
-    ## # Groups:   neighbourhood [10]
-    ##    neighbourhood     neighbourhood_group med_price
-    ##    <chr>             <fct>                   <dbl>
-    ##  1 Eastchester       Bronx                    475 
-    ##  2 Far Rockaway      Queens                   450 
-    ##  3 Tribeca           Manhattan                450 
-    ##  4 Vinegar Hill      Brooklyn                 354.
-    ##  5 NoHo              Manhattan                325 
-    ##  6 Castleton Corners Staten Island            299 
-    ##  7 Rockaway Beach    Queens                   297 
-    ##  8 DUMBO             Brooklyn                 250 
-    ##  9 Highbridge        Bronx                    240 
-    ## 10 Great Kills       Staten Island            235
-
-It appears that the neighborhoods with the most expensive Airbnbs come
-from a range of boroughs. In fact, all are represented in the top 10
-equally. Surprisingly, the Bronx contains the neighborhood, Eastchester,
-with the highest median price of $475.00. Given the extensive analysis
-already done for location by borough and co-ordinates, neighborhood will
-not be analyzed further as it is beyond the initial scope of our focus.
 
 ### Conclusion for Part I
 
@@ -389,35 +438,37 @@ median price of $475.00.
 
 ### Part II: Availability and Property Listing
 
+Next in our data analysis, we explore how the listing is presented on
+the Airbnb platform might influence the price. These the variables that
+releavant in how the listing is presented include variables like name,
+room\_type, minimum\_nights and calculated\_host\_listings\_count. These
+are variables that might inform consumer choices and be indicative of
+the number of available days of a listing.
+
 In part II, the following research question will be examined: How does
 the way in which a property is listed (type of room, for example)
 influence the availability of a listing?
 
 ### Understanding Availability
 
-To start, a bootstrap distribution was constructed for the median
-availability of Airbnbs in NYC. This will help to better understand the
-range of available number of days (out of 365) and the market demand.
-
-Constructing a bootstrap distribution for the median number of available
-days of Airbnbs in NYC:
-
-Creating a 95% bootstrap confidence interval for the median number of
-available days of an Airbnb in NYC:
+To start, a bootstrap distribution and 95% bootstrap confidence interval
+was constructed for the median number of available days of an Airbnb in
+NYC. This will help to better understand the range of available number
+of days (out of 365) and the market demand.
 
     ## # A tibble: 1 x 2
     ##   `2.5%` `97.5%`
     ##    <dbl>   <dbl>
     ## 1     42      57
 
-Creating a visualization of the bootstrap distribution for median price:
+We are 95% confident that the median number of available days of Airbnbs
+in New York City is between 42 and 57 days. This information will help
+us understand availability in the Airbnb market as we go about
+attempting to draw comparisions. A visualization of the bootstrap
+distribution and 95% confidence interval for median availability is
+shown below:
 
 ![](writeup_files/figure-gfm/visualize_avail365-1.png)<!-- -->
-
-Thus, we are 95% confident that the median number of available days of
-Airbnbs in New York City is between 42 and 57 days. This information
-will help us understand availability in the Airbnb market as we go about
-attempting to draw comparisions.
 
 ### Descriptions and Desires: What makes an Airbnb appealing?
 
@@ -428,19 +479,11 @@ greater than 143 and less than or equal to 219 are “medium”, those
 greater than 219 and less than or equal to 292 are “medium high”, and
 those greater than 292 are “high”.
 
-Categorizing availability as described:
-
-Given that the descriptions of an Airbnb listings include multiple words
-or short sentences, text analysis will be performed.
-
-Creating new dataset abnb\_text and selecting only the variables
-required:
-
-Performing text analysis by unnested tokens:
-
-Removing stop words to get the top 10 most common words used in
-descriptions of significance for Airbnb listings with the least
-availability:
+Another important factor of the way a given Airbnb is listed is the
+description (name) written by the host. We are interested in how
+descriptions could influence which Airbnbs are most popular. Given that
+the descriptions of an Airbnb listings include multiple words or short
+sentences, text analysis is be performed.
 
     ## # A tibble: 10 x 3
     ##    word         availability_365     n
@@ -456,11 +499,12 @@ availability:
     ##  9 east                        0   114
     ## 10 williamsburg                0   106
 
-The top most common words for Airbnbs with the least availability are
-bedroom, apartment and private.
+After removing stop words, the top most common words used in
+descriptions of significance for Airbnb listings with the least
+availability are bedroom, apartment and private.
 
-Calculating and visualizing the relaitve frequency of the most common
-words:
+A visualization of the relaitve frequency of the top 10 most common
+words is shown below:
 
 ![](writeup_files/figure-gfm/word-freq-vis-1.png)<!-- -->
 
@@ -481,9 +525,9 @@ the number of booking and thus, the availability of the listing.
 Therefore, we will create a linear model to predict Airbnb availability
 by roomtype.
 
-In order to find the baseline, we will use our exploratory analysis. We
-create a boxplot to show which room type (shared, private or
-house/apartment) is available for the most amount of days per year:
+In order to find the baseline, we will use our exploratory analysis. The
+boxplot below shows which room type (shared, private or house/apartment)
+is available for the most amount of days per year:
 
 ![](writeup_files/figure-gfm/room_type-availability_365-1.png)<!-- -->
 
@@ -493,8 +537,7 @@ days days among entire home and private rooms are slightly less than 50
 days while shared rooms have a rough median availability of 90 days.
 Shared rooms are available for the most number of days in the year.
 
-Creating a table to describe summary statistics for availibility by room
-type:
+summary statistics for availibility by room type:
 
     ## # A tibble: 3 x 3
     ##   room_type       med_availability_365 IQR_availability_365
@@ -507,17 +550,16 @@ The median availability are 90 days for shared room, 45 days for private
 room, and 42 days for entire home/apartment. The range for shared room
 type is the highest with 341 days.
 
-Therefore, we will conduct a linear model to show the influence of room
-type on availability with entire home/apt as be our baseline:
+Therefore, entire home/apt will be our baseline for the linear model to
+show the influence of room type on availability.
 
-Creating a linear model to predict Airbnb availability by room type. It
-is first important to discuss the assumptions we are making when
+It is first important to discuss the assumptions we are making when
 performing this regression. We are assuming each room type is
 independent because the availability of one room type doesn’t affect the
 availability of another room type.
 
 In addition to independence, there are other assumptions that need to be
-discussed. Thus, a residuals plot will be made:
+discussed. Thus, a residuals plot is shown below:
 
 ![](writeup_files/figure-gfm/lm_avail_borough_aug-1.png)<!-- -->
 
@@ -532,15 +574,14 @@ normal.
 
 ![](writeup_files/figure-gfm/lm_avail_borough_aug-nomality-1.png)<!-- -->
 
-Using tidy to show the output for the linear model:
-
 | term                   | estimate | p.value |
 | :--------------------- | -------: | ------: |
 | (Intercept)            |  115.774 |   0.000 |
 | room\_typePrivate room |  \-3.443 |   0.418 |
 | room\_typeShared room  |   74.912 |   0.000 |
 
-The linear model is:
+The linear model that describes the influence of room type on
+availability is:
 
 `price-hat = 115.774 -3.443*(room_typePrivateroom)
 +74.912*(room_typeShared room)`
@@ -560,41 +601,34 @@ For an Airbnb with roomtype of shared room, the median availability is
 expected, on average, to be 74.9 days more per year than an Airbnb in
 wth room type of entire house/apt, holding all else constant.
 
-The R squared of the linear model lm\_avail\_room\_type to evaulaute the
-variability explained by the model:
-
     ## [1] 0.008414499
 
-This means that roughly 0.841% of the variability in median
-availiability can be explained by the type of room of Airbnb in New
-York. This is a relatively small R squared value. Perhaps there are
-other factors which influence availability.
+The R squared of the linear model is 0.00841. This means that roughly
+0.841% of the variability in median availiability can be explained by
+the type of room of Airbnb in New York. This is a relatively small R
+squared value. Perhaps there are other factors which influence
+availability.
 
-As depicted in the output, all the p-values, except for private room,
-are less than the threshold of 0.05; therefore, the expected median
-availabilty predicted by the regression model for shared rooms is
-significant.
+We confirmed that all the p-values, except for private room, are less
+than the threshold of 0.05; therefore, the expected median availabilty
+predicted by the regression model for shared rooms is significant.
 
 ### Listing Factors and Availability
 
-In order to look at these other factors, we will select a model AIC
-backwards selection.
+There are many other variables that we believe could affect the
+avialibility of the listing. In order to look at these other factors, we
+will select a model AIC backwards selection.
 
-Removing NA values and creating a full model for availability\_365:
-
-Performing model selection using AIC for availability using step
-function.
-
-Creating a linear model to predict Airbnb availability by reviews per
-month, minimum number of nights, whether the price was at the
-median/above or not, the room type, number of reviews, and the
-calculated number of host listings. It is first important to discuss the
-assumptions we are making when performing this regression. We are
-assuming each of these factors is independent because they do not
+We created another linear model, this time to predict Airbnb
+availability by reviews per month, minimum number of nights, whether the
+price was at the median/above or not, the room type, number of reviews,
+and the calculated number of host listings. It is first important to
+discuss the assumptions we are making when performing this regression.
+We are assuming each of these factors is independent because they do not
 directly influence each other.
 
 In addition to independence, there are other assumptions that need to be
-discussed. Thus, a residuals plot will be made:
+discussed. Thus, a residuals plot is shown below:
 
 ![](writeup_files/figure-gfm/lm_price_borough_aug-1.png)<!-- -->
 
@@ -609,8 +643,6 @@ normal.
 
 ![](writeup_files/figure-gfm/lm_price_borough_aug-nomality-1.png)<!-- -->
 
-Output for the selected model:
-
 | term                              | estimate | p.value |
 | :-------------------------------- | -------: | ------: |
 | (Intercept)                       |   59.923 |       0 |
@@ -622,14 +654,15 @@ Output for the selected model:
 | price\_caseMedian or Above        |   29.622 |       0 |
 | reviews\_per\_month               |    5.936 |       0 |
 
-The selected linear model for this model is:
+The selected linear model to predict Airbnb availability by reviews per
+month, minimum number of nights, whether the price was at the
+median/above or not, the room type, number of reviews, and the
+calculated number of host listings is:
 
 `availability_365 = 59.923 + 26.396*(room_typePrivate room)
 +115.98*(room_typeShared room) + 0.481*(minimum_nights)
 +0.461*(number_of_reviews) + 0.853*(calculated_host_listings_count)
 +29.622*(price_caseMedian or Above) + 5.93*(reviews_per_month)`
-
-Interpretation of two slopes for final model:
 
 Categorical predictor: Listings that are of room\_type: Private room,
 are expected to have, on average, an average availibility of 26.396
@@ -641,20 +674,18 @@ required to stay at the airbnb (minimum\_nights), it is expected, on
 average, that availibility increases by 0.481 days, holding all else
 constant.
 
-Determining R-squared:
-
     ## [1] 0.1048801
 
-The R-squared value is 10.49% of the variability in availibility can be
-explained by the way the property is listed - the room type, minimum
-nights required, number of reviews the listing has, the number of
-listings the host has, the median price and the reviews per month.
-Compared to our other models, this is a relatively higher R squared
-value. It is also important to note that room types have high
+The R-squared value is 0.1049. This means 10.49% of the variability in
+availibility can be explained by the way the property is listed - the
+room type, minimum nights required, number of reviews the listing has,
+the number of listings the host has, the median price and the reviews
+per month. Compared to our other models, this is a relatively higher R
+squared value. It is also important to note that room types have high
 coefficients.
 
-As depicted in the output, all the p-values are less than the threshold
-of 0.05; therefore, the expected median availabilities predicted by the
+We confirmed, all the p-values are less than the threshold of 0.05;
+therefore, the expected median availabilities predicted by the
 regression model are significant.
 
 ### Host Volume
@@ -667,21 +698,11 @@ of income. We define a host as “high volume” if they hold more than one
 listing and “low volume” if they hold only one listing. Thus, it
 provides us with more information about the owner of the Airbnb.
 
-Since calculated\_host\_listings\_count includes non-NYC listings, we
-use the number of times host\_id exists in the sample to find the number
-of listings the host holds in NYC in our sample.
-
-ID is a unique number for the Airbnb listing, which would cause
-complications in this process, and is being removed intially. It is also
-independent of availability.
-
-Creating new dataframe abnb\_host\_volume and mutating new variable
-host\_volume as described above by counting frequency of each host\_id:
-
-Merging the two datasets abnb\_host\_volume and abnb\_sample by host\_id
-using inner\_join:
-
-Finding number of high volume hosts and low volume hosts:
+Moreover, we are trying to understand how the number of listings per
+host in NYC influence the availability. We believe this analysis could
+give us more insight into the type of hosts that use the Airbnb service.
+We hope to see how this mix of categorical and numerical values impacts
+one of the potential response variables.
 
     ## # A tibble: 2 x 2
     ##   host_volume     n
@@ -689,19 +710,18 @@ Finding number of high volume hosts and low volume hosts:
     ## 1 high volume   436
     ## 2 low volume   3564
 
-Thus, 436 of the hosts are high volume and 3564 of the hosts are low
-volume.
+We found the number of high volume hosts and low volume hosts:
 
-Conducting a hypothesis test if availability can be explained if someone
-is high volume or not:
+436 of the hosts are high volume and 3564 of the hosts are low volume.
+
+Next we decided to conduct a hypothesis test to see if availability can
+be explained depending on whether a host is high volume or not:
 
 Ho: There is no difference in the median availability of high volume and
 low volume hosts.
 
 Ha: There is a difference in the median availability of high volume and
 low volume hosts.
-
-Finding observed median availability:
 
     ## # A tibble: 2 x 2
     ##   host_volume medianavail
@@ -713,40 +733,33 @@ The observed median availability of high volume hosts is 274.5 and that
 of low volume hosts is 30. The observed sample median difference in
 availability is 274.5 - 30.0 = 244.5.
 
-Constructing null distribution:
-
-Visualizing null distribution:
+The null distribution is visualized below:
 
 ![](writeup_files/figure-gfm/vis-hypo-hostvolume-1.png)<!-- -->
-
-From the visualization, there appears to be no overlap between the
-shaded region and the null distribution. A p-value was found to confirm
-this:
 
     ## # A tibble: 1 x 1
     ##   p_value
     ##     <dbl>
     ## 1       0
 
-As expected, the p-value is 0, which is less than the significance value
-of 0.05. Therefore, we reject the null hypothesis that there is no
+From the visualization, there appears to be no overlap between the
+shaded region and the null distribution. We found the p-value and as
+expected, the p-value is 0, which is less than the significance value of
+0.05. Therefore, we reject the null hypothesis that there is no
 difference in median availability. This means that there is sufficient
 evidence that there is a difference in the median availability of high
 volume hosts and low volume hosts. Thus, to estimate the difference we
 construct a bootstrap simulation and find the 95% confidence interval.
 
-Constructing a confidence interval to find the difference in median
-availability:
-
-Constructing 95% confidence interval:
+Finally we construct a 95% confidence interval to find the difference in
+median availability: We are 95% confident that the median availability
+for high volume hosts is between 219 to 261.025 days greater than that
+of low volume hosts.
 
     ## # A tibble: 1 x 2
     ##   `2.5%` `97.5%`
     ##    <dbl>   <dbl>
     ## 1    219    261.
-
-We are 95% confident that the median availability for high volume hosts
-is between 219 to 261.025 days greater than that of low volume hosts.
 
 ### Conclusion For Part 2
 
@@ -768,5 +781,88 @@ showed room type to be a relevant predictor. In additon, we predicted
 that more experienced hosts with more listings would have more
 availability days because they have more listings and our hypothesis
 test indicated that we were right.
+
+### Areas of Improvement:
+
+Perhaps one of the biggest concerns among our dataset was that we could
+not prove constant variance. The spread of the residuals in our residual
+plots did not suggest constant variance. This means that when plotting
+the individual error against the predicted value, the variance of the
+error predicted value should be constant. Graphically, the spread of the
+points around the regression line is too variable. Therefore, we had to
+proceed with caution when drawing assumptions from the linear
+regression. However, if we limit our conclusions to predictions, the
+consequences of a weak or not constant variance are less pressing.
+Furthermore, we assumed independence in our sample, implying that each
+listing is independent because the pricing of one space does not
+directly influence the other. While some might argue there is dependence
+between listings to some extent, the market for Airbnbs in NYC is free
+and competitive, so renters, ideally, don’t collide. In other words, it
+can be safely assumed that hosts of Airbnbs are working together to
+price fix listings in New York City. Another critical concern to
+consider in our analysis are the probabilities of type 1 and type 2
+errors. For the entirety of our analysis, we set our alpha level to
+0.05. However, we could have set the alpha level lower to reduce type 1
+error, but consequently, increase type 2 error. It is important to
+consider the needs when it comes to analyzing the data. If someone wants
+to determine, for instance, on average, which borough is cheaper to book
+an Airbnb between Manhattan and Brooklyn, there would have to set the
+predetermined alpha level on their desired outcome. A type 1 error would
+mean that we reject that is no significant true median difference when,
+in reality, there is a true median difference. A type 2 error would mean
+that we conclude that there is a true median difference when, in
+reality, there is not. Someone who is on a very tight budget and cannot
+afford the more expensive Airbnb may want to decrease the type 1 error
+as much as possible to avoid spending more than they expected. (This is
+all assuming they did not know the actual price of the Airbnb and had to
+pick whether to stay in Manhattan or Brooklyn before booking an Airbnb).
+To decrease the type 1 error, this particular person could set the alpha
+level to a number less than 0.05. Our analysis could be stronger if we
+took into account the purposes that people will use it for. If we were
+going to continue work on the project, we could delve deeper into
+locations such as specific neighborhoods. This would allow users of our
+analysis to investigate further, more specifically, the cheapest places,
+on average, of New York City. For example, although the Bronx is one of
+the more affordable boroughs in our analysis, the most expensive
+neighborhood is in the Bronx. For travelers on a very tight budget, they
+may be misled by the information presented in our dataset because we
+were not specific enough with the location.
+
+### Overall Conclusion:
+
+Our data analysis concluded that: based on our research question from
+our proposal, we wanted to determine how location and availability
+played a role in determining the price of Airbnbs in New York City. We
+concluded that both Manhattan and Brooklyn dominated the Airbnb scene in
+terms of the number of listings, we wanted to see how these two
+locations play a role in the price of Airbnbs. Manhattan had a higher
+true median price than Brooklyn because Manhattan is known from previous
+knowledge to be an upper-class neighborhood; a hypothesis test confirmed
+this. A 95% confidence interval showed that the median price in
+Manhattan is between $55 and $65 higher than the median price in
+Brooklyn. We also concluded in our analysis that Manhattan has the
+greatest frequency of median or above listings at 68.757%, followed by
+Brooklyn at 40.380%. Queens has 24.448%, Staten Island has 21.739% and
+the Bronx has 15.294%. Finally, we investigated the last variable
+corresponding to the location: neighborhood. Looking into the top ten
+median-priced neighborhoods for Airbnb’s we surprisingly found that the
+Bronx contains the neighborhood, Eastchester, with the highest median
+price of $475.00. Based on our second research question in our proposal,
+we wanted to see how the way in which a property is listed (the type of
+room and description for example) influences the availability of a
+listing. Assuming availability is a good predictor of desirability (more
+available, less desirable). Our analysis revealed that a shared room is
+likely the least desired of the three-room types due to the largest IQR
+and highest median availability of the three-room types. Furthermore, we
+did conducted text analysis of the descriptions, we found words
+associated with private were highly sought after such as “private”,
+“apartment” indicating a private enclave, and “bedroom” indicating
+one’s private space. In addition, our linear model predicting
+availability by all variables regarding listing showed room type to be a
+relevant predictor. In addition, we predicted that more experienced
+hosts with more listings would have more availability days because they
+have more listings and our hypothesis test indicated that we were right.
+In our regression, we determined that location is a significant variable
+in determining the price of Airbnb listings in New York City.
 
 ### Overall
