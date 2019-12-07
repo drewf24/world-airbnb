@@ -267,8 +267,6 @@ ggplot(data = lm_price_borough_aug_filter, aes(x = .resid)) +
        title = "Filtered Normality of Residuals")
 ```
 
-Using tidy to show the output for the linear model:
-
 ```{r lm-price-borough-output}
 lm_price_borough %>% 
   tidy() %>% 
@@ -277,7 +275,7 @@ lm_price_borough %>%
 
 ```
 
-The linear model is:
+The linear model that describes how boroughs influence price:
 
 `price-hat = 206.848 -85.106*(neighbourhood_groupBrooklyn) -117.674*(neighbourhood_groupStaten Island) -110.432*(neighbourhood_groupQueens) -126.213(neighbourhood_groupBronx)`
 
@@ -293,28 +291,22 @@ For an Airbnb in Queens, the median price is expected, on average, to be $110.43
 
 For an Airbnb in Bronx, the median price is expected, on average, to be $126.21 less than an Airbnb in Manhattan, holding all else constant.
 
-As depicted in the output, all the p-values are less than the threshold of 0.05; therefore, the expected median prices predicted by the regression model are significant.
-
-The R squared of the linear model lm_price_borough to evaulaute the variability explained by the model:
+We have confirmed that all the p-values are less than the threshold of 0.05; therefore, the expected median prices predicted by the regression model are significant.
 
 ```{r rsqaure-lm_price_borough}
 glance(lm_price_borough)$r.squared
 ```
 
-Thus, roughly 3.670% of the variability in median price can be explained by the borough of Airbnbs in New York City.
+The R squared of the linear model lm_price_borough is .0367. Thus, roughly 3.670% of the variability in median price can be explained by the borough of Airbnbs in New York City.
 
 ### Comparing Manhattan and Brooklyn
 
 We are suspicious that there might be a relationship between median price in Manhattan and Brooklyn because they contain the largest amount and the most expensive Airbnbs. Also, the linear model above showed that the expected difference of $85.11 in median price was the least between Brooklyn and Manhattan and the p-value was less than 0.05. Therefore, we will attempt to answer the following: Is there is a significant difference in the true median prices between Manhattan and Brooklyn?
 
-The abnb_sample was filtered to just include Manhattan and Brooklyn, which was saved to abnb_sample_filtered.
-
 ```{r filter-borough}
 abnb_sample_filtered <- abnb_sample %>%
   filter(neighbourhood_group == "Manhattan" | neighbourhood_group == "Brooklyn")
 ```
-
-Using the abnb_sample_filtered data frame, the observed sample median prices for Manhattand and Brooklyn were found.
 
 ```{r sample_diff_med}
 abnb_sample_filtered %>%
@@ -340,7 +332,7 @@ null_dist_man_brook_med_price <- abnb_sample_filtered %>%
 
 ```
 
-Visualizing the null distribution.
+Below is a visualization of the null distribution:
 
 ```{r null_dist_diff_median_vis, warning=FALSE}
 visualize(null_dist_man_brook_med_price) + 
@@ -348,15 +340,15 @@ visualize(null_dist_man_brook_med_price) +
   shade_p_value(obs_stat = 60, direction = "two_sided")
 ```
 
-From the visualization, there appears to be no overlap between the shaded region and the null distribution. A p-value was found to confirm this:
+From the visualization, there appears to be no overlap between the shaded region and the null distribution. 
 
 ```{r null_dist_diff_median_p_val}
 get_p_value(null_dist_man_brook_med_price, 60, direction = "two_sided")
 ```
 
-As expected, the p-value is 0, which is less than the significance value of 0.05. Therefore, we reject the null hypothesis that there is no difference in median price between Manhattan and Brooklyn Airbnb per night. We conclude that the data does provide convincing evidence of a difference in median price of Airbnbs for listings in Manhattan and Brooklyn.
+To confirm what is clear in the visualization we found the p-value. As expected, the p-value is 0, which is less than the significance value of 0.05. Therefore, we reject the null hypothesis that there is no difference in median price between Manhattan and Brooklyn Airbnb per night. We conclude that the data does provide convincing evidence of a difference in median price of Airbnbs for listings in Manhattan and Brooklyn.
 
-Finding the bootstrap distribution of the difference in median prices between listings in Manhattan and Brooklyn.
+Next we create a bootstrap distribution and 95% confidence interval of the difference in median prices between listings in Manhattan and Brooklyn. To conclude we are 95% confident that the median price in Manhattan is between $55 and $65 higher than the median price in Brooklyn. 
 
 ```{r boot-man-brook-medprice}
 boot_man_brook_medprice <- abnb_sample_filtered %>%
@@ -365,14 +357,9 @@ boot_man_brook_medprice <- abnb_sample_filtered %>%
   calculate(stat = "diff in medians", c("Manhattan", "Brooklyn"))
 ```
 
-Constructing a confidence interval to find the difference in median prices between Manhattan and Brooklyn:
-
 ```{r ci-boot}
 (ci_bounds2 <- get_ci(boot_man_brook_medprice, level = 0.95))
 ```
-
-We are 95% confident that the median price in Manhattan is between $55 and $65 higher than the median price in Brooklyn. 
-
 
 ### Conclusion for Part I
 
@@ -380,18 +367,13 @@ Based on our research question from our proposal, we wanted to determine how loc
 
 ### Part II: Availability and Property Listing
 
-For our second research question, we explore how the listing is presented on the Airbnb platform that might influence the price. These include variables like name, room_type, minimum_nights and calculated_host_listings_count. These are variables that might inform consumer choices and be indicative of the number of available days of a listing. Some variables that could be insightful include the name of the listing which we will use text analysis to analyze. Each observation is also classified as one of three room types: private room, shared room and entire home/apt. Moreover, we are trying to understand how the number of listings per host in NYC influence the availability. We believe this analysis could give us more insight into the type of hosts that use the Airbnb service. We hope to see how this mix of categorical and numerical values impacts one of the potential response variables. 
-
-In part two of our data analysis, we explore how variables such as room type, minimum nights required to book an Airbnb, number of reviews, etc can influence the availability of an Airbnb. 
-
+Next in our data analysis, we explore how the listing is presented on the Airbnb platform might influence the price. These the variables that releavant in how the listing is presented include variables like name, room_type, minimum_nights and calculated_host_listings_count. These are variables that might inform consumer choices and be indicative of the number of available days of a listing.
 
 In part II, the following research question will be examined: How does the way in which a property is listed (type of room, for example) influence the availability of a listing?
 
 ### Understanding Availability
 
-To start, a bootstrap distribution was constructed for the median availability of Airbnbs in NYC. This will help to better understand the range of available number of days (out of 365) and the market demand.
-
-Constructing a bootstrap distribution for the median number of available days of Airbnbs in NYC:
+To start, a bootstrap distribution and 95% bootstrap confidence interval was constructed for the median number of available days of an Airbnb in NYC. This will help to better understand the range of available number of days (out of 365) and the market demand.
 
 ```{r avail_boot_distribution}
 set.seed(111519)
@@ -401,13 +383,11 @@ boot_dist_avail <- abnb_sample %>%
   calculate(stat = "median")
 ```
 
-Creating a 95% bootstrap confidence interval for the median number of available days of an Airbnb in NYC:
-
 ```{r boot_dist_availability_365}
 (ci_bounds <- get_ci(boot_dist_avail, level= 0.95))
 ```
 
-Creating a visualization of the bootstrap distribution for median price:
+We are 95% confident that the median number of available days of Airbnbs in New York City is between 42 and 57 days. This information will help us understand availability in the Airbnb market as we go about attempting to draw comparisions. A visualization of the bootstrap distribution and 95% confidence interval for median availability is shown below:
 
 ```{r visualize_avail365}
 visualize(boot_dist_avail) + 
@@ -415,13 +395,9 @@ visualize(boot_dist_avail) +
   shade_ci(ci_bounds)
 ```
 
-Thus, we are 95% confident that the median number of available days of Airbnbs in New York City is between 42 and 57 days. This information will help us understand availability in the Airbnb market as we go about attempting to draw comparisions.
-
 ### Descriptions and Desires: What makes an Airbnb appealing?
 
 In order to work with availability further, we categorize it in terms of ranges. Those available less than or equal to 73 days are "low", those greater than 73 and less than or equal to 143 are "medium low", those greater than 143 and less than or equal to 219 are "medium", those greater than 219 and less than or equal to 292 are "medium high", and those greater than 292 are "high".
-
-Categorizing availability as described:
 
 ```{r avail-catergory}
 abnb_sample <- abnb_sample %>%
@@ -434,16 +410,12 @@ abnb_sample <- abnb_sample %>%
     ))
 ```
 
-Given that the descriptions of an Airbnb listings include multiple words or short sentences, text analysis will be performed. 
-
-Creating new dataset abnb_text and selecting only the variables required:
+Another important factor of the way a given Airbnb is listed is the description (name) written by the host. We are interested in how descriptions could influence which Airbnbs are most popular. Given that the descriptions of an Airbnb listings include multiple words or short sentences, text analysis is be performed. 
 
 ```{r abnb_text}
 abnb_text <- abnb_sample %>%
   select(id, name, availability_365_case, availability_365)
 ```
-
-Performing text analysis by unnested tokens:
 
 ```{r text-analysis}
 remove_reg <- "&amp;|&lt;|&gt;"
@@ -451,8 +423,6 @@ tidy_description <- abnb_text %>%
   mutate(name = str_remove_all(name, remove_reg)) %>%
   unnest_tokens(word, name)
 ```
-
-Removing stop words to get the top 10 most common words used in descriptions of significance for Airbnb listings with the least availability:
 
 ```{r words-common}
 tidy_description <- tidy_description %>%
@@ -466,9 +436,9 @@ tidy_description %>%
   head(10)
 ```
 
-The top most common words for Airbnbs with the least availability are bedroom, apartment and private. 
+After removing stop words, the top most common words used in descriptions of significance for Airbnb listings with the least availability are bedroom, apartment and private. 
 
-Calculating and visualizing the relaitve frequency of the most common words: 
+A visualization of the relaitve frequency of the top 10 most common words is shown below: 
 
 ```{r word-freq-vis}
 frequency_all <- tidy_description %>%
@@ -489,7 +459,7 @@ Source for text analysis: https://www.tidytextmining.com/tidytext.html
 
 It seems as though how the physical description of the room influences the number of booking and thus, the availability of the listing. Therefore, we will create a linear model to predict Airbnb availability by roomtype.  
 
-In order to find the baseline, we will use our exploratory analysis. We create a boxplot to show which room type (shared, private or house/apartment) is available for the most amount of days per year:
+In order to find the baseline, we will use our exploratory analysis. The boxplot below shows which room type (shared, private or house/apartment) is available for the most amount of days per year:
 
 ```{r room_type-availability_365, message=FALSE}
 abnb %>%
@@ -504,7 +474,7 @@ abnb %>%
 
 The graph above are boxplots that show that the availability based on room type is also skewed to the right. The median available number of days days among entire home and private rooms are slightly less than 50 days while shared rooms have a rough median availability of 90 days. Shared rooms are available for the most number of days in the year. 
 
-Creating a table to describe summary statistics for availibility by room type:
+summary statistics for availibility by room type:
 
 ```{r table-avail}
 abnb %>%
@@ -518,15 +488,15 @@ abnb %>%
 
 The median availability are 90 days for shared room, 45 days for private room, and 42 days for entire home/apartment. The range for shared room type is the highest with 341 days.
 
-Therefore, we will conduct a linear model to show the influence of room type on availability with entire home/apt as be our baseline:
+Therefore, entire home/apt will be our baseline for the linear model to show the influence of room type on availability.
 
 ```{r lm-avail-room-type}
 lm_avail_room_type <- lm(availability_365 ~ room_type, data = abnb_sample)
 ```
 
-Creating a linear model to predict Airbnb availability by room type. It is first important to discuss the assumptions we are making when performing this regression. We are assuming each room type is independent because the availability of one room type doesn't affect the availability of another room type.
+It is first important to discuss the assumptions we are making when performing this regression. We are assuming each room type is independent because the availability of one room type doesn't affect the availability of another room type.
 
-In addition to independence, there are other assumptions that need to be discussed. Thus, a residuals plot will be made:
+In addition to independence, there are other assumptions that need to be discussed. Thus, a residuals plot is shown below:
 
 ```{r lm_avail_borough_aug}
 lm_avail_room_type_aug <- augment(lm_avail_room_type)
@@ -549,8 +519,6 @@ ggplot(data = lm_avail_room_type_aug, aes(x = .resid)) +
        title = "Normality of Residuals")
 ```
 
-Using tidy to show the output for the linear model:
-
 ```{r lm_avail_room_type-output}
 lm_avail_room_type %>% 
   tidy() %>%
@@ -559,7 +527,7 @@ lm_avail_room_type %>%
 
 ```
 
-The linear model is:
+The linear model that describes the influence of room type on availability is:
 
 `price-hat = 115.774 -3.443*(room_typePrivateroom) +74.912*(room_typeShared room)`
 
@@ -570,21 +538,17 @@ For an Airbnb with roomtype of private room, the median availability is expected
 
 For an Airbnb with roomtype of shared room, the median availability is expected, on average, to be 74.9 days more per year than an Airbnb in wth room type of entire house/apt, holding all else constant.
 
-The R squared of the linear model lm_avail_room_type to evaulaute the variability explained by the model: 
-
 ```{r rsqaure-lm_avail_room_typex}
 glance(lm_avail_room_type)$r.squared
 ```
 
-This means that roughly 0.841% of the variability in median availiability can be explained by the type of room of Airbnb in New York. This is a relatively small R squared value. Perhaps there are other factors which influence availability.
+The R squared of the linear model is 0.00841. This means that roughly 0.841% of the variability in median availiability can be explained by the type of room of Airbnb in New York. This is a relatively small R squared value. Perhaps there are other factors which influence availability.
 
-As depicted in the output, all the p-values, except for private room, are less than the threshold of 0.05; therefore, the expected median availabilty predicted by the regression model for shared rooms is significant.
+We confirmed that all the p-values, except for private room, are less than the threshold of 0.05; therefore, the expected median availabilty predicted by the regression model for shared rooms is significant.
 
 ### Listing Factors and Availability
 
-In order to look at these other factors, we will select a model AIC backwards selection.
-
-Removing NA values and creating a full model for availability_365:
+There are many other variables that we believe could affect the avialibility of the listing. In order to look at these other factors, we will select a model AIC backwards selection.
 
 ```{r remove-na}
 abnb_model <- abnb_sample %>%
@@ -603,15 +567,13 @@ m_full_model <- lm(availability_365 ~ room_type +
                      reviews_per_month, data = abnb_model)
 ```
 
-Performing model selection using AIC for availability using step function.
-
 ```{r AIC-backward-selection, results="hide"}
 selected_model <- step(m_full_model, direction = "backward")
 ```
 
-Creating a linear model to predict Airbnb availability by reviews per month, minimum number of nights, whether the price was at the median/above or not, the room type, number of reviews, and the calculated number of host listings. It is first important to discuss the assumptions we are making when performing this regression. We are assuming each of these factors is independent because they do not directly influence each other.
+We created another linear model, this time to predict Airbnb availability by reviews per month, minimum number of nights, whether the price was at the median/above or not, the room type, number of reviews, and the calculated number of host listings. It is first important to discuss the assumptions we are making when performing this regression. We are assuming each of these factors is independent because they do not directly influence each other.
 
-In addition to independence, there are other assumptions that need to be discussed. Thus, a residuals plot will be made:
+In addition to independence, there are other assumptions that need to be discussed. Thus, a residuals plot is shown below:
 
 ```{r lm_price_borough_aug}
 selected_model_aug <- augment(selected_model)
@@ -634,19 +596,15 @@ ggplot(data = lm_price_borough_aug, aes(x = .resid)) +
        title = "Normality of Residuals")
 ```
 
-Output for the selected model:
-
 ```{r selected-kable}
 tidy(selected_model) %>%
   select(term, estimate, p.value) %>%
   kable(format = "markdown", digits = 3)
 ```
 
-The selected linear model for this model is:
+The selected linear model to predict Airbnb availability by reviews per month, minimum number of nights, whether the price was at the median/above or not, the room type, number of reviews, and the calculated number of host listings is:
 
 `availability_365 = 59.923 + 26.396*(room_typePrivate room) +115.98*(room_typeShared room) + 0.481*(minimum_nights) +0.461*(number_of_reviews) + 0.853*(calculated_host_listings_count) +29.622*(price_caseMedian or Above) + 5.93*(reviews_per_month)`
-
-Interpretation of two slopes for final model:
 
 Categorical predictor:
 Listings that are of room_type: Private room, are expected to have, on average, an average availibility of 26.396 higher than the average availability of listings that are of room_type: Whole house/APT, holding all else constant.
@@ -654,30 +612,23 @@ Listings that are of room_type: Private room, are expected to have, on average, 
 Numerical predictor:
 With each additional number of minimum nights required to stay at the airbnb (minimum_nights), it is expected, on average, that availibility increases by 0.481 days, holding all else constant.
 
-Determining R-squared:
-
 ```{r r-square-selectedmodel}
 glance(selected_model)$r.squared
 ```
 
-The R-squared value is 10.49% of the variability in availibility can be explained by the way the property is listed - the room type, minimum nights required, number of reviews the listing has, the number of listings the host has, the median price and the reviews per month. Compared to our other models, this is a relatively higher R squared value. It is also important to note that room types have high coefficients.
+The R-squared value is 0.1049. This means 10.49% of the variability in availibility can be explained by the way the property is listed - the room type, minimum nights required, number of reviews the listing has, the number of listings the host has, the median price and the reviews per month. Compared to our other models, this is a relatively higher R squared value. It is also important to note that room types have high coefficients.
 
-As depicted in the output, all the p-values are less than the threshold of 0.05; therefore, the expected median availabilities predicted by the regression model are significant.
+We confirmed, all the p-values are less than the threshold of 0.05; therefore, the expected median availabilities predicted by the regression model are significant.
 
 ### Host Volume
-
 The last thing we have to consider, is the number of listings the host holds. This is significant because if whether a host hold multiple properties could influence their availbility. Also, those with multiple properties could use Airbnb renting as a business as a consistent source of income. We define a host as "high volume" if they hold more than one listing and "low volume" if they hold only one listing. Thus, it provides us with more information about the owner of the Airbnb.
 
-Since calculated_host_listings_count includes non-NYC listings, we use the number of times host_id exists in the sample to find the number of listings the host holds in NYC in our sample. 
-
-ID is a unique number for the Airbnb listing, which would cause complications in this process, and is being removed intially. It is also independent of availability.
+Moreover, we are trying to understand how the number of listings per host in NYC influence the availability. We believe this analysis could give us more insight into the type of hosts that use the Airbnb service. We hope to see how this mix of categorical and numerical values impacts one of the potential response variables. 
 
 ```{r remove-id}
 abnb_sample <- abnb_sample %>%
   select(-(id))
 ```
-
-Creating new dataframe abnb_host_volume and mutating new variable host_volume as described above by counting frequency of each host_id:
 
 ```{r abnb_host_volume}
 abnb_host_volume <- abnb_sample %>%
@@ -685,29 +636,25 @@ abnb_host_volume <- abnb_sample %>%
   mutate(host_volume = if_else(n> 1, "high volume", "low volume"))
 ```
 
-Merging the two datasets abnb_host_volume and abnb_sample by host_id using inner_join:
-
 ```{r inner-join}
 abnb_host_volume <- abnb_host_volume %>%
   inner_join(abnb_sample, by = "host_id")
 ```
-
-Finding number of high volume hosts and low volume hosts:
 
 ```{r num-volume}
 abnb_host_volume %>%
   count(host_volume)
 ```
 
-Thus, 436 of the hosts are high volume and 3564 of the hosts are low volume.
+We found the number of high volume hosts and low volume hosts:
 
-Conducting a hypothesis test if availability can be explained if someone is high volume or not:
+436 of the hosts are high volume and 3564 of the hosts are low volume.
+
+Next we decided to conduct a hypothesis test to see if availability can be explained depending on whether a host is high volume or not:
 
 Ho: There is no difference in the median availability of high volume and low volume hosts.
 
 Ha: There is a difference in the median availability of high volume and low volume hosts.
-
-Finding observed median availability:
 
 ```{r obs-med-avail}
 abnb_host_volume %>%
@@ -717,8 +664,6 @@ abnb_host_volume %>%
 ```
 
 The observed median availability of high volume hosts is 274.5 and that of low volume hosts is 30. The observed sample median difference in availability is 274.5 - 30.0 = 244.5.
-
-Constructing null distribution:
 
 ```{r hypo-hostvolume}
 set.seed(111519)
@@ -731,7 +676,7 @@ hypo_host_volume_listings <- abnb_host_volume %>%
             order = c("high volume", "low volume"))
 ```
 
-Visualizing null distribution:
+The null distribution is visualized below:
 
 ```{r vis-hypo-hostvolume}
 visualise(hypo_host_volume_listings) +
@@ -741,15 +686,14 @@ visualise(hypo_host_volume_listings) +
                 direction = "two_sided")
 ```
 
-From the visualization, there appears to be no overlap between the shaded region and the null distribution. A p-value was found to confirm this:
-
 ```{r hypo-host-volume-p-value}
 get_p_value(hypo_host_volume_listings, 244.5, direction = "two_sided")
 ```
 
-As expected, the p-value is 0, which is less than the significance value of 0.05. Therefore, we reject the null hypothesis that there is no difference in median availability. This means that there is sufficient evidence that there is a difference in the median availability of high volume hosts and low volume hosts. Thus, to estimate the difference we construct a bootstrap simulation and find the 95% confidence interval.
+From the visualization, there appears to be no overlap between the shaded region and the null distribution. We found the p-value and as expected, the p-value is 0, which is less than the significance value of 0.05. Therefore, we reject the null hypothesis that there is no difference in median availability. This means that there is sufficient evidence that there is a difference in the median availability of high volume hosts and low volume hosts. Thus, to estimate the difference we construct a bootstrap simulation and find the 95% confidence interval.
 
-Constructing a confidence interval to find the difference in median availability:
+Finally we construct a 95% confidence interval to find the difference in median availability:
+We are 95% confident that the median availability for high volume hosts is between 219 to 261.025 days greater than that of low volume hosts.
 
 ```{r boot-hostvolume}
 set.seed(111519)
@@ -761,13 +705,9 @@ boot_hostvolume <- abnb_host_volume %>%
             order = c("high volume", "low volume"))
 ```
 
-Constructing 95% confidence interval:
-
 ```{r ci-boot-hostvolume}
 (cibounds1 <- get_ci(boot_hostvolume, level = 0.95))
 ```
-
-We are 95% confident that the median availability for high volume hosts is between 219 to 261.025 days greater than that of low volume hosts.
 
 ### Conclusion For Part 2
 
