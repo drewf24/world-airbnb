@@ -464,23 +464,20 @@ with the highest median price of $475.00.
 
 ### Part II: Availability and Property Listing
 
-Next in our data analysis, we explore how the listing is presented on
-the Airbnb platform might influence the price. These the variables that
-releavant in how the listing is presented include variables like name,
-room\_type, minimum\_nights and calculated\_host\_listings\_count. These
-are variables that might inform consumer choices and be indicative of
-the number of available days of a listing.
-
 In part II, the following research question will be examined: How does
-the way in which a property is listed (type of room, for example)
-influence the availability of a listing?
+the way in which a property is listed influence the availability of a
+listing? The the variables that are relevant in how the listing is
+presented include the name of the listing, room type, minimum number of
+nights and calculated number of listings by host. These are variables
+that might inform consumer choices and be indicative of the number of
+available days of a listing.
 
 ### Understanding Availability
 
 To start, a bootstrap distribution and 95% bootstrap confidence interval
-was constructed for the median number of available days of an Airbnb in
-NYC. This will help to better understand the range of available number
-of days (out of 365) and the market demand.
+was constructed for the median number of available days of an Airbnb.
+This will help to better understand the range of available number of
+days (out of 365) and the market demand.
 
     ## # A tibble: 1 x 2
     ##   `2.5%` `97.5%`
@@ -563,7 +560,7 @@ days days among entire home and private rooms are slightly less than 50
 days while shared rooms have a rough median availability of 90 days.
 Shared rooms are available for the most number of days in the year.
 
-summary statistics for availibility by room type:
+Summary statistics for availibility by room type:
 
     ## # A tibble: 3 x 3
     ##   room_type       med_availability_365 IQR_availability_365
@@ -592,7 +589,7 @@ discussed. Thus, a residuals plot is shown below:
 As the predicted values increase, the spread of the residuals decreases.
 This violates the constant variance assumption needed for regression.
 Therefore, we will proceed with caution when drawing assumptions from
-the linear regression.
+the linear regression as there is non-randomness in the residual form.
 
 As depicted in the normality of residuals graph below, the residuals are
 randomly distributed around 0 AND nearly
@@ -618,50 +615,53 @@ case, the intercept does have a meaningful interpretation because an
 Airbnb could be available for 115.8 days out of 365 per year.
 
 The availability of the other room types in relation to entire
-home/apartment is: For an Airbnb with roomtype of private room, the
-median availability is expected, on average, to be 3.4 days less per
-year than an Airbnb in wth room type of entire house/apt, holding all
-else constant.
+home/apartment is:
+
+For an Airbnb with roomtype of private room, the median availability is
+expected, on average, to be 3.4 days less per year than an Airbnb in wth
+room type of entire house/apt, holding all else constant.
 
 For an Airbnb with roomtype of shared room, the median availability is
 expected, on average, to be 74.9 days more per year than an Airbnb in
 wth room type of entire house/apt, holding all else constant.
 
-    ## [1] 0.008414499
-
-The R squared of the linear model is 0.00841. This means that roughly
-0.841% of the variability in median availiability can be explained by
-the type of room of Airbnb in New York. This is a relatively small R
-squared value. Perhaps there are other factors which influence
-availability.
-
 We confirmed that all the p-values, except for private room, are less
 than the threshold of 0.05; therefore, the expected median availabilty
 predicted by the regression model for shared rooms is significant.
 
+    ## [1] 0.008414499
+
+The R squared of the linear model is 0.00841. This means that roughly
+0.841% of the variability in median availability can be explained by the
+type of room of Airbnb’s in New York. This is a relatively small R
+squared value. Perhaps there are other factors which influence
+availability.
+
 ### Listing Factors and Availability
 
 There are many other variables that we believe could affect the
-avialibility of the listing. In order to look at these other factors, we
-will select a model AIC backwards selection.
+availibility of the listing. In order to look at these other factors, we
+will select a model using AIC backwards selection.
 
 We created another linear model, this time to predict Airbnb
 availability by reviews per month, minimum number of nights, whether the
 price was at the median/above or not, the room type, number of reviews,
-and the calculated number of host listings. It is first important to
-discuss the assumptions we are making when performing this regression.
-We are assuming each of these factors is independent because they do not
+and the calculated number of host listings. It is important to discuss
+the assumptions that we are making when performing this regression. We
+are assuming each of these factors is independent because they do not
 directly influence each other.
 
 In addition to independence, there are other assumptions that need to be
-discussed. Thus, a residuals plot is shown below:
+discussed such as constant variance. Therefore, a residuals plot is
+shown below:
 
 ![](writeup_files/figure-gfm/lm_price_borough_aug-1.png)<!-- -->
 
 As the predicted values increase, the spread of the residuals shifts
 downward. This violates the constant variance assumption needed for
 regression. Therefore, we will proceed with caution when drawing
-assumptions from the linear regression.
+assumptions from the linear regression as there is non-randomness in the
+plot.
 
 As depicted in the normality of residuals graph below, the residuals are
 randomly distributed around 0 AND nearly
@@ -700,6 +700,10 @@ required to stay at the airbnb (minimum\_nights), it is expected, on
 average, that availibility increases by 0.481 days, holding all else
 constant.
 
+We confirmed, all the p-values are less than the threshold of 0.05;
+therefore, the expected median availabilities predicted by the
+regression model are significant.
+
     ## [1] 0.1048801
 
 The R-squared value is 0.1049. This means 10.49% of the variability in
@@ -710,19 +714,15 @@ per month. Compared to our other models, this is a relatively higher R
 squared value. It is also important to note that room types have high
 coefficients.
 
-We confirmed, all the p-values are less than the threshold of 0.05;
-therefore, the expected median availabilities predicted by the
-regression model are significant.
-
 ### Host Volume
 
 The last thing we have to consider, is the number of listings the host
-holds. This is significant because if whether a host hold multiple
-properties could influence their availbility. Also, those with multiple
-properties could use Airbnb renting as a business as a consistent source
-of income. We define a host as “high volume” if they hold more than one
-listing and “low volume” if they hold only one listing. Thus, it
-provides us with more information about the owner of the Airbnb.
+holds. This is significant because whether a host hold multiple
+properties could influence the listing availability. Also, those with
+multiple properties could use Airbnb renting business as a consistent
+source of income. We define a host as “high volume” if they hold more
+than one listing and “low volume” if they hold only one listing. Thus,
+it provides us with more information about the owner of the Airbnb.
 
 Moreover, we are trying to understand how the number of listings per
 host in NYC influence the availability. We believe this analysis could
@@ -730,17 +730,21 @@ give us more insight into the type of hosts that use the Airbnb service.
 We hope to see how this mix of categorical and numerical values impacts
 one of the potential response variables.
 
+We found the number of high volume hosts and low volume hosts:
+
     ## # A tibble: 2 x 2
     ##   host_volume     n
     ##   <chr>       <int>
     ## 1 high volume   436
     ## 2 low volume   3564
 
-We found the number of high volume hosts and low volume hosts:
-
 436 of the hosts are high volume and 3564 of the hosts are low volume.
 
-Next we decided to conduct a hypothesis test to see if availability can
+Visualizing this in a bar graph:
+
+![](writeup_files/figure-gfm/host-vol-graph-1.png)<!-- -->
+
+Next, we decided to conduct a hypothesis test to see if availability can
 be explained depending on whether a host is high volume or not:
 
 Ho: There is no difference in the median availability of high volume and
@@ -748,6 +752,8 @@ low volume hosts.
 
 Ha: There is a difference in the median availability of high volume and
 low volume hosts.
+
+Finding observed median availability:
 
     ## # A tibble: 2 x 2
     ##   host_volume medianavail
@@ -758,6 +764,8 @@ low volume hosts.
 The observed median availability of high volume hosts is 274.5 and that
 of low volume hosts is 30. The observed sample median difference in
 availability is 274.5 - 30.0 = 244.5.
+
+Conducting hypothesis test:
 
 The null distribution is visualized below:
 
@@ -778,83 +786,81 @@ volume hosts and low volume hosts. Thus, to estimate the difference we
 construct a bootstrap simulation and find the 95% confidence interval.
 
 Finally we construct a 95% confidence interval to find the difference in
-median availability: We are 95% confident that the median availability
-for high volume hosts is between 219 to 261.025 days greater than that
-of low volume hosts.
+median availability:
 
     ## # A tibble: 1 x 2
     ##   `2.5%` `97.5%`
     ##    <dbl>   <dbl>
     ## 1    219    261.
 
-### Conclusion For Part 2
+We are 95% confident that the median availability for high volume hosts
+is between 219 to 261.025 days greater than that of low volume hosts.
+
+### Conclusion For Part II
 
 Based on our second research question in our proposal, we wanted to see
-how the way in which a property is listed (type of room and description
-for example) influences the availability of a listing. Assuming
-availibility is a good predictor of desirability (more availible, less
-desireable). In our proposal we looked at how the variable “room\_type”
-affects the availability of the listing. We hypothesized that room\_type
-would be a major factor in predicting availability because our
+how the way in which a property is listed influences the availability of
+a listing. Assuming availibility is a good predictor of desirability
+(more availible, less desireable), we looked at how the variable “room
+type” affects the availability of the listing. We hypothesized that room
+type would be a major factor in predicting availability because our
 exploratory analysis showed that a shared room is likely the least
-desired of the three room types due to the largest IQR and highest
-median availability of the three roomtypes. Through our text analysis of
-the descriptions we found words associated with private were highly
-sought after such as “private”, “apartment” indicating a private
-enclave, and “bedroom” indicating one’s private space. In additon, our
-linear model predicting availability by all variables regarding listing
-showed room type to be a relevant predictor. In additon, we predicted
-that more experienced hosts with more listings would have more
-availability days because they have more listings and our hypothesis
-test indicated that we were right.
+desired due to the largest IQR and highest median availability of the
+three room types. Through our text analysis of the descriptions we found
+words associated with private were highly sought after. “Private” and
+“apartment” were highly common, indicating a private enclave, and
+“bedroom” indicating one’s private space. In additon, our linear model
+predicting availability by all variables regarding listing, showed room
+type to be a relevant predictor. Furthermore, …high volume & low
+volume….
 
-### Areas of Improvement:
+### Overall Conclusion
+
+### Areas of Improvement
 
 Perhaps one of the biggest concerns among our dataset was that we could
-not prove constant variance. The spread of the residuals in our residual
-plots did not suggest constant variance. This means that when plotting
-the individual error against the predicted value, the variance of the
-error predicted value should be constant. Graphically, the spread of the
-points around the regression line is too variable. Therefore, we had to
-proceed with caution when drawing assumptions from the linear
-regression. However, if we limit our conclusions to predictions, the
-consequences of a weak or not constant variance are less pressing.
+not prove constant variance. When plotting the individual error against
+the predicted value, the variance of the error predicted value should be
+constant. Graphically,this means the spread of the points around the
+regression line is too variable. Therefore, we had to proceed with
+caution when drawing assumptions from the linear regression. However, if
+we limit our conclusions to predictions, the consequences of a weak or
+not constant variance are less pressing.
+
 Furthermore, we assumed independence in our sample, implying that each
 listing is independent because the pricing of one space does not
 directly influence the other. While some might argue there is dependence
 between listings to some extent, the market for Airbnbs in NYC is free
-and competitive, so renters, ideally, don’t collide. In other words, it
-can be safely assumed that hosts of Airbnbs are working together to
-price fix listings in New York City. Another critical concern to
-consider in our analysis are the probabilities of type 1 and type 2
-errors. For the entirety of our analysis, we set our alpha level to
-0.05. However, we could have set the alpha level lower to reduce type 1
-error, but consequently, increase type 2 error. It is important to
-consider the needs when it comes to analyzing the data. If someone wants
-to determine, for instance, on average, which borough is cheaper to book
-an Airbnb between Manhattan and Brooklyn, there would have to set the
-predetermined alpha level on their desired outcome. A type 1 error would
-mean that we reject that is no significant true median difference when,
-in reality, there is a true median difference. A type 2 error would mean
-that we conclude that there is a true median difference when, in
-reality, there is not. Someone who is on a very tight budget and cannot
-afford the more expensive Airbnb may want to decrease the type 1 error
-as much as possible to avoid spending more than they expected. (This is
-all assuming they did not know the actual price of the Airbnb and had to
-pick whether to stay in Manhattan or Brooklyn before booking an Airbnb).
-To decrease the type 1 error, this particular person could set the alpha
-level to a number less than 0.05. Our analysis could be stronger if we
-took into account the purposes that people will use it for. If we were
-going to continue work on the project, we could delve deeper into
-locations such as specific neighborhoods. This would allow users of our
-analysis to investigate further, more specifically, the cheapest places,
-on average, of New York City. For example, although the Bronx is one of
-the more affordable boroughs in our analysis, the most expensive
-neighborhood is in the Bronx. For travelers on a very tight budget, they
-may be misled by the information presented in our dataset because we
-were not specific enough with the location.
+and competitive, so renters, ideally, don’t collude. In other words, it
+can be safely assumed that hosts of Airbnbs are working not together to
+price fix listings in New York City.
 
-### Overall Conclusion:
+Another critical concern to consider in our analysis are the
+probabilities of type 1 and type 2 errors. For the entirety of our
+analysis, we set our alpha level to 0.05. However, we could have set the
+alpha level lower to reduce type 1 error, but consequently, increased
+the type 2 error. It is important to consider the needs when it comes to
+analyzing the data. If someone wants to determine, for instance, which
+borough is cheaper to book an Airbnb, Manhattan or Brooklyn, they would
+have to set the predetermined alpha level on their desired outcome. A
+type 1 error would mean a false positive - that there is a true
+difference in median prices when there actually is not. A type 2 error
+is a false negative, for example, if we had concluded that there is no
+true difference in median prices when one exists. In order to decrease
+the possibility of these errors, we could increase the sample size of
+our data analysis. Our analysis could be stronger if we took into
+account the purposes that people will use it for.
+
+If we were going to continue to work on the project, we could delve
+deeper into locations such as specific neighborhoods. This would allow
+users of our analysis to investigate further, more specifically, the
+cheapest places in New York City. For example, although the Bronx is one
+of the more affordable boroughs in our analysis, the most expensive
+neighborhood in our sample is in the Bronx. For travelers on a very
+tight budget, they may be misled by the information presented in our
+dataset because we were not specific enough with the location.
+
+### Final Thoughts
 
 Our data analysis concluded that: based on our research question from
 our proposal, we wanted to determine how location and availability
