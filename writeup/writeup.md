@@ -6,70 +6,32 @@ WORLD
 ### Introduction:
 
 Every day, thousands of tourists visit the historic city of New York. It
-is the most populous city in the United States and is a popular
+is one of the most populous city in the United States and is a popular
 attraction for tourists, not only from the United States but around the
 world. Given the popularity of tourists, the lodging and hotel industry
 has benefited tremendously. Airbnb is an online marketplace for
 arranging and offering homestays to thousands of tourists every day in
-the beloved city of New York. Our data analysis investigates the Airbnb
-dataset of New York City. Our central focus will be on predicting,
-analyzing, and performing tests on the price and availability of Airbnb
-listings in New York City. For our final project, we want to answer two
-major research questions: How does location influence the price of
-Airbnb listings in New York City and how does the way in which an Airbnb
-is described influence price?
-
-Using the Airbnb dataset, we hope to gain a better understanding of the
-gig hospitality market in New York City for 2019. Specifically, we want
-to find, explore and understand trends in the market as they relate to
-supply (availability) and demand (what people are willing to pay). The
-data set we chose allows us to draw conclusions and understand the
-factors that contribute to the New York City Airbnb scene.
+the beloved city of New York.
 
 Through Kaggle, we found this data set
 (<https://www.kaggle.com/dgomonov/new-york-city-airbnb-open-data>) that
-was collected, and continues to be updated, in 2019 on Airbnb listings
-in New York City. This data set continues to be curated by a 4th year
-data science student at Drexel University (Dgomonov). We are unable to
-reach out to him to get more information on the data set, such as where
-he got it from or how he collected it, because our account on Kaggle is
-not at the “Contributor tier.” However, we can reasonably infer that the
-dataset was created by web scraping Airbnb’s website. Since the dataset
-is looking at all the listings in NYC, we are assuming that the dataset
-is indicative of a population. Therefore, we have created a sample
-dataset for our data analysis.
+was collected and continues to be updated through 2019 on Airbnb’s in
+New York City. This data set continues to be curated by a 4th year data
+science student at Drexel University (Dgomonov). We are unable to reach
+out to him to get more information on the data set, such as where he got
+it from or how he collected it, because our account on Kaggle is not at
+the “Contributor tier.” However, we can reasonably infer that the
+dataset was created by web scraping Airbnb’s website. Moreover, since
+the dataset is looking at all the listings in NYC, we are assuming that
+the dataset is indicative of a population. Therefore, we have created a
+sample dataset for our data analysis.
 
 To analyze this data set, it is first important to understand its
 variables: listing ID, name of the listing, host ID, the name of the
-host, location, neighbourhood, latitude and longitude coordinates, room
-type, price in dollars, minimum\_nights, number of reviews, latest
-review, number of reviews per month, amount of listing per host and
-availability. A description of each of these is included in the
-codebook, as well as shown below
-
-### Dimensions:
-
-`Observations: 48,895` `Variables: 16`
-
-### Codebook:
-
-`Variable Name --> Description` `id --> The specific listing's ID value
-from the Airbnb website.` `name --> Host-produced description of the
-listing.` `host_id --> The ID unique for the listing's owner.`
-`host_name --> First name of host/hosts.` `neighbourhood_group --> One
-of the NYC five boroughs (Manhattan, Brooklyn, Queens, Staten Island,
-Bronx)` `neighbourhood --> Specific area within each of the boroughs.`
-`latitude --> Horizontal global coordinate.` `longitude --> Vertical
-global coordinate.` `room_type --> One of three classifications (Etire
-home/apartment, Private Room, or Shared Room).` `price --> The listing's
-price in United States dollars per night.` `minimum_nights --> The
-minimum nights required by the host to stay.` `number_of_reviews -->
-Quantity of online reviews given for a listing.` `last_review -->
-Year/Month/Date of the most recent review.` `reviews_per_month -->
-Quantity of reviews on average in a given month.`
-`calculated_host_listings_count --> Number of listings per one host.`
-`availability_365 --> Quantity of days in which the listing is
-available.`
+host, location, neighbourhood, latitude, longitude, room type, price in
+dollars, minimum nights, number of reviews, date of latest review,
+number of reviews per month, amount of listings per host, and
+availability.
 
 Based on these factors, it seems as though price and availability would
 make the most interesting response variables because they are very
@@ -79,6 +41,66 @@ available within their budget. Of course, there are going to be other
 factors that are important to a consumer, such as location within NYC.
 However, we expect availability and price to be the most predictive and
 representative of the Airbnbs in New York City.
+
+Our central focus will be on predicting, analyzing, and performing tests
+on the price and availability of Airbnb listings. For our final project,
+we want to answer two major research questions: How does location
+influence the price of Airbnb listings and how does the way in which an
+Airbnb is described influence availibility in New York City?
+
+Using the Airbnb dataset, we hope to gain a better understanding of the
+gig hospitality market in New York City for 2019. Specifically, we want
+to find, explore and understand trends in the market as they relate to
+supply (availability) and demand (what people are willing to pay). The
+data set we chose allows us to draw conclusions and understand the
+factors that contribute to the New York City Airbnb scene.
+
+The dimensions and codebook are below:
+
+### Dimensions:
+
+`Observations: 48,895`
+
+`Variables: 16`
+
+### Codebook:
+
+`Variable Name --> Description`
+
+`id --> The specific listing's ID value from the Airbnb website.`
+
+`name --> Host-produced description of the listing.`
+
+`host_id --> The ID unique for the listing's owner.`
+
+`host_name --> First name of host/hosts.`
+
+`neighbourhood_group --> One of the NYC five boroughs (Manhattan,
+Brooklyn, Queens, Staten Island, The Bronx)`
+
+`neighbourhood --> Specific area within each of the boroughs.`
+
+`latitude --> Horizontal global coordinate.`
+
+`longitude --> Vertical global coordinate.`
+
+`room_type --> One of three classifications (Etire home/apartment,
+Private Room, or Shared Room).`
+
+`price --> The listing's price in United States dollars per night.`
+
+`minimum_nights --> The minimum nights required by the host to stay.`
+
+`number_of_reviews --> Quantity of online reviews given for a listing.`
+
+`last_review --> Year/Month/Date of the most recent review.`
+
+`reviews_per_month --> Quantity of reviews on average in a given month.`
+
+`calculated_host_listings_count --> Number of listings per one host.`
+
+`availability_365 --> Quantity of days in which the listing is
+available.`
 
 In order to perform analysis, we created a sample set of 4000 randomly
 selected observations. The following analysis and conclusions are drawn
@@ -110,8 +132,8 @@ that the true median price would be within.
     ##    <dbl>   <dbl>
     ## 1    100     110
 
-A visualizaing of the bootstrap distribution for median price is shown
-below:
+A visualization of the bootstrap distribution for median price is
+depicted below:
 
 ![](writeup_files/figure-gfm/boot_dist_median_visu-1.png)<!-- -->
 
@@ -123,11 +145,11 @@ to draw comparisions.
 ### Exploring Boroughs
 
 The first location variable that might be helpful to explore is borough
-(neighbourhood\_group) given that New York City is divided into five
-areas (The Bronx, Brooklyn, Manhattan, Queens, and Staten Island).
+given that New York City is divided into five areas (The Bronx,
+Brooklyn, Manhattan, Queens, and Staten Island).
 
-A bar graph that displays number of listings by borough in New York City
-is shown below:
+Next for exploratory data analysis, a bar graph that displays number of
+listings by borough in New York City is shown below:
 
 ![](writeup_files/figure-gfm/visualization-univariate-1.png)<!-- -->
 
@@ -135,7 +157,8 @@ Manhattan and Brooklyn dominate the number of listings on Airbnb in New
 York City. More specifically, there is roughly 20,000 listings in
 Brooklyn and slightly more than 20,000 listings in Manhattan. Queens
 follows after with roughly 5,000 listings, followed by the Bronx and
-Staten Island with fewer than 1,100 listings each.
+Staten Island with fewer than 1,100 listings each. A summary statistic
+is calculated below to get the exact count of listings.
 
     ## # A tibble: 5 x 2
     ##   neighbourhood_group     n
@@ -159,34 +182,35 @@ last at only 373 listings.
     ## 4 Staten Island              75
     ## 5 Bronx                      65
 
-Manhattan has the highest median price at 150 followed by Brooklyn at
-90, Queens and Staten Island at 75, and the Bronx last at 65.
+Now, when looking at median price by borough, Manhattan has the highest
+median price at 150 followed by Brooklyn at 90, Queens and Staten Island
+at 75, and the Bronx last at 65.
 
 It is clear that quantity of listings as well as median price varies
 greatly across each of the five boroughs. After further exploration of
 the relevant location variables we will predict how much these variables
 influence price by developing a linear model.
 
-First we would liketo visualize the distribution of price by borough,
-below is a boxplot to show price by borough
-(neighbourhood\_group):
+First we would like to visualize the distribution of price by borough,
+below is a boxplot to show price by
+borough.
 
 ![](writeup_files/figure-gfm/price_box_neighbourhood_group-1.png)<!-- -->
 
 The boxplot above shows the price of renting an Airbnb per night based
-on the borough that the Airbnb is located. Due to extremely right skewed
-data and very expensive outliers this box plot does not display the
-actual distribution as well as we hoped. In order to make a more useful
-visualization, we filtered for price below $1000 and recreated the box
-plot
-above.
+on the borough that the Airbnb is located in. Due to extremely right
+skewed data and very expensive outliers this box plot does not display
+the actual distribution as well as we hoped. In order to make a more
+useful visualization, we filtered for price below $1000.00 and recreated
+the box plot
+below.
 
 ![](writeup_files/figure-gfm/price_box_neighbourhood_group_filter-1.png)<!-- -->
 
 We have already found above, that Manhattan has the highest median
 price, followed by Brooklyn, Queens and Staten Island, and finally the
 Bronx has the lowest median available price for Airbnb’s in Manhattan
-per night. What we did not know that is evident in both the origianl and
+per night. What we did not know that is evident in both the original and
 the above graph is that Manhattan and Queens have the largest ouliers
 (Manhattan’s largest outlier stands at \>$8,000 per night and Queen’s is
 about $2,000 per night). Staten Island has the lowest IQR and Manhattan
@@ -200,7 +224,7 @@ From the previous sections, it has become clear that Manhattan is the
 most expensive borough for Airbnbs. In order to confirm this visually,
 we will create a scatterplot. To simplify the scatterplot, price will be
 broken down into two catergories based on the median price of all
-Airbnbs in NYC. In order to do this we creae and use a new variable
+Airbnbs in NYC. In order to do this we create and use a new variable
 (price\_case) which describes whether the price of the listing is at or
 above the median price or below the median price. A visualization of
 Airbnbs by latidude and longitude co-ordinates and using color to
@@ -214,7 +238,7 @@ visualization once again confirms our previous findings. The area that
 appears to have the second most number of blue dots is Brooklyn, which
 is right next to Manhattan. We determined the relative frequency of
 listings that are above or at the median price by borough and found
-Manhattan has the greatest frequency of median or above listings at
+Manhattan has the greatest frequency. of median or above listings at
 68.757%, followed by Brooklyn at 40.380%. Queens has 24.448%, Staten
 Island has 21.739% and the Bronx has 15.294%.
 
@@ -228,14 +252,18 @@ Island has 21.739% and the Bronx has 15.294%.
     ## 4 Staten Island       Median or Above     5    0.217
     ## 5 Bronx               Median or Above    13    0.153
 
+Manhattan has the greatest frequency of median or above listings at
+68.757%, followed by Brooklyn at 40.380%. Queens has 24.448%, Staten
+Island has 21.739% and the Bronx has 15.294%.
+
 ### Neighborhood?
 
 After discovering the vairation in price between borough, we were very
 interested in exploring how price was affected by neighbourhood (within
 each borough). We calculated the median price of the top 10
-neighborhoods and check their corresponding borough to see if they tend
-to lie in same borough, which we might expect to be Manhattan as it is
-the most expensive borough.
+neighborhoods and checked their corresponding borough to see if they
+tend to lie in same borough, which we might expect to be Manhattan as it
+is the most expensive borough.
 
     ## # A tibble: 10 x 3
     ## # Groups:   neighbourhood [10]
@@ -257,9 +285,7 @@ boroughs. In fact, all are represented in the top 10 equally.
 Surprisingly, the Bronx contains the neighborhood, Eastchester, with the
 highest median price of $475.00. Given the extensive analysis already
 done for location by borough and co-ordinates, neighborhood will not be
-analyzed further as it is beyond the initial scope of our focus. Next we
-will investigate other location variables such as latitude and longitude
-as well was borough to predict price by location
+analyzed further as it is beyond the initial scope of our focus.
 
 ### Regression analysis
 
@@ -295,8 +321,8 @@ randomly distributed around
 ![](writeup_files/figure-gfm/lm_price_borough_aug-nomalities-1.png)<!-- -->
 
 However, the residuals are not nearly normally distributed. Therefore,
-we will filter out outliers to filtered when take out outliers to get a
-filtered normality of residuals graph that has a nearly normal
+we will filter out outliers to get a residuals graph that has a nearly
+normal
 distribution.
 
 ![](writeup_files/figure-gfm/lm_price_borough_aug-nomality-filtered-1.png)<!-- -->
@@ -341,9 +367,8 @@ model are significant.
 
     ## [1] 0.03669659
 
-The R squared of the linear model lm\_price\_borough is .0367. Thus,
-roughly 3.670% of the variability in median price can be explained by
-the borough of Airbnbs in New York City.
+The R squared of the linear model is .0367. Thus, roughly 3.670% of the
+variability in median price can be explained by the borough.
 
 ### Comparing Manhattan and Brooklyn
 
@@ -353,7 +378,8 @@ and the most expensive Airbnbs. Also, the linear model above showed that
 the expected difference of $85.11 in median price was the least between
 Brooklyn and Manhattan and the p-value was less than 0.05. Therefore, we
 will attempt to answer the following: Is there is a significant
-difference in the true median prices between Manhattan and Brooklyn?
+difference in the true median prices between Manhattan and Brooklyn? The
+observed difference in median prices was calculated.
 
     ## # A tibble: 2 x 2
     ##   neighbourhood_group med_price
@@ -395,8 +421,6 @@ Brooklyn.
 
 Next we create a bootstrap distribution and 95% confidence interval of
 the difference in median prices between listings in Manhattan and
-Brooklyn. To conclude we are 95% confident that the median price in
-Manhattan is between $55 and $65 higher than the median price in
 Brooklyn.
 
     ## # A tibble: 1 x 2
@@ -404,37 +428,39 @@ Brooklyn.
     ##    <dbl>   <dbl>
     ## 1     55      65
 
+To conclude we are 95% confident that the median price in Manhattan is
+between $55 and $65 higher than the median price in Brooklyn.
+
 ### Conclusion for Part I
 
 Based on our research question from our proposal, we wanted to determine
 how location played a role in determining the price of Airbnbs in New
 York City. First, we summarized the sample statistics of the boroughs in
 New York City such as median price and number of listings to get a basic
-understanding of the count and dsitribution of price in relation to
+understanding of the count and distribution of price in relation to
 borough. After finding out that both Manhattan and Brooklyn dominated
 the Airbnb scene in terms of number of listings, we wanted to see how
 these two locations play a role in the price of Airbnbs. We predicted
 that Manhattan would have a higher true median price than Brooklyn
 because Manhattan is known from previous knowledge to be a higher-class
 neighborhood. So, we conducted a hypothesis test to determine if there
-is a true median price difference between these two cities. We concluded
-that we did indeed have sufficent evidence to conclude that there is a
-true median price difference with Manhattan’s median price being higher
-than Brooklyn’s median price. After conducting a confidence interval for
-different in true median price, we are 95% confident that the median
-price in Manhattan is between $55 and $65 higher than the median price
-in Brooklyn. We then created a new variable called “price\_median” which
-is a catagorical variable which indicated whether the price is at or
-above the median price of a listing or not. We then used this new
-variable to create a scatterplot map with color indicating price median
-to see how coordinates play a role in the price of Airbnbs. We concluded
-that Manhattan has the greatest frequency of median or above listings at
-68.757%, followed by Brooklyn at 40.380%. Queens has 24.448%, Staten
-Island has 21.739% and the Bronx has 15.294%. Finally, we investigated
-last variable corresponding to location: neighbourhood. Looking into the
-top ten median priced neighborhoods for Airbnb’s we surprisngly found
-that the Bronx contains the neighborhood, Eastchester, with the highest
-median price of $475.00.
+is a true median price difference between these two boroughs. We
+concluded that there was sufficent evidence that Manhattan’s median
+price is higher than Brooklyn’s median price. After conducting a
+confidence interval for the different in true median price, we are 95%
+confident that the median price in Manhattan is between $55 and $65
+higher than the median price in Brooklyn. We then created a new variable
+called “price\_case” which is a catagorical variable which indicated
+whether the price is at or above the median price of a listing. We then
+used this new variable to create a scatterplot map with color indicating
+median price to see how coordinates play a role in the price of Airbnbs.
+We concluded that Manhattan has the greatest frequency of median or
+above listings at 68.757%, followed by Brooklyn at 40.380%. Queens has
+24.448%, Staten Island has 21.739% and the Bronx has 15.294%. Finally,
+we investigated last variable corresponding to location: neighbourhood.
+Looking into the top ten median priced neighborhoods for Airbnb’s we
+surprisngly found that the Bronx contains the neighborhood, Eastchester,
+with the highest median price of $475.00.
 
 ### Part II: Availability and Property Listing
 
