@@ -818,8 +818,14 @@ words associated with private were highly sought after. “Private” and
 “apartment” were highly common, indicating a private enclave, and
 “bedroom” indicating one’s private space. In additon, our linear model
 predicting availability by all variables regarding listing, showed room
-type to be a relevant predictor. Furthermore, …high volume & low
-volume….
+type to be a relevant predictor. Furthermore, we decided to conduct a
+hypothesis test to see if availability can be explained depending on
+whether a host is high volume or not, where high volume indicated that a
+host had more than one listing, and low volume indicated a host had only
+one histing. We had convincing evidence to conclude that there is a
+difference in median availability of high volume hosts and low volume
+hosts. Finally, we conducted a 95% confidence interval to find the
+different in median availability.
 
 ### Overall Conclusion
 
