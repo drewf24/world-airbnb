@@ -449,18 +449,25 @@ concluded that there was sufficent evidence that Manhattan’s median
 price is higher than Brooklyn’s median price. After conducting a
 confidence interval for the different in true median price, we are 95%
 confident that the median price in Manhattan is between $55 and $65
-higher than the median price in Brooklyn. We then created a new variable
-called “price\_case” which is a catagorical variable which indicated
-whether the price is at or above the median price of a listing. We then
-used this new variable to create a scatterplot map with color indicating
-median price to see how coordinates play a role in the price of Airbnbs.
-We concluded that Manhattan has the greatest frequency of median or
-above listings at 68.757%, followed by Brooklyn at 40.380%. Queens has
-24.448%, Staten Island has 21.739% and the Bronx has 15.294%. Finally,
-we investigated last variable corresponding to location: neighbourhood.
-Looking into the top ten median priced neighborhoods for Airbnb’s we
-surprisngly found that the Bronx contains the neighborhood, Eastchester,
-with the highest median price of $475.00.
+higher than the median price in Brooklyn. We also performed linear
+regression to create a linear model that describes how boroughs
+influence price. However, before we performed our linear regression, we
+had to make assumptions: independence and constant variance. We could
+safely assume independence because we do not suspect hosts are colluding
+to price fix listings. However, upon performing constant variance tests,
+we discovered that our residual plots do not follow the form of constant
+variance. Therefore, we proceeded with caution. We then created a new
+variable called “price\_case” which is a catagorical variable which
+indicated whether the price is at or above the median price of a
+listing. We then used this new variable to create a scatterplot map with
+color indicating median price to see how coordinates play a role in the
+price of Airbnbs. We concluded that Manhattan has the greatest frequency
+of median or above listings at 68.757%, followed by Brooklyn at 40.380%.
+Queens has 24.448%, Staten Island has 21.739% and the Bronx has 15.294%.
+Finally, we investigated last variable corresponding to location:
+neighbourhood. Looking into the top ten median priced neighborhoods for
+Airbnb’s we surprisngly found that the Bronx contains the neighborhood,
+Eastchester, with the highest median price of $475.00.
 
 ### Part II: Availability and Property Listing
 
