@@ -3,7 +3,7 @@ NYC Airbnb Popularity Factors
 WORLD
 12/6/2019
 
-### Introduction:
+## Introduction:
 
 Every day, thousands of tourists visit the historic city of New York. It
 is one of the most populous city in the United States and is a popular
@@ -106,7 +106,7 @@ In order to perform analysis, we created a sample set of 4000 randomly
 selected observations. The following analysis and conclusions are drawn
 from that sample set.
 
-### Part I: Price and Location
+## Part I: Price and Location
 
 For our first research question, we hope to explore how location
 influences the price as a response variable. Some variables from the
@@ -431,45 +431,7 @@ Brooklyn.
 To conclude we are 95% confident that the median price in Manhattan is
 between $55 and $65 higher than the median price in Brooklyn.
 
-### Conclusion for Part I
-
-Based on our research question from our proposal, we wanted to determine
-how location played a role in determining the price of Airbnbs in New
-York City. First, we summarized the sample statistics of the boroughs in
-New York City such as median price and number of listings to get a basic
-understanding of the count and distribution of price in relation to
-borough. After finding out that both Manhattan and Brooklyn dominated
-the Airbnb scene in terms of number of listings, we wanted to see how
-these two locations play a role in the price of Airbnbs. We predicted
-that Manhattan would have a higher true median price than Brooklyn
-because Manhattan is known from previous knowledge to be a higher-class
-neighborhood. So, we conducted a hypothesis test to determine if there
-is a true median price difference between these two boroughs. We
-concluded that there was sufficent evidence that Manhattan’s median
-price is higher than Brooklyn’s median price. After conducting a
-confidence interval for the different in true median price, we are 95%
-confident that the median price in Manhattan is between $55 and $65
-higher than the median price in Brooklyn. We also performed linear
-regression to create a linear model that describes how boroughs
-influence price. However, before we performed our linear regression, we
-had to make assumptions: independence and constant variance. We could
-safely assume independence because we do not suspect hosts are colluding
-to price fix listings. However, upon performing constant variance tests,
-we discovered that our residual plots do not follow the form of constant
-variance. Therefore, we proceeded with caution. We then created a new
-variable called “price\_case” which is a catagorical variable which
-indicated whether the price is at or above the median price of a
-listing. We then used this new variable to create a scatterplot map with
-color indicating median price to see how coordinates play a role in the
-price of Airbnbs. We concluded that Manhattan has the greatest frequency
-of median or above listings at 68.757%, followed by Brooklyn at 40.380%.
-Queens has 24.448%, Staten Island has 21.739% and the Bronx has 15.294%.
-Finally, we investigated last variable corresponding to location:
-neighbourhood. Looking into the top ten median priced neighborhoods for
-Airbnb’s we surprisngly found that the Bronx contains the neighborhood,
-Eastchester, with the highest median price of $475.00.
-
-### Part II: Availability and Property Listing
+## Part II: Availability and Property Listing
 
 In part II, the following research question will be examined: How does
 the way in which a property is listed influence the availability of a
@@ -803,6 +765,46 @@ median availability:
 We are 95% confident that the median availability for high volume hosts
 is between 219 to 261.025 days greater than that of low volume hosts.
 
+## Overall Conclusion
+
+### Conclusion for Part I
+
+Based on our research question from our proposal, we wanted to determine
+how location played a role in determining the price of Airbnbs in New
+York City. First, we summarized the sample statistics of the boroughs in
+New York City such as median price and number of listings to get a basic
+understanding of the count and distribution of price in relation to
+borough. After finding out that both Manhattan and Brooklyn dominated
+the Airbnb scene in terms of number of listings, we wanted to see how
+these two locations play a role in the price of Airbnbs. We predicted
+that Manhattan would have a higher true median price than Brooklyn
+because Manhattan is known from previous knowledge to be a higher-class
+neighborhood. So, we conducted a hypothesis test to determine if there
+is a true median price difference between these two boroughs. We
+concluded that there was sufficent evidence that Manhattan’s median
+price is higher than Brooklyn’s median price. After conducting a
+confidence interval for the different in true median price, we are 95%
+confident that the median price in Manhattan is between $55 and $65
+higher than the median price in Brooklyn. We also performed linear
+regression to create a linear model that describes how boroughs
+influence price. However, before we performed our linear regression, we
+had to make assumptions: independence and constant variance. We could
+safely assume independence because we do not suspect hosts are colluding
+to price fix listings. However, upon performing constant variance tests,
+we discovered that our residual plots do not follow the form of constant
+variance. Therefore, we proceeded with caution. We then created a new
+variable called “price\_case” which is a catagorical variable which
+indicated whether the price is at or above the median price of a
+listing. We then used this new variable to create a scatterplot map with
+color indicating median price to see how coordinates play a role in the
+price of Airbnbs. We concluded that Manhattan has the greatest frequency
+of median or above listings at 68.757%, followed by Brooklyn at 40.380%.
+Queens has 24.448%, Staten Island has 21.739% and the Bronx has 15.294%.
+Finally, we investigated last variable corresponding to location:
+neighbourhood. Looking into the top ten median priced neighborhoods for
+Airbnb’s we surprisngly found that the Bronx contains the neighborhood,
+Eastchester, with the highest median price of $475.00.
+
 ### Conclusion For Part II
 
 Based on our second research question in our proposal, we wanted to see
@@ -826,8 +828,6 @@ one histing. We had convincing evidence to conclude that there is a
 difference in median availability of high volume hosts and low volume
 hosts. Finally, we conducted a 95% confidence interval to find the
 different in median availability.
-
-### Overall Conclusion
 
 ### Areas of Improvement
 
@@ -874,40 +874,5 @@ tight budget, they may be misled by the information presented in our
 dataset because we were not specific enough with the location.
 
 ### Final Thoughts
-
-Our data analysis concluded that: based on our research question from
-our proposal, we wanted to determine how location and availability
-played a role in determining the price of Airbnbs in New York City. We
-concluded that both Manhattan and Brooklyn dominated the Airbnb scene in
-terms of the number of listings, we wanted to see how these two
-locations play a role in the price of Airbnbs. Manhattan had a higher
-true median price than Brooklyn because Manhattan is known from previous
-knowledge to be an upper-class neighborhood; a hypothesis test confirmed
-this. A 95% confidence interval showed that the median price in
-Manhattan is between $55 and $65 higher than the median price in
-Brooklyn. We also concluded in our analysis that Manhattan has the
-greatest frequency of median or above listings at 68.757%, followed by
-Brooklyn at 40.380%. Queens has 24.448%, Staten Island has 21.739% and
-the Bronx has 15.294%. Finally, we investigated the last variable
-corresponding to the location: neighborhood. Looking into the top ten
-median-priced neighborhoods for Airbnb’s we surprisingly found that the
-Bronx contains the neighborhood, Eastchester, with the highest median
-price of $475.00. Based on our second research question in our proposal,
-we wanted to see how the way in which a property is listed (the type of
-room and description for example) influences the availability of a
-listing. Assuming availability is a good predictor of desirability (more
-available, less desirable). Our analysis revealed that a shared room is
-likely the least desired of the three-room types due to the largest IQR
-and highest median availability of the three-room types. Furthermore, we
-did conducted text analysis of the descriptions, we found words
-associated with private were highly sought after such as “private”,
-“apartment” indicating a private enclave, and “bedroom” indicating
-one’s private space. In addition, our linear model predicting
-availability by all variables regarding listing showed room type to be a
-relevant predictor. In addition, we predicted that more experienced
-hosts with more listings would have more availability days because they
-have more listings and our hypothesis test indicated that we were right.
-In our regression, we determined that location is a significant variable
-in determining the price of Airbnb listings in New York City.
 
 ### Overall
