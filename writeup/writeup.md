@@ -926,46 +926,57 @@ dataset because we were not specific enough with the location.
 
 ### Final Thoughts
 
-For this project, we wanted to answer two significant research
-questions: 1) How does location influence the price of Airbnb listings?
-2) How does the way in which an Airbnb is described influence
-availibility?
+### Final Thoughts
 
-Through this analysis, we are confident that we have gained a better
+We are confident that our analysis has provided us with a better
 understanding of the gig hospitality market in New York City for 2019.
-Specifically, we found, explore, and understood trends in the market as
+Specifically, we found, explored, and understood trends in the market as
 they relate to supply (availability) and demand (what people are willing
-to pay).
+to pay). The two main things for a traveler looking at renting Airbnb’s
+are affordability and whether the listings they are looking at are
+available for them to book. Through our analysis, our project would
+provide a traveler with information which could inform or supplement
+their decisions in New York Airbnb market.
 
 In part 1, we explored how location influences the price of Airbnb
-listings. We found that both Manhattan and Brooklyn dominated the number
-of listings in the Airbnb scene. To someone interested in travelling to
-New York City, they will find that most listings will be in these two
-neighborhoods. However, for travellers on a budget, they would need to
+listings. A traveler would be looking at affordability in terms of which
+area of New York he is most interested in visiting. We found that both
+Manhattan and Brooklyn dominated the number of listings in the Airbnb
+scene. These are the more popular and frequented parts of NYC by
+visitors. However, in terms of affordability, a traveler would need to
 decide which neighborhood is cheaper; thus, we calculated that there is
 a true median difference between these two neighborhoods and listings
 Manhattan is, on average, $60 more expensive than listings in Brooklyn.
 This is significant because tourists who cannot afford a pricier listing
 will not be able to book a place in Manhattan. Perhaps one of the
 strongest key takeaways in our analyses of price is our linear model. A
-traveller can look at our linear model and see that the median price for
+traveler can look at our linear model and see that the median price for
 the other boroughs in relation in Manhattan is (on average): Brooklyn is
 $85 less; Staten Island is $118 less, Queens is $110 less, and the Bronx
-is $126. With this information, a tourist on a tighet budget may only
-consider listings in the Bronx. Furthermore, our map (latitude and
-longtitude coordinates) indicates the expensive and less expesive
-listings. Overall, a tourist equipped with this information, can
-determine how location influences the price of an airbnb. Than in part
-2, we analyzed how the way an Airbnb is described influences
-availability. This is important information for a traveller because they
-may need to book an Airbnb in a timely manner. Our analysis indicated
-that any words associated with privacy such as “bedroom,” “private,”
-“apartment,” were among the most popular. A tourist may also want to
-know if an experienced host would have more or less availiable hostings,
-to which our analysis indicated that more experienced hosts will have
-more availiable listings than unexperienced hosts. With knowledge
+is $126. With this information, a tourist on a tighter budget may only
+consider listings in the Bronx and forgo the cost of living closer to
+Manhattan. Furthermore, our map (latitude and longitude coordinates)
+indicates the expensive and less expensive listings in a clear, visual
+manner and highlights the price differences across boroughs. Overall, a
+tourist equipped with this information, can determine how location
+influences the price of an Airbnb.
+
+In part 2, we analyzed how the way an Airbnb is described influences
+availability. While a traveler might find listings in his price range,
+it is not necessary these listings would be available as his
+specifications may be common among Airbnb renters. Thus, we looked at
+how the description of Airbnb’s matched with these common
+specifications; those that did, would be more popular or less available.
+When looking at the name of the listings, our analysis indicated that
+any words associated with privacy such as “bedroom,” “private,”
+“apartment,” were among the most popular. Private rooms also had the
+lowest availability, emphasizing this finding. For example, private
+rooms had the lowest availability and thus, those who were looking at
+this consideration should be more proactive in booking. A tourist may
+also want to know if an experienced host, which we indicate by volume to
+provide more information about the host. With supplemental knowledge
 regarding location and how a listing is described in relation to price
-and availibility, a tourist may use this information to his or her
+and availability, a tourist may use this information to his or her
 advantage.
 
 ### Overall
