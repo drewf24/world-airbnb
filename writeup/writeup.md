@@ -836,14 +836,13 @@ and 95% bootstrap confidence interval for the median number of available
 days of an Airbnb in order to better understand the range of available
 number of days (out of 365) and the market demand. From this we
 determined that we are 95% confident the median number of available days
-of Airbnbs in New York City is between 42 and 57 days.
-
-Next, we performed text analysis on the description (name) written by
-the host because we were interested in how descriptions could influence
-which Airbnbs are most popular. Through our text analysis of the
-descriptions we found words associated with private were highly sought
-after. “Private” and “apartment” were highly common, indicating a
-private enclave, and “bedroom” indicating one’s private space.
+of Airbnbs in New York City is between 42 and 57 days. Next, we
+performed text analysis on the description (name) written by the host
+because we were interested in how descriptions could influence which
+Airbnbs are most popular. Through our text analysis of the descriptions,
+we found words associated with private were highly sought after.
+“Private” and “apartment” were highly common, indicating a private
+enclave, and “bedroom” indicating one’s private space.
 
 We hypothesized that room type would be a major factor in predicting
 availability because our exploratory analysis showed that a shared room
@@ -858,12 +857,12 @@ model that describes the influence of room type on availability with
 entire home/apt as our baseline. The r-squared from our linear model
 tells us that roughly 0.841% of the variability in median availability
 can be explained by the type of room of Airbnb’s in New York.
-Considering is a relatively small R squared value. We continued to look
-into other factors which might influence availability.
+Considering this is a relatively small R squared value, we continued to
+look into other factors which might influence availability.
 
-To do this, we selected linear model to predict Airbnb availability by
+To do this, we selected a linear model to predict Airbnb availability by
 all relevant variables relating to the way in which the property is
-listed. The linear model produced did select roomtype among other
+listed. The linear model produced selected roomtype among other
 variables to predict availability. From this we concluded that 10.49% of
 the variability in availability can be explained by the way the property
 is listed - the room type, minimum nights required, number of reviews
@@ -876,60 +875,64 @@ availability can be explained depending on whether a host is high volume
 or not, where high volume indicated that a host had more than one
 listing, and low volume indicated a host had only one listing. We had
 convincing evidence to conclude that there is a difference in median
-availability of high volume hosts and low volume hosts. Finally, we
-conducted a 95% confidence interval to find the different in median
-availability.
+availability of high volume hosts and low volume hosts. After doing a
+confidence interval, we concluded that we are 95% confident that the
+median availability for high volume hosts is between 219 to 261 days
+greater than that of low volume hosts.
+
+Overall, it seemed as though non-location factors like room type and
+description played some role, with limitations, in influencing
+availability, while host volume played a more critical role, though with
+limitations too, in determining availability. Perhaps rentees are more
+comfortable with Airbnbs that are not the owner’s sole proporty or
+perhaps owners with multiple properties are better at making their
+listings more appealing. More research would need to be done to
+understand these effects further.
 
 ### Areas of Improvement
 
 Perhaps one of the biggest concerns among our dataset was that we could
 not prove constant variance. When plotting the individual error against
 the predicted value, the variance of the error predicted value should be
-constant. Graphically,this means the spread of the points around the
-regression line is too variable. Therefore, we had to proceed with
-caution when drawing assumptions from the linear regression. However, if
-we limit our conclusions to predictions, the consequences of a weak or
-not constant variance are less pressing.
+constant. Graphically,this means, that in our plots, the spread of the
+points around the regression line is too variable. Therefore, we had to
+proceed with caution when drawing assumptions from our linear regression
+models. However, as Malavi said, if we limit our conclusions to
+predictions, the consequences of a weak or not constant variance are not
+as pressing.
 
 Furthermore, we assumed independence in our sample, implying that each
 listing is independent because the pricing of one space does not
 directly influence the other. While some might argue there is dependence
 between listings to some extent, the market for Airbnbs in NYC is free
 and competitive, so renters, ideally, don’t collude. In other words, it
-can be safely assumed that hosts of Airbnbs are working not together to
-price fix listings in New York City.
+can be safely assumed that hosts of Airbnbs are not working together to
+price fix listings.
 
 Another critical concern to consider in our analysis are the
 probabilities of type 1 and type 2 errors. For the entirety of our
 analysis, we set our alpha level to 0.05. However, we could have set the
 alpha level lower to reduce type 1 error, but consequently, increased
-the type 2 error. It is important to consider the needs when it comes to
-analyzing the data. If someone wants to determine, for instance, which
-borough is cheaper to book an Airbnb, Manhattan or Brooklyn, they would
-have to set the predetermined alpha level on their desired outcome. A
-type 1 error would mean a false positive - that there is a true
-difference in median prices when there actually is not. A type 2 error
-is a false negative, for example, if we had concluded that there is no
-true difference in median prices when one exists. In order to decrease
-the possibility of these errors, we could increase the sample size of
-our data analysis. Our analysis could be stronger if we took into
-account the purposes that people will use it for.
+the type 2 error. A type 1 error would mean a false positive - that
+there is a true difference in median prices when there actually is not.
+A type 2 error is a false negative, for example, if we had concluded
+that there is no true difference in median prices when one exists. In
+order to decrease the possibility of these errors, we could increase the
+sample size of our data analysis.
 
 If we were going to continue to work on the project, we could delve
 deeper into locations such as specific neighborhoods. This would allow
-users of our analysis to investigate further, more specifically, the
-cheapest places in New York City. For example, although the Bronx is one
-of the more affordable boroughs in our analysis, the most expensive
+users of our analysis to investigate more specifically the cheapest
+places in New York City. For example, although the Bronx is one of the
+more affordable boroughs in our analysis, the most expensive
 neighborhood in our sample is in the Bronx. For travelers on a very
 tight budget, they may be misled by the information presented in our
 dataset because we were not specific enough with the location.
 
 ### Final Thoughts
 
-### Final Thoughts
-
 We are confident that our analysis has provided us with a better
-understanding of the gig hospitality market in New York City for 2019.
+understanding of the gig hospitality market in New York City.
 Specifically, we found, explored, and understood trends in the market as
 they relate to supply (availability) and demand (what people are willing
 to pay). The two main things for a traveler looking at renting Airbnb’s
@@ -940,43 +943,42 @@ their decisions in New York Airbnb market.
 
 In part 1, we explored how location influences the price of Airbnb
 listings. A traveler would be looking at affordability in terms of which
-area of New York he is most interested in visiting. We found that both
-Manhattan and Brooklyn dominated the number of listings in the Airbnb
-scene. These are the more popular and frequented parts of NYC by
+area of New York he or she is most interested in visiting. We found that
+both Manhattan and Brooklyn dominated the number of listings in the
+Airbnb scene. These are the more popular and frequented parts of NYC by
 visitors. However, in terms of affordability, a traveler would need to
-decide which neighborhood is cheaper; thus, we calculated that there is
-a true median difference between these two neighborhoods and listings
-Manhattan is, on average, $60 more expensive than listings in Brooklyn.
-This is significant because tourists who cannot afford a pricier listing
-will not be able to book a place in Manhattan. Perhaps one of the
-strongest key takeaways in our analyses of price is our linear model. A
-traveler can look at our linear model and see that the median price for
-the other boroughs in relation in Manhattan is (on average): Brooklyn is
-$85 less; Staten Island is $118 less, Queens is $110 less, and the Bronx
-is $126. With this information, a tourist on a tighter budget may only
-consider listings in the Bronx and forgo the cost of living closer to
-Manhattan. Furthermore, our map (latitude and longitude coordinates)
-indicates the expensive and less expensive listings in a clear, visual
-manner and highlights the price differences across boroughs. Overall, a
-tourist equipped with this information, can determine how location
-influences the price of an Airbnb.
+decide which neighborhood is cheaper; thus, we calculated that we are
+95% confident that there is a true median difference between these two
+neighborhoods and listings in Manhattan are, on average, $55 to $65 more
+expensive than listings in Brooklyn. This is significant because
+tourists who cannot afford a pricier listing will not be able to book a
+place in Manhattan. Perhaps one of the strongest key takeaways in our
+analyses of price is our linear model. A traveler can look at our linear
+model and see that the median price for the other boroughs are in
+relation to Manhattan. Brooklyn is $85 less; Staten Island is $118 less,
+Queens is $110 less, and the Bronx is $126 less. With this information,
+a tourist on a tighter budget may only consider listings in the Bronx
+and forgo the cost of renting closer to Manhattan. Furthermore, our map
+(latitude and longitude coordinates) indicates the expensive and less
+expensive listings in a clear, visual manner and highlights the price
+differences across boroughs. Overall, a tourist equipped with this
+information, can make decisions more tailored to their needs and
+preferences.
 
 In part 2, we analyzed how the way an Airbnb is described influences
-availability. While a traveler might find listings in his price range,
-it is not necessary these listings would be available as his
-specifications may be common among Airbnb renters. Thus, we looked at
-how the description of Airbnb’s matched with these common
+availability. While a traveler might find listings in his or her price
+range, it is not necessary these listings would be available as his or
+her specifications may be common among Airbnb renters. Thus, we looked
+at how the description of Airbnb’s matched with these common
 specifications; those that did, would be more popular or less available.
 When looking at the name of the listings, our analysis indicated that
 any words associated with privacy such as “bedroom,” “private,”
-“apartment,” were among the most popular. Private rooms also had the
-lowest availability, emphasizing this finding. For example, private
-rooms had the lowest availability and thus, those who were looking at
-this consideration should be more proactive in booking. A tourist may
-also want to know if an experienced host, which we indicate by volume to
-provide more information about the host. With supplemental knowledge
-regarding location and how a listing is described in relation to price
-and availability, a tourist may use this information to his or her
+“apartment,” were among the most popular. For example, private rooms
+had the lowest availability and thus, those who are looking at this
+consideration should be more proactive in booking. A tourist may also
+want to know if an experienced host, which we indicate by volume, is
+renting to them. With supplemental knowledge regarding location and how
+a listing is described, a tourist may use this information to his or her
 advantage.
 
 ### Overall
